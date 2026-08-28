@@ -1,0 +1,86 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: agent-forge-backend
+  profiles:
+    active: dev
+  # 开启 Java 21 虚拟线程支持 (高并发极速吞吐)
+  threads:
+    virtual:
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# Sa-Token 配置
+sa-token:
+  token-name: Authorization
+  timeout: 2592000 # 30天
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-read-header: true
+  is-read-cookie: false
+  jwt-secret-key: ${JWT_SECRET:agentforge-enterprise-secret-key-32bytes-min!}
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.agentforge.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+
+# SpringDoc OpenAPI 接口文档
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+# AgentForge 平台核心参数
+agentforge:
+  security:
+    white-list:
+      - /api/auth/login
+      - /api/auth/register
+      - /api/system/health
+      - /api/v3/api-docs/**
+      - /api/swagger-ui/**
+      - /api/swagger-ui.html
+  llm:
+    default-provider: deepseek
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY:sk-placeholder}
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com/v1}
+      model-name: deepseek-chat
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-placeholder}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model-name: gpt-4o
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      model-name: qwen2.5:7b
+  rag:
+    default-embedding-dim: 1536
+    default-top-k: 5
+    default-similarity-threshold: 0.65
+    rerank-enabled: true
