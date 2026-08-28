@@ -105,22 +105,21 @@ cd frontend && npm install && npm run dev
 
 ---
 
-## 📁 核心交付物与商业文档库
+## 📁 核心交付物与企业规范文档库
 
-* [📖 买家交付实施与排查手册 (`docs/BUYER_HANDOVER_MANUAL.md`)](./docs/BUYER_HANDOVER_MANUAL.md)
-* [💼 商业变现与销售成交实操指南 (`docs/COMMERCIAL_SALES_PITCH_KIT.md`)](./docs/COMMERCIAL_SALES_PITCH_KIT.md)
-* [📄 软件产品商业源码买断合同模板 (`docs/COMMERCIAL_LICENSE_AGREEMENT.md`)](./docs/COMMERCIAL_LICENSE_AGREEMENT.md)
+* [📖 系统实施与快速部署手册 (`docs/BUYER_HANDOVER_MANUAL.md`)](./docs/BUYER_HANDOVER_MANUAL.md)
 * [🛡️ 企业级等保三级安全白皮书 (`docs/ENTERPRISE_SECURITY_WHITEPAPER.md`)](./docs/ENTERPRISE_SECURITY_WHITEPAPER.md)
 * [📋 招投标技术偏离表与指标对照 (`docs/RFP_TECHNICAL_SPECIFICATION.md`)](./docs/RFP_TECHNICAL_SPECIFICATION.md)
 * [📊 企业 AI 落地 ROI 成本效益分析报告 (`docs/ROI_COST_ANALYSIS_REPORT.md`)](./docs/ROI_COST_ANALYSIS_REPORT.md)
+* [🏛️ 系统架构设计与技术全景剖析 (`docs/ARCHITECTURE.md`)](./docs/ARCHITECTURE.md)
 
 ---
 
-## 🤝 商业授权与技术支持
+## 🤝 商业授权与技术支持 SLA
 
-本项目已提供完整的商业源码买断与技术服务支持，适用于：
-1. **软件外包团队 / 独立开发者**：直接作为底层中台交付政企、国企客户，节省 3 个月自研成本；
+本项目提供完整的商业源码买断、信创适配与技术交付支持，适用于：
+1. **软件外包团队 / 独立开发者**：作为底层中台快速向政企、国企客户交付，节省团队数月研发成本；
 2. **中小企业 / 律所 / 制造业**：私有化部署专属合同合规审查、智能知识库与 Text2SQL 业务中台。
 
 * **作者 / 架构维护者**：Project Author (独立全栈架构师)
-* **商业咨询与技术交流**：请联系仓库 Maintainer 或查阅 `docs/COMMERCIAL_SALES_PITCH_KIT.md`。
+* **技术咨询与商业支持**：请联系仓库 Maintainer。
