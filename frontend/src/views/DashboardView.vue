@@ -78,7 +78,21 @@
     </div>
 
     <!-- Quick Action Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <router-link to="/copilot" class="p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 via-dark-card to-slate-900 border border-amber-500/30 hover:border-amber-400 group transition-all relative overflow-hidden">
+        <div class="absolute top-3 right-3">
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/40">NEW</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <h3 class="text-base font-bold text-white group-hover:text-amber-400 transition-colors">全员 Copilot 门户 (员工端)</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          极简免培训对话门户，支持制度查阅、合同合规自检、财务报销及 Word/PDF 拖拽问答。
+        </p>
+        <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-400 mt-4">打开员工门户 &rarr;</span>
+      </router-link>
+
       <router-link to="/datasets" class="p-6 rounded-2xl bg-gradient-to-b from-dark-card to-slate-900 border border-dark-border hover:border-brand-500/50 group transition-all">
         <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
@@ -113,6 +127,33 @@
       </router-link>
     </div>
 
+    <!-- Web Component Widget Showcase -->
+    <div class="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-dark-card to-slate-900 border border-dark-border space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="p-1 rounded bg-brand-500/20 text-brand-400">🔌</span>
+            两行代码无缝嵌入第三方系统 (Shadow DOM 挂件)
+          </h3>
+          <p class="text-xs text-slate-400 mt-1">
+            企业客户无需改造原有 OA/ERP/CRM 系统，只需在任意 HTML 页面贴入以下脚本，即可获得右下角悬浮 AI 助手：
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button @click="copyWidgetCode" class="px-3.5 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all">
+            📋 复制挂件引入代码
+          </button>
+          <button @click="triggerWidget" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-dark-border transition-all">
+            🚀 现场体验右下角挂件
+          </button>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto select-all">
+        <code>&lt;script src="/agentforge-widget.js" data-api-url="/api" data-app-id="1" data-title="企业智能助手"&gt;&lt;/script&gt;</code>
+      </div>
+    </div>
+
     <!-- Architecture Badges -->
     <div class="p-6 rounded-2xl bg-slate-900/40 border border-dark-border">
       <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">企业级硬核技术架构标准</h4>
@@ -131,4 +172,23 @@
 </template>
 
 <script setup>
+const copyWidgetCode = () => {
+  const code = '<script src="/agentforge-widget.js" data-api-url="/api" data-app-id="1" data-title="企业智能助手"><' + '/script>'
+  navigator.clipboard.writeText(code)
+  alert('已复制挂件代码到剪贴板！可直接粘贴至任何第三方系统的 HTML 页面。')
+}
+
+const triggerWidget = () => {
+  if (!document.getElementById('agentforge-widget-container')) {
+    const s = document.createElement('script')
+    s.src = '/agentforge-widget.js'
+    s.setAttribute('data-api-url', '/api')
+    s.setAttribute('data-app-id', '1')
+    s.setAttribute('data-title', '企业智能助手')
+    document.body.appendChild(s)
+    alert('已成功在当前页面注入 Shadow DOM 挂件！请查看屏幕右下角 🤖 悬浮球！')
+  } else {
+    alert('右下角挂件已就绪，请直接点击右下角的 🤖 悬浮按钮进行交互！')
+  }
+}
 </script>

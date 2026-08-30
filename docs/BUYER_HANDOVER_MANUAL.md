@@ -1,6 +1,6 @@
 # 📖 AgentForge 商业交付与极速实施手册（买家版）
 
-**版本**：v1.0.0 Commercial Release  
+**版本**：v1.1.0 Commercial Enterprise Release  
 **适用对象**：系统管理员、运维工程师、软件集成商交付团队
 
 ---
@@ -13,7 +13,8 @@
 # 1. 启动全栈生产容器 (PostgreSQL 16 pgvector + Redis 7 + 后端 Java 21 + 前端 Nginx)
 docker-compose -f docker-compose-prod.yml up -d
 ```
-* **前端 Web Studio 访问地址**：`http://服务器IP:80`
+* **控制台 Web Studio 访问地址**：`http://服务器IP:80`
+* **全员 Copilot 极简门户访问地址**：`http://服务器IP:80/copilot`
 * **默认管理员账户**：`admin` / `admin123456`
 * **默认超级租户 ID**：`1`
 
@@ -34,10 +35,26 @@ docker-compose -f docker-compose-prod.yml up -d
 
 ---
 
-## 🛠️ 2. 系统一键自检与自愈诊断
+## 🛠️ 2. 系统一键自检与运维工具库
 
-部署完成后，可直接访问自检接口或在控制台查看：
-* **自检 API**：`GET http://localhost:8080/api/system/diagnostics`
+### 2.1 生产环境一键自动化巡检
+项目内置了生产级一键健康自检脚本，自动检测全链路连通性：
+* **Linux / 信创环境**：
+  ```bash
+  chmod +x scripts/health_check.sh && ./scripts/health_check.sh
+  ```
+* **Windows Server 环境**：
+  双击运行 `scripts\health_check.bat`
+
+### 2.2 数据库与向量索引一键热备份
+* **执行备份**：
+  ```bash
+  chmod +x scripts/backup_database.sh && ./scripts/backup_database.sh
+  ```
+  自动导出包含 pgvector 向量索引的完整 SQL 并保留最近 7 天历史快照。
+
+### 2.3 自检 API
+* **自检接口**：`GET http://localhost:8080/api/system/health`
 * **自检范围**：
   - [x] PostgreSQL 16 读写及 pgvector 向量索引健康状态
   - [x] Redis 7 响应延迟及语义降本缓存就绪状态
@@ -72,5 +89,16 @@ docker-compose -f docker-compose-prod.yml up -d
 
 ---
 
-## 📞 4. 商业授权与技术支持 SLA
+## 📁 4. 配套商业交付白皮书库
+
+* [🏛️ 信创国产化软硬件适配兼容性白皮书 (`docs/XINCHUANG_COMPATIBILITY_MATRIX.md`)](./XINCHUANG_COMPATIBILITY_MATRIX.md)
+* [🎯 招投标技术专家答辩与现场攻防 20 问宝典 (`docs/BIDDING_DEFENSE_FAQ.md`)](./BIDDING_DEFENSE_FAQ.md)
+* [🛡️ 企业级等保三级安全白皮书 (`docs/ENTERPRISE_SECURITY_WHITEPAPER.md`)](./ENTERPRISE_SECURITY_WHITEPAPER.md)
+* [📋 招投标技术偏离表与指标对照 (`docs/RFP_TECHNICAL_SPECIFICATION.md`)](./RFP_TECHNICAL_SPECIFICATION.md)
+* [📊 企业 AI 落地 ROI 成本效益分析报告 (`docs/ROI_COST_ANALYSIS_REPORT.md`)](./ROI_COST_ANALYSIS_REPORT.md)
+* [🚨 企业级高可用容灾与应急预案 SOP (`docs/DISASTER_RECOVERY_SOP.md`)](./DISASTER_RECOVERY_SOP.md)
+
+---
+
+## 📞 5. 商业授权与技术支持 SLA
 * 本源码包享有商业闭环永久授权，允许进行二次开发、定制贴牌 (OEM) 及向最终客户私有化交付。

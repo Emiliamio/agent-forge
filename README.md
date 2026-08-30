@@ -108,10 +108,23 @@ cd frontend && npm install && npm run dev
 ## 📁 核心交付物与企业规范文档库
 
 * [📖 系统实施与快速部署手册 (`docs/BUYER_HANDOVER_MANUAL.md`)](./docs/BUYER_HANDOVER_MANUAL.md)
+* [🏛️ 信创国产化软硬件适配兼容性白皮书 (`docs/XINCHUANG_COMPATIBILITY_MATRIX.md`)](./docs/XINCHUANG_COMPATIBILITY_MATRIX.md)
+* [🎯 招投标技术专家答辩与现场攻防 20 问宝典 (`docs/BIDDING_DEFENSE_FAQ.md`)](./docs/BIDDING_DEFENSE_FAQ.md)
 * [🛡️ 企业级等保三级安全白皮书 (`docs/ENTERPRISE_SECURITY_WHITEPAPER.md`)](./docs/ENTERPRISE_SECURITY_WHITEPAPER.md)
 * [📋 招投标技术偏离表与指标对照 (`docs/RFP_TECHNICAL_SPECIFICATION.md`)](./docs/RFP_TECHNICAL_SPECIFICATION.md)
 * [📊 企业 AI 落地 ROI 成本效益分析报告 (`docs/ROI_COST_ANALYSIS_REPORT.md`)](./docs/ROI_COST_ANALYSIS_REPORT.md)
+* [🚨 企业级高可用容灾与应急预案 SOP (`docs/DISASTER_RECOVERY_SOP.md`)](./docs/DISASTER_RECOVERY_SOP.md)
 * [🏛️ 系统架构设计与技术全景剖析 (`docs/ARCHITECTURE.md`)](./docs/ARCHITECTURE.md)
+
+---
+
+## 🛠️ 生产运维自动化工具脚本库
+
+| 脚本文件 | 适用环境 | 作用与功能 |
+| :--- | :--- | :--- |
+| `scripts/health_check.sh` | Linux / 信创系统 | 一键自动化巡检 Java 21 后端、PostgreSQL 16 向量扩展、Redis 延迟及磁盘 IO |
+| `scripts/health_check.bat` | Windows Server | Windows 环境下一键双击自检与基础设施健康排查 |
+| `scripts/backup_database.sh` | Linux 生产机房 | PostgreSQL 向量库与 Redis 语义缓存热备份与过期数据自动清理 (SOP) |
 
 ---
 

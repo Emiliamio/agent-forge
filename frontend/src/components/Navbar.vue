@@ -22,11 +22,16 @@
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
+          class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150"
           :class="isActive(item.path) ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'"
         >
-          <component :is="item.icon" class="w-4 h-4" />
-          <span>{{ item.name }}</span>
+          <div class="flex items-center gap-3">
+            <component :is="item.icon" class="w-4 h-4" />
+            <span>{{ item.name }}</span>
+          </div>
+          <span v-if="item.badge" class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30 font-medium">
+            {{ item.badge }}
+          </span>
         </router-link>
       </nav>
     </div>
@@ -66,13 +71,15 @@ import {
   Database,
   GitFork,
   Bot,
-  Receipt
+  Receipt,
+  Sparkles
 } from 'lucide-vue-next'
 
 const route = useRoute()
 
 const navItems = [
   { name: '控制台概览', path: '/', icon: LayoutDashboard },
+  { name: '全员 Copilot 门户', path: '/copilot', icon: Sparkles, badge: '极简门户' },
   { name: '知识库管理 (RAG)', path: '/datasets', icon: Database },
   { name: 'DAG 工作流编排', path: '/workflows', icon: GitFork },
   { name: '智能体调试 (ReAct)', path: '/agents', icon: Bot },
