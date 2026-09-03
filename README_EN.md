@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-40%20Passed%20(100%25)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-42%20Passed%20(100%25)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT%20%7C%20Commercial-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [Technical Blog](https://emiliamio.github.io) | [Commercial SLA & License](COMMERCIAL_LICENSE.md)
@@ -32,6 +32,7 @@
    │                     Security & Multi-Tenant Physical Isolation                   │
    │  • Sa-Token unified identity authentication & fine-grained RBAC                 │
    │  • MyBatis-Plus JsqlParser SQL AST physical tenant isolation (0.00% leakage)    │
+   │  • Multi-tenant Token Budget & RPM Rate Limiter (TenantTokenQuotaLimiter)       │
    │  • Adversarial Prompt Injection & Jailbreak Guardrails (PromptInjectionGuard)   │
    │  • RAG Factuality & Grounding Guardrail (RagGroundingEvaluator score & warning) │
    │  • Financial-grade PII 2-way reversible masking + DFA millisecond safety filter │
@@ -39,6 +40,7 @@
                                           │
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    3-Way Hybrid RAG Deep Retrieval Pipeline                      │
+   │  • GraphRAG S-P-O entity triplet extraction & 2-hop topological traversal search │
    │  • Dense Vector Search (pgvector HNSW) + Sparse Full-Text (tsvector GIN)        │
    │  • RRF (Reciprocal Rank Fusion) + Cross-Encoder re-ranking secondary scoring    │
    │  • Parent-Child Small-to-Big 2-tier chunking + Multi-turn Query rewriting       │
@@ -97,4 +99,4 @@ AgentForge incorporates comprehensive regression testing covering AST tenant iso
 ```bash
 cd backend && mvn clean test
 ```
-* **Test Suite Status**: **40 / 40 Passed (100% Green)**
+* **Test Suite Status**: **42 / 42 Passed (100% Green)**

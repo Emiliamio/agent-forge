@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-40%20Passed%20(100%25)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-42%20Passed%20(100%25)-success.svg)]()
 [![License](https://img.shields.io/badge/License-Commercial%20%2F%20Enterprise-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
@@ -30,6 +30,7 @@
    │                     安全防护与多租户物理隔离层 (Security & Isolation)             │
    │  • Sa-Token 统一身份认证与 RBAC 权限体系                                          │
    │  • MyBatis-Plus JsqlParser SQL AST 语法树租户强隔离 (跨租户物理越权率 0.00%)     │
+   │  • 多租户动态 Token 消费预算与 RPM 并发限流熔断器 (TenantTokenQuotaLimiter 防击穿)│
    │  • 企业级 Prompt 注入与越狱对抗安全护栏 (PromptInjectionGuard 拦截率 100%)        │
    │  • RAG 事实性与幻觉评估护栏 (RagGroundingEvaluator 计算断言重合度与引文免责声明)   │
    │  • 金融级 PII 双向可逆敏感脱敏 (手机号/身份证/银行卡) + DFA 毫秒级敏感词安全过滤   │
@@ -37,6 +38,7 @@
                                           │
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    三路混合 RAG 深度检索层 (Hybrid RAG Pipeline)                 │
+   │  • GraphRAG 实体三元组自动抽取 (S-P-O) 与两跳拓扑扩散搜索 (Multi-Hop Traversal)   │
    │  • 密集向量检索 (pgvector HNSW) + 稀疏全文检索 (tsvector GIN)                    │
    │  • RRF (倒数排名融合算法) + Cross-Encoder 交叉重排模型二次评分                   │
    │  • 父子 Small-to-Big 双层分块 + 多轮对话 Query 智能指代消解重写                  │
@@ -95,4 +97,4 @@ AgentForge 后端内置覆盖 AST 租户隔离、Kahn DAG 调度、RAG 混合检
 ```bash
 cd backend && mvn clean test
 ```
-* **单测通过率**：**40 / 40 全部通过 (100% 绿灯)**
+* **单测通过率**：**42 / 42 全部通过 (100% 绿灯)**
