@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-44%20Passed%20(100%25)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-46%20Passed%20(100%25)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT%20%7C%20Commercial-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [Technical Blog](https://emiliamio.github.io) | [Commercial SLA & License](COMMERCIAL_LICENSE.md)
@@ -41,6 +41,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    3-Way Hybrid RAG Deep Retrieval Pipeline                      │
    │  • GraphRAG S-P-O entity triplet extraction & 2-hop topological traversal search │
+   │  • Pure Java 8-bit Scalar Quantization (ScalarQuantizationEngine SQ8 75% cut)   │
    │  • Dense Vector Search (pgvector HNSW) + Sparse Full-Text (tsvector GIN)        │
    │  • RRF (Reciprocal Rank Fusion) + Cross-Encoder re-ranking secondary scoring    │
    │  • Parent-Child Small-to-Big 2-tier chunking + Multi-turn Query rewriting       │
@@ -50,6 +51,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    Reactive DAG Workflow Engine                                  │
    │  • Kahn topological sorting concurrent execution (Project Reactor / Flux)       │
+   │  • Distributed Trace Timeline Gantt Formatter (TraceWaterfallGanttService APM)   │
    │  • Secure Code Sandbox Engine (SecureCodeSandboxEngine with AST risk blocking)   │
    │  • Model Arena Canary Traffic Splitter (ModelArenaTrafficSplitter & benchmark)   │
    │  • LangSmith-grade Agent Execution Topology Waterfall & Token Cost Accounting   │
@@ -101,4 +103,4 @@ AgentForge incorporates comprehensive regression testing covering AST tenant iso
 ```bash
 cd backend && mvn clean test
 ```
-* **Test Pass Rate**: **44 / 44 passed (100% Green)**
+* **Test Pass Rate**: **46 / 46 passed (100% Green)**

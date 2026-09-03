@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-44%20Passed%20(100%25)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-46%20Passed%20(100%25)-success.svg)]()
 [![License](https://img.shields.io/badge/License-Commercial%20%2F%20Enterprise-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
@@ -39,6 +39,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    三路混合 RAG 深度检索层 (Hybrid RAG Pipeline)                 │
    │  • GraphRAG 实体三元组自动抽取 (S-P-O) 与两跳拓扑扩散搜索 (Multi-Hop Traversal)   │
+   │  • 纯 Java 8-bit 标量量化压缩引擎 (ScalarQuantizationEngine SQ8 内存降低 75%)     │
    │  • 密集向量检索 (pgvector HNSW) + 稀疏全文检索 (tsvector GIN)                    │
    │  • RRF (倒数排名融合算法) + Cross-Encoder 交叉重排模型二次评分                   │
    │  • 父子 Small-to-Big 双层分块 + 多轮对话 Query 智能指代消解重写                  │
@@ -48,6 +49,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    响应式 DAG 工作流引擎 (Reactive Workflow Engine)              │
    │  • 基于 Kahn 拓扑排序算法的并发分层调度 (Project Reactor / Flux 并发流)          │
+   │  • 分布式 Trace 拓扑时间线甘特图格式化 (TraceWaterfallGanttService APM 时序瀑布流)│
    │  • 企业级受限安全代码沙箱执行器 (SecureCodeSandboxEngine 敏感指令阻断 + 看门狗超时)│
    │  • 多模型金丝雀灰度分流与竞技场评测器 (ModelArenaTrafficSplitter 租户一致性路由)   │
    │  • LangSmith 级 Agent 执行拓扑全链路 Trace 瀑布流与 Token 成本精算追踪器          │
@@ -99,4 +101,4 @@ AgentForge 后端内置覆盖 AST 租户隔离、Kahn DAG 调度、RAG 混合检
 ```bash
 cd backend && mvn clean test
 ```
-* **单测通过率**：**44 / 44 全部通过 (100% 绿灯)**
+* **单测通过率**：**46 / 46 全部通过 (100% 绿灯)**
