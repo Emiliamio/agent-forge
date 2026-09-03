@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-37%20Passed%20(100%25)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-40%20Passed%20(100%25)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT%20%7C%20Commercial-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [Technical Blog](https://emiliamio.github.io) | [Commercial SLA & License](COMMERCIAL_LICENSE.md)
@@ -25,6 +25,7 @@
    ┌─────────────────────────────────────────────────────────────────────────────────┐
    │                          Multi-Channel Ingress Layer                             │
    │      Vue 3.4 Admin Studio   │   Lightweight Employee Portal   │   Shadow DOM Widget │
+   │  • DeepSeek-R1 Structured SSE Event Stream (Reasoning <think> separation + UI)   │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
                                           │
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
@@ -32,6 +33,7 @@
    │  • Sa-Token unified identity authentication & fine-grained RBAC                 │
    │  • MyBatis-Plus JsqlParser SQL AST physical tenant isolation (0.00% leakage)    │
    │  • Adversarial Prompt Injection & Jailbreak Guardrails (PromptInjectionGuard)   │
+   │  • RAG Factuality & Grounding Guardrail (RagGroundingEvaluator score & warning) │
    │  • Financial-grade PII 2-way reversible masking + DFA millisecond safety filter │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
                                           │
@@ -47,6 +49,7 @@
    │                    Reactive DAG Workflow Engine                                  │
    │  • Kahn topological sorting concurrent execution (Project Reactor / Flux)       │
    │  • LangSmith-grade Agent Execution Topology Waterfall & Token Cost Accounting   │
+   │  • Anthropic MCP (Model Context Protocol) Native Client (JSON-RPC 2.0 ecosystem)│
    │  • 9 Reactive Node Executors (LLM, RAG, Code, HTTP, Switch, Human-in-Loop, SQL) │
    │  • ReAct Agent state machine + dynamic OpenAPI toolbox orchestration            │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
@@ -94,4 +97,4 @@ AgentForge incorporates comprehensive regression testing covering AST tenant iso
 ```bash
 cd backend && mvn clean test
 ```
-* **Test Suite Status**: **35 / 35 Passed (100% Green)**
+* **Test Suite Status**: **40 / 40 Passed (100% Green)**
