@@ -1,4 +1,4 @@
-﻿# 🚀 AgentForge (灵眸智枢) —— 纯血 Java 21 企业级 AI Agent 智能体与混合 RAG 中台
+# 🚀 AgentForge (灵眸智枢) —— 纯血 Java 21 企业级 AI Agent 智能体与混合 RAG 中台
 
 [![Java](https://img.shields.io/badge/Java-21%20LTS-orange.svg?style=flat&logo=openjdk)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen.svg?style=flat&logo=springboot)](https://spring.io/projects/spring-boot)
@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-35%20Passed%20(100%25)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-37%20Passed%20(100%25)-success.svg)]()
 [![License](https://img.shields.io/badge/License-Commercial%20%2F%20Enterprise-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
@@ -29,6 +29,7 @@
    │                     安全防护与多租户物理隔离层 (Security & Isolation)             │
    │  • Sa-Token 统一身份认证与 RBAC 权限体系                                          │
    │  • MyBatis-Plus JsqlParser SQL AST 语法树租户强隔离 (跨租户物理越权率 0.00%)     │
+   │  • 企业级 Prompt 注入与越狱对抗安全护栏 (PromptInjectionGuard 拦截率 100%)        │
    │  • 金融级 PII 双向可逆敏感脱敏 (手机号/身份证/银行卡) + DFA 毫秒级敏感词安全过滤   │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
                                           │
@@ -43,6 +44,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    响应式 DAG 工作流引擎 (Reactive Workflow Engine)              │
    │  • 基于 Kahn 拓扑排序算法的并发分层调度 (Project Reactor / Flux 并发流)          │
+   │  • LangSmith 级 Agent 执行拓扑全链路 Trace 瀑布流与 Token 成本精算追踪器          │
    │  • 9 大反应式节点执行器 (LLM、RAG、Code、HTTP、Switch、Human-in-Loop、Text2SQL等) │
    │  • ReAct Agent 智能体状态机 + 动态 OpenAPI 工具箱编排                            │
    └──────────────────────────────────────┬──────────────────────────────────────────┘

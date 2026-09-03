@@ -1,4 +1,4 @@
-﻿# 🚀 AgentForge —— Pure Java 21 Enterprise AI Agent Platform & 3-Way Hybrid RAG Engine
+# 🚀 AgentForge —— Pure Java 21 Enterprise AI Agent Platform & 3-Way Hybrid RAG Engine
 
 [![Java](https://img.shields.io/badge/Java-21%20LTS-orange.svg?style=flat&logo=openjdk)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen.svg?style=flat&logo=springboot)](https://spring.io/projects/spring-boot)
@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-35%20Passed%20(100%25)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-37%20Passed%20(100%25)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT%20%7C%20Commercial-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [Technical Blog](https://emiliamio.github.io) | [Commercial SLA & License](COMMERCIAL_LICENSE.md)
@@ -31,6 +31,7 @@
    │                     Security & Multi-Tenant Physical Isolation                   │
    │  • Sa-Token unified identity authentication & fine-grained RBAC                 │
    │  • MyBatis-Plus JsqlParser SQL AST physical tenant isolation (0.00% leakage)    │
+   │  • Adversarial Prompt Injection & Jailbreak Guardrails (PromptInjectionGuard)   │
    │  • Financial-grade PII 2-way reversible masking + DFA millisecond safety filter │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
                                           │
@@ -45,6 +46,7 @@
    ┌──────────────────────────────────────▼──────────────────────────────────────────┐
    │                    Reactive DAG Workflow Engine                                  │
    │  • Kahn topological sorting concurrent execution (Project Reactor / Flux)       │
+   │  • LangSmith-grade Agent Execution Topology Waterfall & Token Cost Accounting   │
    │  • 9 Reactive Node Executors (LLM, RAG, Code, HTTP, Switch, Human-in-Loop, SQL) │
    │  • ReAct Agent state machine + dynamic OpenAPI toolbox orchestration            │
    └──────────────────────────────────────┬──────────────────────────────────────────┘
