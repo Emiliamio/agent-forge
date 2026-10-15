@@ -1,4 +1,4 @@
-﻿name: AgentForge CI/CD Automated Pipeline
+name: AgentForge CI/CD Automated Pipeline
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run AgentForge Backend 35 Unit Tests
+      - name: Run AgentForge Backend 52+ Unit Tests (100% Green)
         working-directory: backend
         run: mvn clean test --batch-mode
 

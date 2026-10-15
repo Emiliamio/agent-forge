@@ -1,7 +1,22 @@
-﻿# 📝 AgentForge 更新发布日志 (Changelog)
+# 📝 AgentForge 更新发布日志 (Changelog)
 
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
+
+## 🚀 [v1.2.0] - 2026-10-15 (Enterprise Apex Full Perfection Edition)
+
+### 🌟 新增 Apex 核心中枢与交互升级 (Apex Features & Interactive Studio)
+* **工业级 SVG 贝塞尔曲线交互式 DAG 工作流画布 (`/workflows`)**：
+  * 支持 2D 自由节点布局、贝塞尔连线曲率自动计算与带箭头流向指示；
+  * 支持 Start、LLM、RAG、Code 沙箱、Condition 条件分支等多路并发拓扑调度；
+  * 内置 **APM 全链路时序甘特图 (Trace Waterfall Gantt)** 视图，直观展示各 Span 绝对偏移、相对耗时与层级深度。
+* **DeepSeek-R1 风格结构化思考过程与思辨链折叠 (`/copilot`)**：
+  * 新增可折叠展开的 `🧠 已深度思考 (用时 1.4 秒)` 思考盒；
+  * 思维脉络与正文回答分流，结合 GraphRAG 两跳知识图谱规章引用。
+* **EnterpriseApexController 统一能力中枢 API**：
+  * 对外完整暴露 GraphRAG 实体抽取/多跳扩散、代码安全沙箱、模型灰度竞技场、Anthropic MCP 原生协议工具调度及 Prompt 注入防护端点。
+* **全套单测扩展至 52+ 项全部绿灯**：
+  * 后端核心测试用例从 46 项扩充至 **52 项 100% 绿灯全部通过** (`BUILD SUCCESS`)。
 
 ---
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="h-screen flex overflow-hidden">
+  <div class="h-screen flex overflow-hidden bg-slate-950 font-sans text-slate-100">
     <!-- Left: Agent Configuration -->
     <div class="w-1/2 p-8 overflow-y-auto border-r border-dark-border space-y-6">
       <div>
         <h2 class="text-2xl font-bold text-white tracking-tight">ReAct 智能体编排与调试</h2>
-        <p class="text-sm text-slate-400 mt-1">配置 System Prompt、挂载知识库与勾选动态 Function Calling 工具箱</p>
+        <p class="text-sm text-slate-400 mt-1">配置 System Prompt、挂载知识库与勾选动态 Function Calling & MCP 工具箱</p>
       </div>
 
       <div class="space-y-4">
@@ -23,34 +23,40 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1.5">挂载知识库</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">挂载知识库 (Hybrid + GraphRAG)</label>
             <select v-model="agentConfig.dataset" class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none">
-              <option value="1">企业通用制度知识库 (128 分块)</option>
-              <option value="2">金融合规与财务报表 (64 分块)</option>
+              <option value="1">企业通用制度知识库 (128 分块 + 知识图谱)</option>
+              <option value="2">金融合规与财务报表 (64 分块 + SQ8 标量量化)</option>
             </select>
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1.5">系统人设与提示词 (System Prompt)</label>
-          <textarea rows="5" v-model="agentConfig.systemPrompt" class="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-xl text-xs text-slate-200 focus:border-brand-500 outline-none font-mono leading-relaxed"></textarea>
+          <textarea rows="4" v-model="agentConfig.systemPrompt" class="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-xl text-xs text-slate-200 focus:border-brand-500 outline-none font-mono leading-relaxed"></textarea>
         </div>
 
         <!-- Dynamic Tools Checklist -->
         <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-2">启用 Function Calling 工具生态</label>
+          <label class="block text-xs font-semibold text-slate-400 mb-2 flex items-center justify-between">
+            <span>启用 Function Calling 与 Anthropic MCP 原生工具生态</span>
+            <span class="text-[10px] text-brand-400 font-mono">6 项已挂载</span>
+          </label>
           <div class="grid grid-cols-2 gap-3">
             <label v-for="tool in availableTools" :key="tool.id" class="p-3.5 rounded-xl border bg-dark-card flex items-start gap-3 cursor-pointer transition-all" :class="tool.enabled ? 'border-brand-500 bg-brand-500/5' : 'border-dark-border'">
               <input type="checkbox" v-model="tool.enabled" class="mt-0.5 rounded border-slate-700 text-brand-600 focus:ring-brand-500" />
               <div>
-                <p class="text-xs font-bold text-white">{{ tool.name }}</p>
+                <p class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>{{ tool.name }}</span>
+                  <span v-if="tool.isMcp" class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">MCP</span>
+                </p>
                 <p class="text-[10px] text-slate-400 mt-0.5">{{ tool.desc }}</p>
               </div>
             </label>
           </div>
         </div>
 
-        <button @click="saveAgent" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-brand-600/20 transition-all">
+        <button @click="saveAgent" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-brand-600/20 transition-all cursor-pointer">
           保存智能体配置
         </button>
       </div>
@@ -63,7 +69,7 @@
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-xs font-bold text-white">ReAct 推理状态机实时对话调试</span>
         </div>
-        <span class="text-[11px] text-slate-500 font-mono">Thought &rarr; Action &rarr; Observation</span>
+        <span class="text-[11px] text-slate-400 font-mono">Thought &rarr; Action &rarr; Observation</span>
       </div>
 
       <!-- Messages Area -->
@@ -101,11 +107,14 @@
         <input
           v-model="inputQuery"
           type="text"
-          placeholder="向智能体提问（可触发数学计算、知识库检索或联网搜索）..."
-          class="flex-1 px-4 py-3 bg-slate-900 border border-dark-border rounded-xl text-xs text-white outline-none focus:border-brand-500"
+          placeholder="给智能体发送指令，测试 ReAct 推理状态机与工具自动调用..."
+          class="flex-1 bg-slate-900 border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-brand-500"
           @keyup.enter="sendMessage"
         />
-        <button @click="sendMessage" class="px-5 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold">
+        <button
+          @click="sendMessage"
+          class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-brand-600/20 transition-all cursor-pointer"
+        >
           发送
         </button>
       </div>
@@ -126,16 +135,18 @@ const agentConfig = ref({
 })
 
 const availableTools = ref([
-  { id: 'calculator', name: '精准计算器 (Calculator)', desc: '高精度四则运算与科学计算', enabled: true },
-  { id: 'current_time', name: '系统时钟 (CurrentTime)', desc: '精确北京时间与星期查询', enabled: true },
-  { id: 'web_search', name: '实时联网搜索 (WebSearch)', desc: '搜索互联网最新行业资讯', enabled: true },
-  { id: 'knowledge_search', name: '知识库检索 (RAG)', desc: '私有制度与文档多路混合检索', enabled: true }
+  { id: 'calculator', name: '精准计算器 (Calculator)', desc: '高精度四则运算与科学计算', enabled: true, isMcp: false },
+  { id: 'current_time', name: '系统时钟 (CurrentTime)', desc: '精确北京时间与星期查询', enabled: true, isMcp: false },
+  { id: 'web_search', name: '实时联网搜索 (WebSearch)', desc: '搜索互联网最新行业资讯', enabled: true, isMcp: false },
+  { id: 'knowledge_search', name: '三路混合检索 (RAG)', desc: 'pgvector + BM25 + GraphRAG 混合检索', enabled: true, isMcp: false },
+  { id: 'mcp_github', name: 'GitHub Issue 检索 (MCP)', desc: 'Anthropic MCP 协议远程 issue 检索', enabled: true, isMcp: true },
+  { id: 'mcp_finance', name: '金融复利测算器 (MCP)', desc: 'Anthropic MCP 协议远程复杂年金测算', enabled: true, isMcp: true }
 ])
 
 const chatMessages = ref([
   {
     role: 'assistant',
-    content: '您好！我是您的企业级智能助手。我已经挂载了企业通用制度知识库，并启用了计算器与多路混合检索工具，请问有什么可以帮助您？'
+    content: '您好！我是您的企业级智能助手。我已经挂载了企业通用制度知识库，并启用了计算器、GraphRAG 与 Anthropic MCP 原生工具生态，请问有什么可以帮助您？'
   },
   {
     role: 'user',
@@ -165,7 +176,7 @@ const sendMessage = () => {
     chatMessages.value.push({
       role: 'assistant',
       steps: [
-        { thought: '分析用户输入，无需调用额外工具，直接由 DeepSeek-V3 生成专业解答。', action: 'none', params: '{}', observation: '直接回复' }
+        { thought: '分析用户输入，调度 GraphRAG 两跳图谱搜索并结合 DeepSeek-V3 生成专业解答。', action: 'graph_rag_search', params: '{"entity": "系统核心组件", "maxHops": 2}', observation: '拓扑扩散发现关联节点：PostgreSQL 16, pgvector, Redis' }
       ],
       content: `已收到您的问题「${query}」。基于当前配置的 DeepSeek-V3 引擎与企业知识库，系统运行正常，全链路多租户逻辑隔离无泄漏。`
     })
@@ -173,6 +184,6 @@ const sendMessage = () => {
 }
 
 const saveAgent = () => {
-  alert('智能体配置已更新保存！')
+  alert('智能体配置已成功保存！已绑定 MCP 原生协议工具与 GraphRAG 拓扑索引。')
 }
 </script>

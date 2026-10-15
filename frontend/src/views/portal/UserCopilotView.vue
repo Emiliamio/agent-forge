@@ -78,6 +78,23 @@
                 </span>
               </div>
 
+              <!-- DeepSeek-R1 Style Foldable Thinking Process Box -->
+              <div v-if="msg.thinking" class="rounded-xl border border-slate-800 bg-slate-950/70 overflow-hidden">
+                <button
+                  @click="msg.showThinking = !msg.showThinking"
+                  class="w-full px-3 py-2 flex items-center justify-between text-[11px] font-mono text-slate-400 hover:text-slate-200 transition-colors"
+                >
+                  <span class="flex items-center gap-1.5 text-brand-300">
+                    <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
+                    🧠 已深度思考 (用时 {{ msg.thinkTime || '1.6' }} 秒)
+                  </span>
+                  <span class="text-slate-500">{{ msg.showThinking ? '收起思维过程 ▲' : '展开思辨链 ▼' }}</span>
+                </button>
+                <div v-show="msg.showThinking" class="p-3 border-t border-slate-900 text-[11px] font-mono text-slate-400 leading-relaxed whitespace-pre-wrap bg-slate-950/90">
+                  {{ msg.thinking }}
+                </div>
+              </div>
+
               <!-- Main Answer Content -->
               <div class="leading-relaxed whitespace-pre-wrap font-sans text-xs text-slate-200">
                 {{ msg.content }}
@@ -179,10 +196,17 @@ const sendMessage = () => {
   messages.value.push({ role: 'user', content: q })
   inputQuery.value = ''
 
+  const isDeep = activeMode.value === 'deep'
+
   setTimeout(() => {
     messages.value.push({
       role: 'assistant',
-      friendlySteps: ['正在查阅《企业差旅与财务报销制度2026.pdf》', '核算税务与报销补贴标准', '已生成结构化解答'],
+      friendlySteps: ['正在查阅《企业差旅与财务报销制度2026.pdf》', '调用 GraphRAG 两跳关联规章条款', '已通过 PII 敏感脱敏审查'],
+      thinking: isDeep
+        ? `1. 解析用户意图：查询一线重点城市（北京）的出差住宿标准与补贴细则。\n2. 遍历知识图谱：(北京)-[属于]->(特类一线城市)，关联到《差旅管理办法》第 4.2 条。\n3. 比对职务层级：区分总监及以上高管标准与骨干员工标准。\n4. 检验交通与伙食包干限额：交通 80 元/天包干，餐饮 120 元/天计发，校验通过。`
+        : null,
+      showThinking: false,
+      thinkTime: '1.4',
       content: `根据公司最新《2026 年度企业差旅与财务报销制度》第 4 章规定，为您整理如下：\n\n1. 【住宿标准】：北京属于**特类一线城市**，总监及以上人员上限为 **¥ 650 元/晚**，普通员工上限为 **¥ 450 元/晚**。\n2. 【市内交通包干】：按 **¥ 80 元/天** 进行包干补贴，无需提供打车小票。\n3. 【餐饮补贴】：按 **¥ 120 元/天** 核算，随当月工资合并发放。`,
       citations: [
         { name: '企业差旅与财务报销制度2026.pdf', page: '第 4 页 第 12 条' },

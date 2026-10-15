@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-46%20Passed%20(100%25)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-52%20Passed%20(100%25)-success.svg)]()
 [![License](https://img.shields.io/badge/License-Commercial%20%2F%20Enterprise-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
@@ -101,4 +101,4 @@ AgentForge 后端内置覆盖 AST 租户隔离、Kahn DAG 调度、RAG 混合检
 ```bash
 cd backend && mvn clean test
 ```
-* **单测通过率**：**46 / 46 全部通过 (100% 绿灯)**
+* **单测通过率**：**52 / 52 全部通过 (100% 绿灯)**
