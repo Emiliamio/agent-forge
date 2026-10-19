@@ -17,14 +17,14 @@ jobs:
         image: pgvector/pgvector:pg16
         env:
           POSTGRES_DB: agentforge
-          POSTGRES_USER: af_user
-          POSTGRES_PASSWORD: af_password_2026
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd "pg_isready -U postgres -d agentforge"
+          --health-interval 5s
+          --health-timeout 3s
           --health-retries 5
 
       redis:
@@ -33,16 +33,25 @@ jobs:
           - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
+          --health-interval 5s
+          --health-timeout 3s
           --health-retries 5
 
     env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: agentforge
+      DB_USER: postgres
+      DB_PASSWORD: password123
       SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agentforge
-      SPRING_DATASOURCE_USERNAME: af_user
-      SPRING_DATASOURCE_PASSWORD: af_password_2026
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password123
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
       SPRING_DATA_REDIS_HOST: localhost
       SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ""
 
     steps:
       - name: Checkout Source Code

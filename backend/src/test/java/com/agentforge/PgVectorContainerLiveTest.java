@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,8 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Testcontainers 真实 pgvector 容器集成验证 (Docker 自动化)")
 public class PgVectorContainerLiveTest {
 
+    private static final DockerImageName PGVECTOR_IMAGE = DockerImageName.parse("pgvector/pgvector:pg16")
+            .asCompatibleSubstituteFor("postgres");
+
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("pgvector/pgvector:pg16")
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(PGVECTOR_IMAGE)
             .withDatabaseName("agentforge_test")
             .withUsername("test_user")
             .withPassword("test_password_2026");
