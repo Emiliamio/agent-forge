@@ -1,6 +1,5 @@
 server:
   port: 8080
-  forward-headers-strategy: framework
   servlet:
     context-path: /api
     encoding:
@@ -61,6 +60,13 @@ springdoc:
 # AgentForge 平台核心参数
 agentforge:
   security:
+    trusted-proxies:
+      - 127.0.0.1
+      - 0:0:0:0:0:0:0:1
+      - "::1"
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
     white-list:
       - /auth/login
       - /auth/register

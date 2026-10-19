@@ -41,8 +41,11 @@ client.interceptors.response.use(response => {
       window.location.href = '/login'
     }
   }
-  console.error('Network Error:', error.message)
-  return Promise.reject(error)
+  const errorMsg = error.response?.data?.message || error.message || '网络请求异常'
+  console.error('API Error:', errorMsg)
+  const err = new Error(errorMsg)
+  err.response = error.response
+  return Promise.reject(err)
 })
 
 export default client

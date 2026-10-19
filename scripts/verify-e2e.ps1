@@ -1,8 +1,9 @@
-﻿# AgentForge Native End-to-End Live Protocol Verification
+# AgentForge Native End-to-End Live Protocol Verification
 # Zero Testcontainers Dependency - Runs against live local databases and backend
 
 param(
-    [string]$BaseUrl = "http://localhost:8080/api"
+    [string]$BaseUrl = "http://localhost:8080/api",
+    [string]$WidgetToken = ""
 )
 
 $ErrorActionPreference = "Continue"
@@ -164,27 +165,30 @@ if ($token) {
     # 7. Public Widget Chat (Multi-tenant lookup & Unauthenticated Execution)
     try {
         $widgetBody = '{"message":"Hello, test widget chat"}'
-        $widgetResp = Invoke-RestMethod -Uri "$BaseUrl/public/agents/1/chat" -Method Post -Body $widgetBody -ContentType "application/json; charset=utf-8"
-        Record-Result "7. Public Widget Chat /public/agents/1/chat" ($widgetResp.code -eq 200) "Unauthenticated widget chat works"
+        $widgetHeaders = @{}
+        if ($WidgetToken) {
+            $widgetHeaders["X-Public-Token"] = $WidgetToken
+        }
+        $widgetResp = Invoke-RestMethod -Uri "$BaseUrl/public/agents/1/chat" -Method Post -Headers $widgetHeaders -Body $widgetBody -ContentType "application/json; charset=utf-8"
+        Record-Result "7. Public Widget Chat /public/agents/1/chat" ($widgetResp.code -eq 200) "Public widget chat works"
     } catch {
         Record-Result "7. Public Widget Chat /public/agents/1/chat" $false $_.Exception.Message
     }
 
-    # 8. Natural Language RAG Search (ASCII Unicode Escaped to prevent Windows codepage truncation)
+    # 8. Natural Language RAG Search
     try {
-        # \u5317\u4eac\u51fa\u5dee\u4f4f\u5bbf\u62a5\u9500\u6807\u51c6\u662f\u591a\u5c11 = 北京出差住宿报销标准是多少
         $searchBody = '{"datasetIds":[1],"query":"\u5317\u4eac\u51fa\u5dee\u4f4f\u5bbf\u62a5\u9500\u6807\u51c6\u662f\u591a\u5c11","topK":5,"minScore":0.0}'
         $searchResp = Invoke-RestMethod -Uri "$BaseUrl/rag/search" -Method Post -Headers $authHeaders -Body $searchBody -ContentType "application/json; charset=utf-8"
-        $hasResults = ($searchResp.code -eq 200)
         $citationCount = if ($searchResp.data) { $searchResp.data.Count } else { 0 }
-        Record-Result "8. Natural Language Search /rag/search" $hasResults "Returned $citationCount citations"
+        $passed = ($searchResp.code -eq 200 -and $citationCount -gt 0)
+        Record-Result "8. Natural Language Search /rag/search" $passed "Returned $citationCount citations"
     } catch {
         Record-Result "8. Natural Language Search /rag/search" $false $_.Exception.Message
     }
 }
 
 Write-Host "================================================================================" -ForegroundColor Cyan
-$failedCount = ($script:testResults | Where-Object { $_.Status -eq "FAIL" }).Count
+$failedCount = @($script:testResults | Where-Object { $_.Status -eq "FAIL" }).Count
 if ($failedCount -gt 0) {
     Write-Host " E2E Verification Result: FAILED ($failedCount test(s) failed)" -ForegroundColor Red
     Write-Host "================================================================================" -ForegroundColor Cyan

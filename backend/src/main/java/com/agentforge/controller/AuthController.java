@@ -52,6 +52,7 @@ public class AuthController {
     private final SysUserMapper userMapper;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
     private final HttpServletRequest servletRequest;
+    private final com.agentforge.security.ClientIpResolver clientIpResolver;
 
     // 登录防暴力破解限流器 (1 分钟内同一 IP + 用户名最多尝试 5 次)
     private static final int MAX_LOGIN_ATTEMPTS = 5;
@@ -59,38 +60,9 @@ public class AuthController {
     private static final long WINDOW_MS = 60_000L;
     private final Map<String, Queue<Long>> inMemoryAttemptMap = new ConcurrentHashMap<>();
 
-    private String getClientIp() {
-        if (servletRequest == null) {
-            return "127.0.0.1";
-        }
-        String remoteAddr = servletRequest.getRemoteAddr();
-        // 仅当直接连接来自受信任内网反向代理时，才采信反向代理传递的真实客户端 IP，杜绝直连时伪造 Header 绕过限流
-        if (isTrustedProxy(remoteAddr)) {
-            String realIp = servletRequest.getHeader("X-Real-IP");
-            if (StrUtil.isNotBlank(realIp) && !"unknown".equalsIgnoreCase(realIp)) {
-                return realIp.trim();
-            }
-            String xff = servletRequest.getHeader("X-Forwarded-For");
-            if (StrUtil.isNotBlank(xff) && !"unknown".equalsIgnoreCase(xff)) {
-                String[] hops = xff.split(",");
-                String lastHop = hops[hops.length - 1].trim();
-                if (!lastHop.isBlank() && !"unknown".equalsIgnoreCase(lastHop)) {
-                    return lastHop;
-                }
-            }
-        }
-        return remoteAddr != null ? remoteAddr : "127.0.0.1";
-    }
-
-    private boolean isTrustedProxy(String ip) {
-        if (ip == null) return false;
-        return ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1") || ip.equals("::1")
-                || ip.startsWith("10.") || ip.startsWith("192.168.")
-                || ip.matches("^172\\.(1[6-9]|2[0-9]|3[0-1])\\..*");
-    }
-
     private String buildRateLimitKey(String username) {
-        return "auth:ratelimit:login:" + getClientIp() + ":" + (username != null ? username.trim() : "anonymous");
+        String ip = clientIpResolver != null ? clientIpResolver.resolveClientIp(servletRequest) : "127.0.0.1";
+        return "auth:ratelimit:login:" + ip + ":" + (username != null ? username.trim() : "anonymous");
     }
 
     private void checkLoginRateLimit(String rateLimitKey) {

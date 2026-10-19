@@ -36,9 +36,14 @@ public class RerankerService {
         List<ChunkSearchResult> scoredList = new ArrayList<>(candidates.size());
 
         for (ChunkSearchResult chunk : candidates) {
-            double crossScore = computeCrossMatchScore(query, chunk.getContent());
-            // 综合融合得分与交叉打分
-            double combinedScore = (chunk.getScore() != null ? chunk.getScore() * 0.4 : 0.0) + (crossScore * 0.6);
+            String fullContext = chunk.getContent();
+            if (chunk.getMetadata() != null && !chunk.getMetadata().isBlank()) {
+                fullContext = fullContext + " " + chunk.getMetadata();
+            }
+            double crossScore = computeCrossMatchScore(query, fullContext);
+            // 归一化 RRF 分数 (单路满分约 0.0164，双路满分约 0.0328)
+            double rrfNormalized = (chunk.getScore() != null ? Math.min(1.0, chunk.getScore() * 30.0) : 0.0);
+            double combinedScore = (rrfNormalized * 0.3) + (crossScore * 0.7);
             chunk.setScore(Math.round(combinedScore * 10000.0) / 10000.0);
             scoredList.add(chunk);
         }
@@ -63,18 +68,27 @@ public class RerankerService {
             return 0.95;
         }
 
-        // 2. 词元覆盖率统计
-        String[] queryTerms = qClean.split("\\s+|[，。！？,!?]");
+        // 2. 词元与 CJK 实体关键词覆盖率统计
+        List<String> keywords = com.agentforge.service.rag.tokenizer.CjkTokenizer.extractKeywords(query);
         int matchedTerms = 0;
         int totalTerms = 0;
 
-        for (String term : queryTerms) {
-            if (term.isBlank()) {
-                continue;
+        if (keywords != null && !keywords.isEmpty()) {
+            for (String kw : keywords) {
+                if (kw.isBlank()) continue;
+                totalTerms++;
+                if (dClean.contains(kw.toLowerCase())) {
+                    matchedTerms++;
+                }
             }
-            totalTerms++;
-            if (dClean.contains(term)) {
-                matchedTerms++;
+        } else {
+            String[] queryTerms = qClean.split("\\s+|[，。！？,!?]");
+            for (String term : queryTerms) {
+                if (term.isBlank()) continue;
+                totalTerms++;
+                if (dClean.contains(term)) {
+                    matchedTerms++;
+                }
             }
         }
 

@@ -181,12 +181,12 @@ CREATE TABLE IF NOT EXISTS agent_app (
     tools_config        JSONB DEFAULT '[]'::jsonb, -- 启用的内置与外部 OpenAPI 工具列表
     dataset_ids         JSONB DEFAULT '[]'::jsonb, -- 关联知识库 ID 数组
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 启用, 0: 禁用
-    public_enabled      SMALLINT NOT NULL DEFAULT 1, -- 1: 允许公开免密挂件访问, 0: 禁止
+    public_enabled      SMALLINT NOT NULL DEFAULT 0, -- 1: 允许公开免密挂件访问, 0: 禁止 (默认关闭保障安全)
     public_token        VARCHAR(64), -- 可选的挂件签名密钥/安全分享 Token
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 1;
+ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 0;
 ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_token VARCHAR(64);
 CREATE INDEX IF NOT EXISTS idx_agent_app_tenant ON agent_app(tenant_id);
 

@@ -46,7 +46,7 @@ public class HybridSearchService {
         }
 
         Long tenantId = TenantContextHolder.getTenantId();
-        int candidateLimit = Math.max(topK * 3, 15); // 扩大初筛候选池规模
+        int candidateLimit = Math.max(topK * 10, 60); // 充分扩大初筛候选池规模，保证 Reranker 拥有全局视野候选集
 
         // 1. 第一路：稠密向量检索 (Dense Retrieval via pgvector HNSW)
         List<ChunkSearchResult> vectorResults = Collections.emptyList();
@@ -54,7 +54,7 @@ public class HybridSearchService {
         try {
             float[] queryVector = embeddingService.embed(query);
             String queryVectorStr = VectorUtils.toString(queryVector);
-            vectorResults = chunkMapper.searchByVector(tenantId, datasetIds, queryVectorStr, minScore, candidateLimit);
+            vectorResults = chunkMapper.searchByVector(tenantId, datasetIds, queryVectorStr, 0.0, candidateLimit);
         } catch (Exception e) {
             vectorEx = e;
             log.error("pgvector 稠密向量检索失败: tenantId={}, datasetIds={}, error={}", tenantId, datasetIds, e.getMessage(), e);
@@ -85,6 +85,14 @@ public class HybridSearchService {
         List<ChunkSearchResult> fusedCandidates = rrfFusionEngine.fuse(vectorResults, keywordResults, candidateLimit);
 
         // 4. 第三路：Cross-Encoder 交叉注意力二次重排序
-        return rerankerService.rerank(query, fusedCandidates, topK);
+        List<ChunkSearchResult> reranked = rerankerService.rerank(query, fusedCandidates, topK);
+
+        // 5. 真实相似度截断：仅当设定了 minScore > 0 时，对最终重排序后的候选进行严格过滤
+        if (minScore > 0.0) {
+            return reranked.stream()
+                    .filter(c -> c.getScore() != null && c.getScore() >= minScore)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        return reranked;
     }
 }

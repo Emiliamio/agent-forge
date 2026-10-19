@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工业级 Zero-DBA 数据库全自动初始化引擎
@@ -52,12 +53,125 @@ public class DatabaseAutoInitializer implements CommandLineRunner {
                     log.info("✅ [Zero-DBA] 演示租户、测试文档与默认管理员账户注入完成 (共执行 {} 条 DML 语句)！", seedCount);
                 }
             } else {
-                log.info("✨ [Zero-DBA] 数据库表结构校验正常，系统已就绪。");
+                log.info("✨ [Zero-DBA] 检测到既有数据库环境，启动存量结构校验与增量平滑迁移...");
+            }
+
+            // 无论全新还是存量数据库，每次启动均执行幂等增量迁移与结构自愈
+            runSchemaPatchMigrations();
+
+        } catch (Exception e) {
+            log.error("❌ [Zero-DBA] 数据库自动初始化/迁移失败: error={}", e.getMessage(), e);
+            throw new IllegalStateException("Zero-DBA 数据库自动建库/平滑迁移失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 执行全量存量数据库的幂等增量迁移与 CJK 倒排索引平滑回填
+     * 无论首次初始化还是历史老环境启动，均保证表结构与字段 100% 契合最新代码契约
+     */
+    private void runSchemaPatchMigrations() {
+        log.info("🔄 [Zero-DBA] 执行增量表结构平滑演进与历史索引回填...");
+
+        // 0. 存量历史环境 TIMESTAMPTZ 类型平滑转换 (避免 PG JDBC 42.x 抛出 Cannot convert TIMESTAMPTZ to LocalDateTime)
+        try {
+            List<Map<String, Object>> timestamptzCols = jdbcTemplate.queryForList(
+                    "SELECT table_name, column_name FROM information_schema.columns " +
+                    "WHERE table_schema = 'public' AND column_name IN ('created_at', 'updated_at') " +
+                    "AND data_type = 'timestamp with time zone'"
+            );
+            for (Map<String, Object> col : timestamptzCols) {
+                String tbl = (String) col.get("table_name");
+                String cName = (String) col.get("column_name");
+                String alterSql = String.format("ALTER TABLE \"%s\" ALTER COLUMN \"%s\" TYPE TIMESTAMP WITHOUT TIME ZONE USING \"%s\"::TIMESTAMP", tbl, cName, cName);
+                jdbcTemplate.execute(alterSql);
+                log.info("🕒 [Zero-DBA] 平滑转换存量列时间类型: {}.{} -> TIMESTAMP", tbl, cName);
             }
         } catch (Exception e) {
-            log.error("❌ [Zero-DBA] 数据库自动初始化失败: error={}", e.getMessage(), e);
-            throw new IllegalStateException("Zero-DBA 数据库自动建库初始化失败: " + e.getMessage(), e);
+            log.warn("ℹ️ [Zero-DBA] 存量时间列类型迁移忽略: {}", e.getMessage());
         }
+
+        // 1. 确保 CJK Bigram 分词函数与触发器在存量环境中升级就绪
+        String cjkFunctionsSql = """
+                CREATE OR REPLACE FUNCTION cjk_bigram_tokenize(str TEXT) RETURNS TEXT AS $$
+                DECLARE
+                    len INT;
+                    i INT;
+                    c1 TEXT;
+                    c2 TEXT;
+                    result TEXT := '';
+                BEGIN
+                    IF str IS NULL OR str = '' THEN
+                        RETURN '';
+                    END IF;
+                    len := length(str);
+                    FOR i IN 1..len LOOP
+                        c1 := substr(str, i, 1);
+                        IF c1 ~ '[\\u4e00-\\u9fa5]' THEN
+                            result := result || ' ' || c1;
+                            IF i < len THEN
+                                c2 := substr(str, i + 1, 1);
+                                IF c2 ~ '[\\u4e00-\\u9fa5]' THEN
+                                    result := result || ' ' || c1 || c2;
+                                END IF;
+                            END IF;
+                        ELSEIF c1 ~ '[a-zA-Z0-9_]' THEN
+                            result := result || c1;
+                        ELSE
+                            result := result || ' ';
+                        END IF;
+                    END LOOP;
+                    RETURN result;
+                END;
+                $$ LANGUAGE plpgsql IMMUTABLE;
+
+                CREATE OR REPLACE FUNCTION update_chunk_tsv() RETURNS trigger AS $$
+                BEGIN
+                    NEW.tsv_content := to_tsvector('simple', cjk_bigram_tokenize(COALESCE(NEW.content, '')));
+                    RETURN NEW;
+                END;
+                $$ LANGUAGE plpgsql;
+
+                DROP TRIGGER IF EXISTS trg_chunk_tsv_update ON document_chunk;
+                CREATE TRIGGER trg_chunk_tsv_update
+                BEFORE INSERT OR UPDATE ON document_chunk
+                FOR EACH ROW EXECUTE FUNCTION update_chunk_tsv();
+                """;
+        try {
+            executeSqlScript(cjkFunctionsSql, "cjk_migration_patch");
+            log.info("📑 [Zero-DBA] CJK Bigram 倒排索引函数与触发器升级完毕。");
+        } catch (Exception e) {
+            log.warn("ℹ️ [Zero-DBA] CJK 函数升级忽略: {}", e.getMessage());
+        }
+
+        List<String> patchSqls = List.of(
+                // 2. 智能体表幂等补充挂件安全开关与 Token 凭据字段
+                "ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 0",
+                "ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_token VARCHAR(64)",
+                // 3. 历史切片 CJK Bigram 倒排索引触发重算回填
+                "UPDATE document_chunk SET content = content"
+        );
+
+        for (String sql : patchSqls) {
+            try {
+                jdbcTemplate.execute(sql);
+            } catch (Exception e) {
+                log.warn("ℹ️ [Zero-DBA] 增量补丁执行忽略: sql={}, msg={}", sql, e.getMessage());
+            }
+        }
+
+        // 3. 严格校验关键列是否存在，杜绝列缺失导致全站 500
+        validateSchemaColumns();
+    }
+
+    private void validateSchemaColumns() {
+        Integer colCount = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'agent_app' AND column_name = 'public_enabled'",
+                Integer.class
+        );
+        if (colCount == null || colCount == 0) {
+            throw new IllegalStateException("Zero-DBA 校验失败: agent_app 表缺少必需列 public_enabled，请检查数据库权限或迁移脚本！");
+        }
+        log.info("✅ [Zero-DBA] 表结构与关键列校验 100% 通过，系统就绪。");
     }
 
     /**

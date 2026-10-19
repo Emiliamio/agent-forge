@@ -21,14 +21,14 @@ public class RrfFusionEngine {
     private static final double K = 60.0;
 
     /**
-     * 稠密向量权重
+     * 稠密向量权重 (与稀疏关键词平衡融合)
      */
-    private static final double DENSE_WEIGHT = 0.65;
+    private static final double DENSE_WEIGHT = 1.0;
 
     /**
      * 稀疏全文检索权重
      */
-    private static final double SPARSE_WEIGHT = 0.35;
+    private static final double SPARSE_WEIGHT = 1.0;
 
     /**
      * 对稠密向量列表与全文检索列表执行 RRF 融合打分

@@ -6,6 +6,7 @@
   const scriptTag = document.currentScript;
   const apiUrl = (scriptTag && scriptTag.getAttribute('data-api-url')) || 'http://localhost:8080/api';
   const appId = (scriptTag && scriptTag.getAttribute('data-app-id')) || '1';
+  const publicToken = (scriptTag && scriptTag.getAttribute('data-token')) || '';
   const botTitle = (scriptTag && scriptTag.getAttribute('data-title')) || 'AgentForge 智能顾问';
   const primaryColor = (scriptTag && scriptTag.getAttribute('data-primary-color')) || '#4f46e5';
 
@@ -99,9 +100,13 @@
     appendMessage('user', text);
 
     try {
+      const reqHeaders = { 'Content-Type': 'application/json' };
+      if (publicToken) {
+        reqHeaders['X-Public-Token'] = publicToken;
+      }
       const response = await fetch(`${apiUrl}/public/agents/${appId}/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: reqHeaders,
         body: JSON.stringify({ message: text })
       });
       const resData = await response.json();

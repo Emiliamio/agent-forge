@@ -57,7 +57,7 @@ VALUES (
 ) ON CONFLICT (id) DO NOTHING;
 
 -- 5. 插入示例智能体应用
-INSERT INTO agent_app (id, tenant_id, name, description, avatar, app_type, system_prompt, model_config, tools_config, dataset_ids, status)
+INSERT INTO agent_app (id, tenant_id, name, description, avatar, app_type, system_prompt, model_config, tools_config, dataset_ids, status, public_enabled)
 VALUES (
     1,
     1,
@@ -69,8 +69,9 @@ VALUES (
     '{"provider": "deepseek", "model": "deepseek-chat", "temperature": 0.7, "max_tokens": 4096}'::jsonb,
     '["web_search", "calculator", "current_time"]'::jsonb,
     '[1]'::jsonb,
+    1,
     1
-) ON CONFLICT (id) DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET public_enabled = 1;
 
 -- 同步序列
 SELECT setval('sys_tenant_id_seq', (SELECT MAX(id) FROM sys_tenant));
