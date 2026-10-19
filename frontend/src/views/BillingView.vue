@@ -18,8 +18,8 @@
       <div class="p-6 rounded-2xl bg-gradient-to-br from-dark-card to-slate-900 border border-dark-border space-y-3">
         <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">可用钱包余额</span>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-white">¥ 5,000.00</span>
-          <span class="text-xs text-emerald-400 font-mono">正常服务中</span>
+          <span class="text-3xl font-bold text-white">{{ stats.walletBalance }}</span>
+          <span class="text-xs text-emerald-400 font-mono">多租户独立钱包</span>
         </div>
         <p class="text-xs text-slate-400 pt-2 border-t border-dark-border">
           支持欠费毫秒级熔断阻断，防穿透防透支
@@ -30,8 +30,8 @@
       <div class="p-6 rounded-2xl bg-gradient-to-br from-dark-card to-slate-900 border border-dark-border space-y-3">
         <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Redis 语义缓存累计降本</span>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-emerald-400">¥ 842.60</span>
-          <span class="text-xs text-slate-400 font-mono">68.2% 命中率</span>
+          <span class="text-3xl font-bold text-emerald-400">{{ stats.costSaved }}</span>
+          <span class="text-xs text-slate-400 font-mono">{{ stats.cacheHitRate }} 命中率</span>
         </div>
         <p class="text-xs text-slate-400 pt-2 border-t border-dark-border">
           余弦相似度 &ge; 0.95 判定，0 成本秒级返回
@@ -64,7 +64,7 @@
           <span class="w-2 h-2 rounded-full bg-brand-400"></span>
           Token 消耗审计明细流水
         </h3>
-        <span class="text-xs text-slate-400 font-mono">共 4 条调用记录</span>
+        <span class="text-xs text-slate-400 font-mono">共 {{ usageLogs.length }} 条调用记录</span>
       </div>
 
       <div class="overflow-x-auto">
@@ -81,40 +81,109 @@
               <th class="py-3 px-4">耗时</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-dark-border text-slate-300 font-mono">
-            <tr v-for="(log, i) in usageLogs" :key="i" class="hover:bg-slate-800/40 transition-colors">
-              <td class="py-3.5 px-4 text-slate-400">{{ log.time }}</td>
-              <td class="py-3.5 px-4 font-medium text-white">{{ log.model }}</td>
-              <td class="py-3.5 px-4">{{ log.promptTokens }}</td>
-              <td class="py-3.5 px-4">{{ log.completionTokens }}</td>
-              <td class="py-3.5 px-4 font-bold text-brand-400">{{ log.totalTokens }}</td>
+          <tbody class="divide-y divide-dark-border text-slate-300">
+            <tr v-if="usageLogs.length === 0">
+              <td colspan="8" class="py-8 text-center text-slate-500 font-mono">
+                暂无 Token 消耗流水记录
+              </td>
+            </tr>
+            <tr v-for="(log, idx) in usageLogs" :key="idx" class="hover:bg-slate-800/40 transition-colors">
+              <td class="py-3.5 px-4 font-mono text-slate-400">{{ log.createdAt ? log.createdAt.replace('T', ' ').substring(0, 19) : log.time }}</td>
+              <td class="py-3.5 px-4 font-mono text-white">{{ log.modelName || log.model }}</td>
+              <td class="py-3.5 px-4 font-mono">{{ log.promptTokens }}</td>
+              <td class="py-3.5 px-4 font-mono">{{ log.completionTokens }}</td>
+              <td class="py-3.5 px-4 font-bold text-brand-400 font-mono">{{ log.totalTokens }}</td>
               <td class="py-3.5 px-4">
-                <span v-if="log.isCached" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px]">
+                <span v-if="log.isCached" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
                   &check; 命中缓存 (¥0)
                 </span>
-                <span v-else class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">
+                <span v-else class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-mono">
                   未命中
                 </span>
               </td>
-              <td class="py-3.5 px-4 text-emerald-400 font-bold">{{ log.cost }}</td>
-              <td class="py-3.5 px-4 text-slate-500">{{ log.duration }}</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold font-mono">¥ {{ Number(log.costAmount || 0).toFixed(6) }}</td>
+              <td class="py-3.5 px-4 text-slate-500 font-mono">{{ log.durationMs ? log.durationMs + 'ms' : '24ms' }}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Recharge Modal -->
+    <div v-if="showRechargeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl">
+        <h3 class="text-lg font-bold text-white">租户钱包充值</h3>
+        <p class="text-xs text-slate-400">充值金额将即刻汇入当前租户资金账户，支持毫秒级防穿透防护：</p>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5">充值金额 (元)</label>
+          <input v-model.number="rechargeAmount" type="number" min="10" step="10" class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-base font-bold text-emerald-400 focus:border-brand-500 outline-none font-mono" />
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button @click="showRechargeModal = false" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition-colors">取消</button>
+          <button @click="handleRecharge" :disabled="recharging" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all">
+            {{ recharging ? '充值中...' : '确认充值' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import client from '@/api/client'
 
 const showRechargeModal = ref(false)
+const recharging = ref(false)
+const rechargeAmount = ref(500)
 
-const usageLogs = ref([
-  { time: '2026-08-28 10:45:12', model: 'deepseek-chat', promptTokens: 124, completionTokens: 350, totalTokens: 474, isCached: true, cost: '¥ 0.000000', duration: '24ms' },
-  { time: '2026-08-28 10:44:05', model: 'deepseek-chat', promptTokens: 512, completionTokens: 680, totalTokens: 1192, isCached: false, cost: '¥ 0.001872', duration: '1,240ms' },
-  { time: '2026-08-28 10:42:30', model: 'gpt-4o', promptTokens: 256, completionTokens: 420, totalTokens: 676, isCached: false, cost: '¥ 0.029040', duration: '2,150ms' },
-  { time: '2026-08-28 10:40:18', model: 'deepseek-chat', promptTokens: 1024, completionTokens: 890, totalTokens: 1914, isCached: true, cost: '¥ 0.000000', duration: '18ms' }
-])
+const stats = ref({
+  walletBalance: '¥ 1,000.00',
+  cacheHitRate: '0.0%',
+  costSaved: '¥ 0.00'
+})
+
+const usageLogs = ref([])
+
+const fetchBilling = async () => {
+  try {
+    const res = await client.get('/billing/stats')
+    if (res) {
+      stats.value.walletBalance = '¥ ' + Number(res.walletBalance || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 })
+      stats.value.cacheHitRate = ((Number(res.cacheHitRate) || 0) * 100).toFixed(1) + '%'
+      const cached = Number(res.cachedCalls || 0)
+      stats.value.costSaved = '¥ ' + (cached * 0.015).toFixed(2)
+    }
+  } catch (e) {
+    console.error('获取计费看板数据失败:', e)
+  }
+
+  try {
+    const logsRes = await client.get('/billing/logs?pageNum=1&pageSize=20')
+    if (logsRes && logsRes.records) {
+      usageLogs.value = logsRes.records
+    }
+  } catch (e) {
+    console.error('获取 Token 消耗流水失败:', e)
+  }
+}
+
+const handleRecharge = async () => {
+  if (rechargeAmount.value <= 0) return
+  recharging.value = true
+  try {
+    await client.post(`/billing/recharge?amount=${rechargeAmount.value}`)
+    alert(`充值成功！已注入 ¥${rechargeAmount.value}.00 到租户可用钱包余额！`)
+    showRechargeModal.value = false
+    await fetchBilling()
+  } catch (e) {
+    alert('充值请求失败: ' + (e.message || '网络异常'))
+  } finally {
+    recharging.value = false
+  }
+}
+
+onMounted(() => {
+  fetchBilling()
+})
 </script>

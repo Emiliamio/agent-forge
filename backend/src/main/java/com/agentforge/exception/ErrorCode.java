@@ -34,6 +34,7 @@ public enum ErrorCode {
     FILE_TYPE_NOT_SUPPORTED(2004, "不支持的文件解析格式"),
     FILE_EMPTY(2005, "上传文件内容为空"),
     EMBEDDING_FAILED(2006, "文档向量化计算失败"),
+    RAG_RETRIEVAL_FAILED(2007, "知识库混合检索执行失败"),
 
     // Agent 与工作流相关 (3001 - 3099)
     AGENT_APP_NOT_FOUND(3001, "智能体应用不存在"),

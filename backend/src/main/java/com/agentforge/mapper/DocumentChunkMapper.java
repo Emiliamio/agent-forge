@@ -19,17 +19,21 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
      * 稠密向量余弦相似度检索 (基于 pgvector HNSW 索引)
      */
     @Select("""
+            <script>
             SELECT id, tenant_id, dataset_id, document_id, chunk_index, content, metadata, token_count, created_at,
-                   (1 - (embedding <=> #{queryVector}::vector)) AS score
+                   (1 - (embedding &lt;=&gt; #{queryVector}::vector)) AS score
             FROM document_chunk
             WHERE tenant_id = #{tenantId}
+            <if test="datasetIds != null and datasetIds.size() > 0">
               AND dataset_id IN
               <foreach collection="datasetIds" item="dId" open="(" separator="," close=")">
                   #{dId}
               </foreach>
-              AND (1 - (embedding <=> #{queryVector}::vector)) >= #{minScore}
-            ORDER BY embedding <=> #{queryVector}::vector ASC
+            </if>
+              AND (1 - (embedding &lt;=&gt; #{queryVector}::vector)) &gt;= #{minScore}
+            ORDER BY embedding &lt;=&gt; #{queryVector}::vector ASC
             LIMIT #{topK}
+            </script>
             """)
     List<ChunkSearchResult> searchByVector(
             @Param("tenantId") Long tenantId,
@@ -43,17 +47,21 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
      * 全文关键词检索 (基于 PostgreSQL BM25 / tsvector GIN 索引)
      */
     @Select("""
+            <script>
             SELECT id, tenant_id, dataset_id, document_id, chunk_index, content, metadata, token_count, created_at,
                    ts_rank(tsv_content, plainto_tsquery('simple', #{keyword})) AS score
             FROM document_chunk
             WHERE tenant_id = #{tenantId}
+            <if test="datasetIds != null and datasetIds.size() > 0">
               AND dataset_id IN
               <foreach collection="datasetIds" item="dId" open="(" separator="," close=")">
                   #{dId}
               </foreach>
+            </if>
               AND tsv_content @@ plainto_tsquery('simple', #{keyword})
             ORDER BY score DESC
             LIMIT #{topK}
+            </script>
             """)
     List<ChunkSearchResult> searchByKeyword(
             @Param("tenantId") Long tenantId,

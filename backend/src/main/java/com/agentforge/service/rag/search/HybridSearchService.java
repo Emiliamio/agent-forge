@@ -49,20 +49,32 @@ public class HybridSearchService {
 
         // 1. 第一路：稠密向量检索 (Dense Retrieval via pgvector HNSW)
         List<ChunkSearchResult> vectorResults = Collections.emptyList();
+        Exception vectorEx = null;
         try {
             float[] queryVector = embeddingService.embed(query);
             String queryVectorStr = VectorUtils.toString(queryVector);
             vectorResults = chunkMapper.searchByVector(tenantId, datasetIds, queryVectorStr, minScore, candidateLimit);
         } catch (Exception e) {
-            log.warn("pgvector 稠密向量检索异常，降级为全文检索: error={}", e.getMessage());
+            vectorEx = e;
+            log.error("pgvector 稠密向量检索失败: tenantId={}, datasetIds={}, error={}", tenantId, datasetIds, e.getMessage(), e);
         }
 
         // 2. 第二路：稀疏全文检索 (Sparse BM25 via PostgreSQL tsvector)
         List<ChunkSearchResult> keywordResults = Collections.emptyList();
+        Exception keywordEx = null;
         try {
             keywordResults = chunkMapper.searchByKeyword(tenantId, datasetIds, query.trim(), candidateLimit);
         } catch (Exception e) {
-            log.warn("PostgreSQL 全文检索异常: error={}", e.getMessage());
+            keywordEx = e;
+            log.error("PostgreSQL 全文检索失败: tenantId={}, datasetIds={}, error={}", tenantId, datasetIds, e.getMessage(), e);
+        }
+
+        // 若双路检索均由于底层异常报错，直接上抛明确业务异常，拒绝静默掩盖
+        if (vectorEx != null && keywordEx != null) {
+            throw new com.agentforge.exception.BusinessException(
+                    com.agentforge.exception.ErrorCode.RAG_RETRIEVAL_FAILED,
+                    "混合检索底层执行失败: vectorError=" + vectorEx.getMessage() + ", keywordError=" + keywordEx.getMessage()
+            );
         }
 
         // 3. RRF (Reciprocal Rank Fusion) 倒数排名融合打分

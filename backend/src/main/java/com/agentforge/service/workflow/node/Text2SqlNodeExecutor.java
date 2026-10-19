@@ -9,18 +9,24 @@ import com.agentforge.service.workflow.model.DagModel;
 import com.agentforge.service.workflow.model.WorkflowContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TEXT2SQL 商业级智能结构化数据分析节点执行器
- * 支持将自然语言问题转换为只读 SQL、防 SQL 注入过滤并在数据库中执行聚合统计
+ * 采用 JSqlParser AST 语法树级硬核安全审计：
+ * 1. 严格只读 SELECT 语义约束；
+ * 2. 严禁多语句注入 (;) 与跨表读取用户密码 (sys_user) / API Key / pg_catalog 等敏感表；
+ * 3. 阻断高危系统函数 (pg_read_file, pg_sleep, dblink 等)；
+ * 4. 强制追加 LIMIT 保护；真实执行异常绝不伪造返回 Mock 数据。
  */
 @Slf4j
 @Component
@@ -30,8 +36,16 @@ public class Text2SqlNodeExecutor implements WorkflowNodeExecutor {
     private final LlmClient llmClient;
     private final JdbcTemplate jdbcTemplate;
 
-    private static final List<String> DANGEROUS_SQL_KEYWORDS = List.of(
-            "DELETE", "UPDATE", "INSERT", "DROP", "TRUNCATE", "ALTER", "CREATE", "GRANT", "REVOKE", "EXEC"
+    // 严禁查询的敏感与系统底层元数据表
+    private static final Set<String> FORBIDDEN_TABLES = Set.of(
+            "sys_user", "api_key", "sys_tenant",
+            "information_schema", "pg_catalog", "pg_tables", "pg_user", "pg_shadow"
+    );
+
+    // 严禁调用的高危系统函数
+    private static final List<String> DANGEROUS_FUNCTIONS = List.of(
+            "pg_read_file", "pg_write_file", "pg_sleep", "pg_terminate_backend",
+            "dblink", "query_to_xml", "version", "current_setting"
     );
 
     @Override
@@ -59,7 +73,7 @@ public class Text2SqlNodeExecutor implements WorkflowNodeExecutor {
                     
                     【要求】
                     1. 只能输出纯净的 SQL 语句，不要包含任何 markdown 代码块或解释。
-                    2. 严禁生成任何更新、删除或DDL语句。
+                    2. 严禁生成任何更新、删除或 DDL 语句，只允许单条 SELECT 查询。
                     """, tableSchema);
 
             LlmResponse response = llmClient.generate(LlmRequest.builder()
@@ -70,28 +84,34 @@ public class Text2SqlNodeExecutor implements WorkflowNodeExecutor {
 
             String rawSql = response.getContent().replaceAll("```sql|```", "").trim();
 
-            // 2. 防注入与只读安全审计拦截
-            validateSqlSafety(rawSql);
-
-            // 3. 执行查询
-            List<Map<String, Object>> queryRows = List.of();
+            // 2. 基于 JSqlParser AST 的硬核安全静态审计
+            String safeSql;
             try {
-                queryRows = jdbcTemplate.queryForList(rawSql);
+                safeSql = validateAndHardenSql(rawSql);
             } catch (Exception e) {
-                log.warn("Text2SQL 查询模拟返回安全结果集: sql={}, error={}", rawSql, e.getMessage());
-                queryRows = List.of(
-                        Map.of("region", "华东大区", "total_sales", 14850000, "quarter", "2025Q3"),
-                        Map.of("region", "华北大区", "total_sales", 9820000, "quarter", "2025Q3")
-                );
+                long duration = System.currentTimeMillis() - startTime;
+                log.error("🛑 [TEXT2SQL_SECURITY_BLOCK] SQL 安全审计未通过: rawSql={}, error={}", rawSql, e.getMessage());
+                return NodeExecutionResult.fail(node.getId(), getNodeType(), "SQL 安全审计拦截: " + e.getMessage(), duration);
+            }
+
+            // 3. 真实执行查询 (带 5 秒超时保护，真实报错绝不伪造)
+            List<Map<String, Object>> queryRows;
+            try {
+                jdbcTemplate.setQueryTimeout(5);
+                queryRows = jdbcTemplate.queryForList(safeSql);
+            } catch (Exception e) {
+                long duration = System.currentTimeMillis() - startTime;
+                log.error("❌ [TEXT2SQL_EXEC_ERROR] SQL 数据库执行报错: sql={}, error={}", safeSql, e.getMessage());
+                return NodeExecutionResult.fail(node.getId(), getNodeType(), "SQL 真实执行报错: " + e.getMessage(), duration);
             }
 
             // 4. 写入上下文变量
-            context.setVariable(node.getId() + ".sql", rawSql);
+            context.setVariable(node.getId() + ".sql", safeSql);
             context.setVariable(node.getId() + ".data", queryRows);
             context.setVariable("last_sql_result", queryRows);
 
             Map<String, Object> outputs = new HashMap<>();
-            outputs.put("generatedSql", rawSql);
+            outputs.put("generatedSql", safeSql);
             outputs.put("rowCount", queryRows.size());
             outputs.put("data", queryRows);
 
@@ -100,16 +120,51 @@ public class Text2SqlNodeExecutor implements WorkflowNodeExecutor {
         });
     }
 
-    private void validateSqlSafety(String sql) {
-        if (StrUtil.isBlank(sql) || !sql.toUpperCase(Locale.ROOT).startsWith("SELECT")) {
-            throw new IllegalArgumentException("Text2SQL 安全拦截：只允许执行 SELECT 只读查询语句");
+    /**
+     * 基于 JSqlParser 的 AST 深度解析与安全加固
+     */
+    public String validateAndHardenSql(String sql) throws Exception {
+        if (StrUtil.isBlank(sql)) {
+            throw new IllegalArgumentException("SQL 语句不能为空");
         }
 
-        String upperSql = " " + sql.toUpperCase(Locale.ROOT) + " ";
-        for (String keyword : DANGEROUS_SQL_KEYWORDS) {
-            if (upperSql.contains(" " + keyword + " ") || upperSql.contains(";" + keyword)) {
-                throw new SecurityException("Text2SQL 拦截到高危关键词: " + keyword);
+        // 禁止分号多语句注入
+        if (sql.contains(";") && !sql.endsWith(";")) {
+            throw new SecurityException("Text2SQL 拦截：严禁多语句联合执行");
+        }
+        String cleanSql = sql.endsWith(";") ? sql.substring(0, sql.length() - 1).trim() : sql.trim();
+
+        // 1. 语法树解析
+        Statement statement = CCJSqlParserUtil.parse(cleanSql);
+        if (!(statement instanceof Select select)) {
+            throw new SecurityException("Text2SQL 拦截：仅允许执行只读 SELECT 查询");
+        }
+
+        // 2. 敏感表校验
+        TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
+        List<String> tableNames = tablesNamesFinder.getTableList(statement);
+        for (String table : tableNames) {
+            String lowerTable = table.toLowerCase(Locale.ROOT);
+            for (String forbidden : FORBIDDEN_TABLES) {
+                if (lowerTable.equals(forbidden) || lowerTable.contains(forbidden)) {
+                    throw new SecurityException("Text2SQL 拦截：严禁访问系统敏感表或元数据表 [" + table + "]");
+                }
             }
         }
+
+        // 3. 高危函数阻断
+        String upperSql = cleanSql.toUpperCase(Locale.ROOT);
+        for (String func : DANGEROUS_FUNCTIONS) {
+            if (upperSql.contains(func.toUpperCase(Locale.ROOT))) {
+                throw new SecurityException("Text2SQL 拦截：检测到高危函数调用 [" + func + "]");
+            }
+        }
+
+        // 4. LIMIT 保护：防止未分页大查询拖垮内存 (默认最大 100 行)
+        if (!upperSql.contains("LIMIT")) {
+            cleanSql = cleanSql + " LIMIT 100";
+        }
+
+        return cleanSql;
     }
 }

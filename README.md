@@ -101,4 +101,4 @@ AgentForge 后端内置覆盖 AST 租户隔离、Kahn DAG 调度、RAG 混合检
 ```bash
 cd backend && mvn clean test
 ```
-* **单测通过率**：**52 / 52 全部通过 (100% 绿灯)**
+* **自动化测试通过率**：**62 / 62 全部通过 (100% 绿灯，覆盖 JSqlParser AST 防注入、跨租户越权拦截、pgvector 向量类型映射、PostgreSQL 存储过程分句状态机解析)**

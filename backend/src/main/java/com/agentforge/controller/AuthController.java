@@ -79,8 +79,9 @@ public class AuthController {
             throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
         }
 
-        // 4. 执行 Sa-Token 登录，附加租户与角色信息
-        StpUtil.login(user.getId(), SaLoginConfig.setExtra("tenantId", tenant.getId()).setExtra("role", user.getRole()));
+        // 4. 执行 Sa-Token 登录，附加租户与角色信息到 Session 中，全面兼容 Redis 与内存存储
+        StpUtil.login(user.getId());
+        StpUtil.getSession().set("tenantId", tenant.getId()).set("role", user.getRole());
 
         LoginVO loginVO = LoginVO.builder()
                 .token(StpUtil.getTokenValue())

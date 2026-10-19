@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.agentforge.config.mybatis.PgVectorTypeHandler;
+
 /**
  * 知识库文档分块与高维向量实体
  */
@@ -19,7 +21,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("document_chunk")
+@TableName(value = "document_chunk", autoResultMap = true)
 public class DocumentChunk implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,6 +42,7 @@ public class DocumentChunk implements Serializable {
     /**
      * 1536/1024 维稠密向量 (入库格式: "[0.123, -0.456, ...]")
      */
+    @TableField(typeHandler = PgVectorTypeHandler.class)
     private String embedding;
 
     private Integer tokenCount;

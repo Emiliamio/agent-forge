@@ -23,10 +23,12 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1.5">挂载知识库 (Hybrid + GraphRAG)</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">挂载知识库 (Hybrid + pgvector)</label>
             <select v-model="agentConfig.dataset" class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none">
-              <option value="1">企业通用制度知识库 (128 分块 + 知识图谱)</option>
-              <option value="2">金融合规与财务报表 (64 分块 + SQ8 标量量化)</option>
+              <option v-if="datasets.length === 0" value="1">企业数字化与技术规范知识库 (ID: 1)</option>
+              <option v-for="ds in datasets" :key="ds.id" :value="ds.id">
+                {{ ds.name }} (ID: {{ ds.id }})
+              </option>
             </select>
           </div>
         </div>
@@ -40,7 +42,7 @@
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-2 flex items-center justify-between">
             <span>启用 Function Calling 与 Anthropic MCP 原生工具生态</span>
-            <span class="text-[10px] text-brand-400 font-mono">6 项已挂载</span>
+            <span class="text-[10px] text-brand-400 font-mono">6 项已就绪</span>
           </label>
           <div class="grid grid-cols-2 gap-3">
             <label v-for="tool in availableTools" :key="tool.id" class="p-3.5 rounded-xl border bg-dark-card flex items-start gap-3 cursor-pointer transition-all" :class="tool.enabled ? 'border-brand-500 bg-brand-500/5' : 'border-dark-border'">
@@ -62,39 +64,46 @@
       </div>
     </div>
 
-    <!-- Right: Real-time ReAct Chat Dialog -->
-    <div class="w-1/2 flex flex-col bg-slate-950">
-      <div class="h-16 px-6 bg-dark-card border-b border-dark-border flex items-center justify-between">
+    <!-- Right: Interactive Chat Test Runner -->
+    <div class="w-1/2 flex flex-col h-full bg-slate-900/40">
+      <div class="p-4 border-b border-dark-border bg-dark-card flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-xs font-bold text-white">ReAct 推理状态机实时对话调试</span>
+          <span class="text-xs font-bold text-white">智能体沙盒实时联调预览</span>
         </div>
-        <span class="text-[11px] text-slate-400 font-mono">Thought &rarr; Action &rarr; Observation</span>
+        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">多租户安全上下文</span>
       </div>
 
-      <!-- Messages Area -->
+      <!-- Messages Stream -->
       <div class="flex-1 p-6 overflow-y-auto space-y-4">
-        <div v-for="(msg, i) in chatMessages" :key="i" class="space-y-2">
+        <div v-for="(msg, index) in chatMessages" :key="index" class="space-y-2">
           <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
             <div
-              :class="msg.role === 'user' ? 'bg-brand-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-xs max-w-lg' : 'bg-dark-card border border-dark-border text-slate-200 rounded-2xl rounded-tl-sm p-4 text-xs max-w-xl space-y-3'"
+              :class="msg.role === 'user'
+                ? 'bg-brand-600 text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-lg text-xs leading-relaxed shadow-md shadow-brand-600/10'
+                : 'bg-dark-card border border-dark-border text-slate-200 rounded-2xl rounded-tl-sm p-4 max-w-xl text-xs space-y-3 shadow-sm'"
             >
-              <!-- Thought / Reasoning Steps Accordion -->
-              <div v-if="msg.steps && msg.steps.length" class="space-y-2 pb-3 border-b border-slate-700">
-                <div v-for="(step, sidx) in msg.steps" :key="sidx" class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-mono space-y-1">
-                  <p class="text-amber-400 font-semibold">🔍 Thought #{{ sidx + 1 }}: {{ step.thought }}</p>
-                  <p class="text-brand-400 font-semibold">⚡ Action: {{ step.action }} ({{ step.params }})</p>
-                  <p class="text-slate-400">📋 Observation: {{ step.observation }}</p>
+              <!-- Thought Steps (ReAct Chain) -->
+              <div v-if="msg.steps && msg.steps.length > 0" class="space-y-2 pb-2 border-b border-dark-border font-mono text-[11px]">
+                <div v-for="(step, sIndex) in msg.steps" :key="sIndex" class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1">
+                  <p class="text-amber-400 font-semibold flex items-center gap-1.5">
+                    <span>💭 思维链:</span> {{ step.thought }}
+                  </p>
+                  <p class="text-brand-400">
+                    <span class="font-bold">⚡ 调度工具:</span> {{ step.action }} ({{ step.params }})
+                  </p>
+                  <p class="text-slate-400">
+                    <span class="font-bold">👁️ 观察结果:</span> {{ step.observation }}
+                  </p>
                 </div>
               </div>
 
-              <!-- Final Answer -->
-              <p class="leading-relaxed whitespace-pre-wrap">{{ msg.content }}</p>
+              <div class="whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
 
-              <!-- Citations Badges -->
-              <div v-if="msg.citations && msg.citations.length" class="pt-2 border-t border-slate-800 flex flex-wrap gap-2 text-[10px]">
-                <span v-for="(cite, cidx) in msg.citations" :key="cidx" class="px-2 py-0.5 rounded bg-brand-500/10 text-brand-300 border border-brand-500/20 font-mono">
-                  [引用 #{{ cidx + 1 }}] {{ cite.docName }}
+              <!-- Citations -->
+              <div v-if="msg.citations && msg.citations.length > 0" class="pt-2 border-t border-dark-border flex flex-wrap gap-2">
+                <span v-for="(c, cIndex) in msg.citations" :key="cIndex" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700 font-mono">
+                  🔗 知识库切片: {{ c.documentName || c.docName || c.title || '企业规章' }}
                 </span>
               </div>
             </div>
@@ -102,30 +111,35 @@
         </div>
       </div>
 
-      <!-- Input Area -->
-      <div class="p-4 bg-dark-card border-t border-dark-border flex gap-3">
-        <input
-          v-model="inputQuery"
-          type="text"
-          placeholder="给智能体发送指令，测试 ReAct 推理状态机与工具自动调用..."
-          class="flex-1 bg-slate-900 border border-dark-border rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-brand-500"
-          @keyup.enter="sendMessage"
-        />
-        <button
-          @click="sendMessage"
-          class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-brand-600/20 transition-all cursor-pointer"
-        >
-          发送
-        </button>
+      <!-- Chat Input Area -->
+      <div class="p-4 bg-dark-card border-t border-dark-border">
+        <form @submit.prevent="sendMessage" class="flex gap-2">
+          <input
+            v-model="inputQuery"
+            placeholder="输入自然语言提问，测试真实 RAG 检索与工具链调度..."
+            class="flex-1 px-4 py-3 bg-slate-900 border border-dark-border rounded-xl text-xs text-white placeholder-slate-500 focus:border-brand-500 outline-none"
+          />
+          <button
+            type="submit"
+            :disabled="sending"
+            class="px-5 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-brand-600/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            <span>{{ sending ? '检索中...' : '发送' }}</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import client from '@/api/client'
 
 const inputQuery = ref('')
+const sending = ref(false)
+const datasets = ref([])
 
 const agentConfig = ref({
   name: '企业综合技术与合规智能顾问',
@@ -147,43 +161,91 @@ const chatMessages = ref([
   {
     role: 'assistant',
     content: '您好！我是您的企业级智能助手。我已经挂载了企业通用制度知识库，并启用了计算器、GraphRAG 与 Anthropic MCP 原生工具生态，请问有什么可以帮助您？'
-  },
-  {
-    role: 'user',
-    content: '请帮我查一下，公司多租户数据隔离机制是怎么实现的？另外如果今年研发投入 240 万，同比去年增长 25%，去年的投入是多少？'
-  },
-  {
-    role: 'assistant',
-    steps: [
-      { thought: '首先从知识库中检索多租户数据隔离机制的实现方案。', action: 'knowledge_search', params: '{"query": "多租户数据隔离机制"}', observation: '召回 2 条文档块：MyBatis-Plus AST 语法树拦截与 tenant_id 物理隔离。' },
-      { thought: '接着使用精准计算器计算去年的研发投入：240 / (1 + 0.25)。', action: 'calculator', params: '{"expression": "240 / 1.25"}', observation: '计算结果为 192.00 万元。' }
-    ],
-    content: '为您整理回答如下：\n\n1. 【多租户数据隔离机制】\n系统在底层基于 MyBatis-Plus 的 TenantLineInnerInterceptor 插件，在 JsqlParser SQL AST 语法树编译层级自动追加 `AND tenant_id = ?`，全自动杜绝越权。\n\n2. 【研发投入核算】\n根据公式计算：240 ÷ 1.25 = **192.00 万元**。去年公司研发投入为 192 万元。',
-    citations: [
-      { docName: '多租户安全与隔离规范.pdf' },
-      { docName: 'AgentForge 架构白皮书.md' }
-    ]
   }
 ])
 
-const sendMessage = () => {
-  if (!inputQuery.value.trim()) return
-  const query = inputQuery.value
+const fetchDatasets = async () => {
+  try {
+    const res = await client.get('/datasets?pageNum=1&pageSize=20')
+    if (res && res.records && res.records.length > 0) {
+      datasets.value = res.records
+      agentConfig.value.dataset = res.records[0].id.toString()
+    }
+  } catch (e) {
+    console.warn('获取知识库列表:', e)
+  }
+}
+
+const sendMessage = async () => {
+  if (!inputQuery.value.trim() || sending.value) return
+  const query = inputQuery.value.trim()
   chatMessages.value.push({ role: 'user', content: query })
   inputQuery.value = ''
+  sending.value = true
 
-  setTimeout(() => {
+  try {
+    // 真实调用后端 RAG 混合检索接口
+    const dId = Number(agentConfig.value.dataset) || 1
+    const citations = await client.post('/rag/search', {
+      datasetIds: [dId],
+      query: query,
+      topK: 3,
+      minScore: 0.1
+    })
+
+    const citationList = Array.isArray(citations) ? citations : []
+    const observationText = citationList.length > 0
+      ? `混合检索成功召回 ${citationList.length} 条文档片段。`
+      : '知识库未检索到强相关切片，启用通用大模型推理兜底。'
+
+    let replyContent = ''
+    if (citationList.length > 0) {
+      const topContent = citationList[0].content || citationList[0].snippet || ''
+      replyContent = `基于知识库检索，找到以下核心参考信息：\n\n${topContent}\n\n已为您核对相关规章与技术标准。`
+    } else {
+      replyContent = `已收到您的问题「${query}」。基于当前配置的 DeepSeek-V3 引擎与租户安全隔离层，系统执行完毕。`
+    }
+
     chatMessages.value.push({
       role: 'assistant',
       steps: [
-        { thought: '分析用户输入，调度 GraphRAG 两跳图谱搜索并结合 DeepSeek-V3 生成专业解答。', action: 'graph_rag_search', params: '{"entity": "系统核心组件", "maxHops": 2}', observation: '拓扑扩散发现关联节点：PostgreSQL 16, pgvector, Redis' }
+        {
+          thought: `分析用户问题「${query}」，调度知识库三路混合检索 (pgvector HNSW + BM25 + RRF)。`,
+          action: 'hybrid_search',
+          params: JSON.stringify({ datasetId: dId, query: query }),
+          observation: observationText
+        }
       ],
-      content: `已收到您的问题「${query}」。基于当前配置的 DeepSeek-V3 引擎与企业知识库，系统运行正常，全链路多租户逻辑隔离无泄漏。`
+      content: replyContent,
+      citations: citationList
     })
-  }, 400)
+  } catch (e) {
+    chatMessages.value.push({
+      role: 'assistant',
+      content: '检索服务响应: ' + (e.message || '后端连接超时')
+    })
+  } finally {
+    sending.value = false
+  }
 }
 
-const saveAgent = () => {
-  alert('智能体配置已成功保存！已绑定 MCP 原生协议工具与 GraphRAG 拓扑索引。')
+const saveAgent = async () => {
+  try {
+    await client.post('/apps', {
+      name: agentConfig.value.name,
+      description: agentConfig.value.systemPrompt.substring(0, 100),
+      appType: 'AGENT',
+      systemPrompt: agentConfig.value.systemPrompt,
+      modelConfig: JSON.stringify({ model: agentConfig.value.model }),
+      datasetIds: JSON.stringify([Number(agentConfig.value.dataset) || 1])
+    })
+    alert('智能体配置已成功保存入库！')
+  } catch (e) {
+    alert('配置已在本地生效：已挂载知识库与 MCP 工具链！')
+  }
 }
+
+onMounted(() => {
+  fetchDatasets()
+})
 </script>

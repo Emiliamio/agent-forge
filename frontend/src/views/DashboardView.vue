@@ -7,9 +7,12 @@
         <p class="text-sm text-slate-400 mt-1">全局监控混合 RAG 召回、响应式 DAG 工作流与多租户 Token 计量</p>
       </div>
       <div class="flex items-center gap-3">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          服务全链路健康 (Postgres + Redis)
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all"
+          :class="healthInfo.isUp ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'"
+        >
+          <span class="w-2 h-2 rounded-full" :class="healthInfo.isUp ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'"></span>
+          {{ healthInfo.text }}
         </span>
       </div>
     </div>
@@ -19,16 +22,16 @@
       <!-- Metric 1: Total Tokens -->
       <div class="p-6 rounded-2xl bg-dark-card border border-dark-border relative overflow-hidden group hover:border-brand-500/50 transition-all">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">总 Token 消耗</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">总调用次数</span>
           <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           </div>
         </div>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-white">1,428,500</span>
-          <span class="text-xs font-medium text-emerald-400">+12.4%</span>
+          <span class="text-3xl font-bold text-white">{{ stats.totalCalls }}</span>
+          <span class="text-xs font-medium text-emerald-400">实时审计</span>
         </div>
-        <p class="mt-1 text-xs text-slate-500">毫秒级审计流水</p>
+        <p class="mt-1 text-xs text-slate-500">毫秒级审计流水日志</p>
       </div>
 
       <!-- Metric 2: Semantic Cache Hit Rate -->
@@ -40,7 +43,7 @@
           </div>
         </div>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-white">68.2%</span>
+          <span class="text-3xl font-bold text-white">{{ stats.cacheHitRate }}</span>
           <span class="text-xs font-medium text-emerald-400">余弦阈值 0.95</span>
         </div>
         <p class="mt-1 text-xs text-slate-500">大模型 API 账单直降 60%+</p>
@@ -55,7 +58,7 @@
           </div>
         </div>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-white">¥ 842.60</span>
+          <span class="text-3xl font-bold text-white">{{ stats.costSaved }}</span>
           <span class="text-xs font-medium text-indigo-400">Redis 0 成本</span>
         </div>
         <p class="mt-1 text-xs text-slate-500">免调用 DeepSeek/OpenAI</p>
@@ -70,60 +73,43 @@
           </div>
         </div>
         <div class="mt-4 flex items-baseline gap-2">
-          <span class="text-3xl font-bold text-white">¥ 5,000.00</span>
-          <span class="text-xs font-medium text-amber-400">充足</span>
+          <span class="text-3xl font-bold text-white">{{ stats.walletBalance }}</span>
+          <span class="text-xs font-medium text-amber-400">多租户隔离</span>
         </div>
         <p class="mt-1 text-xs text-slate-500">支持欠费毫秒级熔断</p>
       </div>
     </div>
 
     <!-- Quick Action Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <router-link to="/copilot" class="p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 via-dark-card to-slate-900 border border-amber-500/30 hover:border-amber-400 group transition-all relative overflow-hidden">
-        <div class="absolute top-3 right-3">
-          <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/40">NEW</span>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <router-link to="/datasets" class="p-6 rounded-2xl bg-dark-card border border-dark-border hover:border-brand-500/50 transition-all group block">
+        <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+          📚
         </div>
-        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-        </div>
-        <h3 class="text-base font-bold text-white group-hover:text-amber-400 transition-colors">全员 Copilot 门户 (员工端)</h3>
+        <h3 class="text-base font-bold text-white group-hover:text-brand-400 transition-colors">知识库数据集 (RAG)</h3>
         <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          极简免培训对话门户，支持制度查阅、合同合规自检、财务报销及 Word/PDF 拖拽问答。
+          管理企业多模态文档切片，配置 pgvector HNSW 稠密余弦向量与 BM25 稀疏全文检索，实现高精度召回。
         </p>
-        <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-400 mt-4">打开员工门户 &rarr;</span>
       </router-link>
 
-      <router-link to="/datasets" class="p-6 rounded-2xl bg-gradient-to-b from-dark-card to-slate-900 border border-dark-border hover:border-brand-500/50 group transition-all">
-        <div class="w-12 h-12 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      <router-link to="/workflows" class="p-6 rounded-2xl bg-dark-card border border-dark-border hover:border-brand-500/50 transition-all group block">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+          ⚡
         </div>
-        <h3 class="text-base font-bold text-white group-hover:text-brand-400 transition-colors">混合检索知识库 (Hybrid RAG)</h3>
+        <h3 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">DAG 工作流编排引擎</h3>
         <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          集成 pgvector HNSW 稠密检索 + BM25 全文稀疏检索 + RRF 倒数排名融合 + Cross-Encoder 深度重排。
+          Kahn 算法拓扑排序与 Reactor 响应式并发调度，可视化编排 LLM、Python 代码沙箱与条件分支。
         </p>
-        <span class="inline-flex items-center gap-1 text-xs font-medium text-brand-400 mt-4">进入知识库 &rarr;</span>
       </router-link>
 
-      <router-link to="/workflows" class="p-6 rounded-2xl bg-gradient-to-b from-dark-card to-slate-900 border border-dark-border hover:border-indigo-500/50 group transition-all">
-        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <router-link to="/billing" class="p-6 rounded-2xl bg-dark-card border border-dark-border hover:border-brand-500/50 transition-all group block">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+          💰
         </div>
-        <h3 class="text-base font-bold text-white group-hover:text-indigo-400 transition-colors">DAG 工作流可视化编排</h3>
+        <h3 class="text-base font-bold text-white group-hover:text-amber-400 transition-colors">租户计量与账单看板</h3>
         <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          基于 Kahn 拓扑排序与 Project Reactor 响应式流，支持多分支并行、条件剪枝与节点超时熔断。
+          精确到单次请求的 Prompt 与 Completion Token 消耗流水，结合语义缓存节省大模型调用开销。
         </p>
-        <span class="inline-flex items-center gap-1 text-xs font-medium text-indigo-400 mt-4">打开工作流画布 &rarr;</span>
-      </router-link>
-
-      <router-link to="/agents" class="p-6 rounded-2xl bg-gradient-to-b from-dark-card to-slate-900 border border-dark-border hover:border-emerald-500/50 group transition-all">
-        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
-        </div>
-        <h3 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">ReAct 智能体与工具箱</h3>
-        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-          内置 Function Calling 工具生态（计算器/时间/搜索/知识库），动态加载 OpenAPI 3.0 规范与多轮推理。
-        </p>
-        <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 mt-4">调试智能体 &rarr;</span>
       </router-link>
     </div>
 
@@ -172,6 +158,57 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import client from '@/api/client'
+
+const healthInfo = ref({
+  isUp: true,
+  text: '正在检测服务全链路健康...'
+})
+
+const stats = ref({
+  totalCalls: '0',
+  cacheHitRate: '0.0%',
+  costSaved: '¥ 0.00',
+  walletBalance: '¥ 1,000.00'
+})
+
+const fetchHealthAndStats = async () => {
+  try {
+    const health = await client.get('/system/health')
+    if (health) {
+      const pg = health.postgres === 'UP' ? 'PG: UP' : 'PG: DOWN'
+      const r = health.redis === 'UP' ? 'Redis: UP' : 'Redis: DOWN'
+      healthInfo.value = {
+        isUp: health.postgres === 'UP',
+        text: `全链路健康 (${pg} · ${r})`
+      }
+    }
+  } catch (e) {
+    healthInfo.value = {
+      isUp: false,
+      text: '后端服务连接中 (请确认 8080 端口已启动)'
+    }
+  }
+
+  try {
+    const billing = await client.get('/billing/stats')
+    if (billing) {
+      stats.value.totalCalls = Number(billing.totalCalls || 0).toLocaleString()
+      stats.value.cacheHitRate = ((Number(billing.cacheHitRate) || 0) * 100).toFixed(1) + '%'
+      stats.value.walletBalance = '¥ ' + Number(billing.walletBalance || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 })
+      const cached = Number(billing.cachedCalls || 0)
+      stats.value.costSaved = '¥ ' + (cached * 0.015).toFixed(2)
+    }
+  } catch (e) {
+    // 未登录或租户初始状态
+  }
+}
+
+onMounted(() => {
+  fetchHealthAndStats()
+})
+
 const copyWidgetCode = () => {
   const code = '<script src="/agentforge-widget.js" data-api-url="/api" data-app-id="1" data-title="企业智能助手"><' + '/script>'
   navigator.clipboard.writeText(code)

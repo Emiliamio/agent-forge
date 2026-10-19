@@ -13,14 +13,14 @@ VALUES (
     1
 ) ON CONFLICT (id) DO NOTHING;
 
--- 2. 插入系统管理员用户 (密码明文: admin123, 采用 BCrypt 格式或安全哈希)
--- 密码哈希: $2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIkeHG2 (admin123)
+-- 2. 插入系统管理员用户 (默认账号: admin, 密码: admin123456, 采用 Sa-Token 标准 BCrypt 格式)
+-- 密码哈希: $2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6 (admin123456)
 INSERT INTO sys_user (id, tenant_id, username, password_hash, salt, real_name, email, role, status)
 VALUES (
     1,
     1,
     'admin',
-    '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIkeHG2',
+    '$2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6',
     'af_salt_888',
     '系统管理员',
     'admin@agentforge.ai',

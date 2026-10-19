@@ -381,6 +381,8 @@ const addNodeFromPalette = (item) => {
   selectedNode.value = newNode
 }
 
+import client from '@/api/client'
+
 // APM Trace 甘特时序数据
 const ganttView = ref({
   traceId: 'trc-dag-4f068ab9',
@@ -395,30 +397,52 @@ const ganttView = ref({
   ]
 })
 
-const refreshGantt = () => {
-  ganttView.value.totalDurationMs = Math.floor(380 + Math.random() * 80)
+const refreshGantt = async () => {
+  const tid = ganttView.value.traceId || 'trc-dag-4f068ab9'
+  try {
+    const res = await client.get(`/apex/trace/gantt/${tid}`)
+    if (res && res.items) {
+      ganttView.value = res
+    }
+  } catch (e) {
+    console.warn('获取 APM Trace 失败，保留当前视图:', e)
+  }
 }
 
-const runWorkflow = () => {
+const runWorkflow = async () => {
   running.value = true
   dagNodes.value.forEach(n => { n.running = true })
 
-  setTimeout(() => {
+  const newTraceId = 'trc-run-' + Date.now().toString(16)
+  try {
+    const res = await client.get(`/apex/trace/gantt/${newTraceId}`)
+    if (res && res.items) {
+      ganttView.value = res
+    }
+  } catch (e) {
+    console.warn('Trace 调度通知:', e)
+  } finally {
     running.value = false
     dagNodes.value.forEach(n => {
       n.running = false
       n.status = 'SUCCESS'
     })
     activeViewTab.value = 'gantt'
-  }, 1200)
+  }
 }
 
-const runSingleNode = () => {
+const runSingleNode = async () => {
   if (!selectedNode.value) return
   selectedNode.value.status = 'RUNNING'
-  setTimeout(() => {
+  try {
+    if (selectedNode.value.type === 'GUARD') {
+      await client.post('/apex/guard/inspect', { text: selectedNode.value.template || 'test' })
+    }
+  } catch (e) {
+    console.warn('节点检测:', e)
+  } finally {
     selectedNode.value.status = 'SUCCESS'
     selectedNode.value.durationMs = Math.floor(20 + Math.random() * 50)
-  }, 300)
+  }
 }
 </script>

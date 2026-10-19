@@ -21,7 +21,7 @@
           <div
             v-for="ds in datasets"
             :key="ds.id"
-            @click="selectedDataset = ds"
+            @click="selectDataset(ds)"
             class="p-5 rounded-2xl border cursor-pointer transition-all"
             :class="selectedDataset?.id === ds.id ? 'bg-dark-card border-brand-500 shadow-lg shadow-brand-500/10' : 'bg-slate-900/40 border-dark-border hover:border-slate-700'"
           >
@@ -29,15 +29,15 @@
               <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold">
                 {{ ds.name.substring(0, 1) }}
               </div>
-              <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                {{ ds.embeddingModel }}
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                {{ ds.embeddingModel || 'text-embedding-3-small' }}
               </span>
             </div>
-            <h3 class="text-base font-bold text-white mt-3">{{ ds.name }}</h3>
-            <p class="text-xs text-slate-400 mt-1 line-clamp-2">{{ ds.description }}</p>
+            <h3 class="text-base font-bold text-white mt-3 truncate">{{ ds.name }}</h3>
+            <p class="text-xs text-slate-400 mt-1 line-clamp-2">{{ ds.description || '暂无描述' }}</p>
             <div class="mt-4 pt-3 border-t border-dark-border flex justify-between text-xs text-slate-500 font-mono">
-              <span>文档数: {{ ds.docCount }}</span>
-              <span>分块数: {{ ds.chunkCount }}</span>
+              <span>分块大小: {{ ds.chunkSize || 500 }}</span>
+              <span>重叠: {{ ds.chunkOverlap || 50 }}</span>
             </div>
           </div>
         </div>
@@ -51,8 +51,8 @@
             </h3>
             <label class="cursor-pointer px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-dark-border transition-colors flex items-center gap-1.5">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-              上传文件 (PDF/DOCX/MD/TXT)
-              <input type="file" class="hidden" @change="handleFileUpload" />
+              <span>{{ uploading ? '上传解析中...' : '上传文件 (PDF/DOCX/MD/TXT)' }}</span>
+              <input type="file" class="hidden" :disabled="uploading" @change="handleFileUpload" />
             </label>
           </div>
 
@@ -69,20 +69,28 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-dark-border text-slate-300">
+                <tr v-if="documents.length === 0">
+                  <td colspan="5" class="py-8 text-center text-slate-500 font-mono">
+                    当前知识库暂无文档，请点击右上角上传文件进行向量切片
+                  </td>
+                </tr>
                 <tr v-for="doc in documents" :key="doc.id" class="hover:bg-slate-800/40 transition-colors">
                   <td class="py-3.5 px-4 font-medium text-white flex items-center gap-2">
                     <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    {{ doc.title }}
+                    {{ doc.fileName }}
                   </td>
                   <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-[10px]">{{ doc.fileType }}</span></td>
-                  <td class="py-3.5 px-4 font-mono">{{ doc.chunkCount }}</td>
+                  <td class="py-3.5 px-4 font-mono">{{ doc.chunkCount || 0 }}</td>
                   <td class="py-3.5 px-4">
-                    <span class="inline-flex items-center gap-1 text-emerald-400 font-medium">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      {{ doc.status }}
+                    <span
+                      class="inline-flex items-center gap-1 font-medium text-[11px]"
+                      :class="doc.parseStatus === 'SUCCESS' ? 'text-emerald-400' : (doc.parseStatus === 'FAILED' ? 'text-rose-400' : 'text-amber-400')"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full" :class="doc.parseStatus === 'SUCCESS' ? 'bg-emerald-400' : 'bg-amber-400'"></span>
+                      {{ doc.parseStatus }}
                     </span>
                   </td>
-                  <td class="py-3.5 px-4 text-slate-500 font-mono">{{ doc.createTime }}</td>
+                  <td class="py-3.5 px-4 text-slate-500 font-mono">{{ doc.createdAt ? doc.createdAt.replace('T', ' ').substring(0, 16) : '-' }}</td>
                 </tr>
               </tbody>
             </table>
@@ -98,54 +106,83 @@
               <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
               三路混合检索沙盒
             </h3>
-            <span class="text-[10px] text-slate-400 font-mono">Dense + Sparse + RRF</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+              HNSW + BM25 + RRF
+            </span>
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1.5">输入测试检索语句</label>
-            <div class="flex gap-2">
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="例如：多租户数据隔离机制是什么？"
-                class="flex-1 px-3.5 py-2 bg-slate-900 border border-dark-border rounded-xl text-xs text-slate-200 outline-none focus:border-brand-500 transition-colors"
-                @keyup.enter="runSearch"
-              />
-              <button
-                @click="runSearch"
-                :disabled="searching"
-                class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-medium transition-colors"
-              >
-                {{ searching ? '检索中...' : '测试检索' }}
-              </button>
-            </div>
+          <p class="text-xs text-slate-400">
+            输入自然语言测试混合召回，后端真实执行 PostgreSQL pgvector 与 tsvector 倒数排名融合：
+          </p>
+
+          <div class="space-y-3">
+            <textarea
+              v-model="searchQuery"
+              rows="3"
+              class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-xs text-white placeholder-slate-500 focus:border-brand-500 outline-none resize-none"
+              placeholder="请输入检索关键词或问题..."
+            ></textarea>
+            <button
+              @click="runSearch"
+              :disabled="searching || !selectedDataset"
+              class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-brand-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <svg v-if="searching" class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+              <span>{{ searching ? '混合检索执行中...' : '执行三路检索召回' }}</span>
+            </button>
           </div>
 
-          <!-- Search Results Stream -->
+          <!-- Search Results List -->
           <div class="space-y-3 pt-2">
-            <div v-if="searchResults.length === 0" class="p-8 text-center text-slate-500 text-xs font-mono">
-              输入问题即可查看 pgvector + BM25 融合召回切片与溯源打分
+            <div class="text-xs font-semibold text-slate-400 flex items-center justify-between">
+              <span>检索命中片段 (Top-K)</span>
+              <span class="text-[10px] font-mono text-slate-500">共 {{ searchResults.length }} 条引用</span>
             </div>
+
+            <div v-if="searchResults.length === 0" class="p-6 text-center text-slate-500 text-xs border border-dashed border-dark-border rounded-xl">
+              暂无召回结果，请输入关键词并发起检索
+            </div>
+
             <div
               v-for="(chunk, idx) in searchResults"
               :key="idx"
-              class="p-3.5 rounded-xl bg-slate-900/80 border border-dark-border space-y-2 text-xs"
+              class="p-3.5 rounded-xl bg-slate-900/60 border border-dark-border space-y-2 hover:border-slate-700 transition-colors"
             >
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-brand-400">#{{ idx + 1 }} 候选切片</span>
-                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[10px]">
-                  RRF 综合分: {{ chunk.score.toFixed(4) }}
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-white flex items-center gap-1.5 truncate">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-400"></span>
+                  {{ chunk.documentName || chunk.title || `切片 #${idx + 1}` }}
+                </span>
+                <span class="text-[11px] font-mono text-emerald-400 font-bold">
+                  得分: {{ (chunk.score || 0).toFixed(4) }}
                 </span>
               </div>
               <p class="text-slate-300 leading-relaxed text-[11px] bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
-                {{ chunk.content }}
+                {{ chunk.content || chunk.snippet }}
               </p>
-              <div class="flex justify-between text-[10px] text-slate-500 font-mono pt-1">
-                <span>稠密排名: {{ chunk.denseRank }}</span>
-                <span>BM25排名: {{ chunk.sparseRank }}</span>
-              </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Dataset Modal -->
+    <div v-if="showCreateModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+        <h3 class="text-lg font-bold text-white">新建企业知识库数据集</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">知识库名称</label>
+            <input v-model="newDataset.name" class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-xs text-white focus:border-brand-500 outline-none" placeholder="例如：财务审计规范知识库" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">知识库描述</label>
+            <textarea v-model="newDataset.description" rows="3" class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-xs text-white focus:border-brand-500 outline-none resize-none" placeholder="简要说明包含的制度或技术文档范围..."></textarea>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button @click="showCreateModal = false" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition-colors">取消</button>
+          <button @click="createDataset" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all">确认创建</button>
         </div>
       </div>
     </div>
@@ -153,49 +190,122 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import client from '@/api/client'
 
 const showCreateModal = ref(false)
 const searching = ref(false)
+const uploading = ref(false)
 const searchQuery = ref('多租户数据隔离机制与 JsqlParser AST 拦截原理')
 
-const datasets = ref([
-  { id: 1, name: '企业通用制度知识库', description: '包含公司多租户安全规范、技术架构手册与运维 SOP。', embeddingModel: 'text-embedding-3-small', docCount: 4, chunkCount: 128 },
-  { id: 2, name: '金融合规与财务报表', description: '高精度财务跨页报表、风控规章与合规审计指南。', embeddingModel: 'text-embedding-3-small', docCount: 2, chunkCount: 64 }
-])
+const datasets = ref([])
+const selectedDataset = ref(null)
+const documents = ref([])
+const searchResults = ref([])
 
-const selectedDataset = ref(datasets.value[0])
+const newDataset = ref({
+  name: '',
+  description: '',
+  embeddingModel: 'text-embedding-3-small',
+  embeddingDim: 1536,
+  chunkSize: 500,
+  chunkOverlap: 50
+})
 
-const documents = ref([
-  { id: 101, title: 'AgentForge 架构白皮书.md', fileType: 'MARKDOWN', chunkCount: 42, status: '解析就绪', createTime: '2026-08-28 10:15' },
-  { id: 102, title: '多租户安全与隔离规范.pdf', fileType: 'PDF', chunkCount: 56, status: '解析就绪', createTime: '2026-08-28 10:20' },
-  { id: 103, title: 'pgvector 混合检索调优.docx', fileType: 'DOCX', chunkCount: 30, status: '解析就绪', createTime: '2026-08-28 10:35' }
-])
-
-const searchResults = ref([
-  {
-    content: '通过 MyBatis-Plus TenantLineInnerInterceptor 插件，在 JsqlParser SQL AST 语法树层级自动追加 AND tenant_id = ?，彻底杜绝数据越权。',
-    score: 0.9425,
-    denseRank: 1,
-    sparseRank: 1
-  },
-  {
-    content: '混合检索采用 RRF (Reciprocal Rank Fusion) 倒数排名融合算法无量纲整合 pgvector HNSW 稠密余弦距离与 PostgreSQL BM25 全文检索。',
-    score: 0.8872,
-    denseRank: 2,
-    sparseRank: 3
+const fetchDatasets = async () => {
+  try {
+    const res = await client.get('/datasets?pageNum=1&pageSize=20')
+    if (res && res.records) {
+      datasets.value = res.records
+      if (datasets.value.length > 0 && !selectedDataset.value) {
+        selectDataset(datasets.value[0])
+      }
+    }
+  } catch (e) {
+    console.error('获取知识库列表失败:', e)
   }
-])
+}
 
-const runSearch = () => {
-  if (!searchQuery.value.trim()) return
+const selectDataset = async (ds) => {
+  selectedDataset.value = ds
+  fetchDocuments(ds.id)
+}
+
+const fetchDocuments = async (datasetId) => {
+  try {
+    const res = await client.get(`/documents/list?datasetId=${datasetId}&pageNum=1&pageSize=50`)
+    if (res && res.records) {
+      documents.value = res.records
+    } else {
+      documents.value = []
+    }
+  } catch (e) {
+    documents.value = []
+  }
+}
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files?.[0]
+  if (!file || !selectedDataset.value) return
+
+  const formData = new FormData()
+  formData.append('datasetId', selectedDataset.value.id)
+  formData.append('file', file)
+
+  uploading.value = true
+  try {
+    await client.post('/documents/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    alert('文档上传成功，已触发异步分片与高维向量入库！')
+    fetchDocuments(selectedDataset.value.id)
+  } catch (e) {
+    alert('上传失败: ' + (e.message || '网络异常'))
+  } finally {
+    uploading.value = false
+    event.target.value = ''
+  }
+}
+
+const runSearch = async () => {
+  if (!searchQuery.value.trim() || !selectedDataset.value) return
   searching.value = true
-  setTimeout(() => {
+  searchResults.value = []
+
+  try {
+    const res = await client.post('/rag/search', {
+      datasetIds: [selectedDataset.value.id],
+      query: searchQuery.value.trim(),
+      topK: 5,
+      minScore: 0.1
+    })
+    if (Array.isArray(res)) {
+      searchResults.value = res
+    }
+  } catch (e) {
+    alert('混合检索调用失败: ' + (e.message || '未知错误'))
+  } finally {
     searching.value = false
-  }, 400)
+  }
 }
 
-const handleFileUpload = () => {
-  alert('文档已加入异步分片流水线，后台正基于 Virtual Threads 提取并向量化！')
+const createDataset = async () => {
+  if (!newDataset.value.name.trim()) {
+    alert('请输入知识库名称')
+    return
+  }
+  try {
+    await client.post('/datasets', newDataset.value)
+    showCreateModal.value = false
+    newDataset.value.name = ''
+    newDataset.value.description = ''
+    await fetchDatasets()
+  } catch (e) {
+    alert('创建失败: ' + (e.message || '网络异常'))
+  }
 }
+
+onMounted(() => {
+  fetchDatasets()
+})
 </script>
