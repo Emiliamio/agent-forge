@@ -7,10 +7,42 @@ on:
     branches: [ main ]
 
 jobs:
-  # ── 1. Backend Build & 35 Unit Tests (JDK 21 LTS) ──
+  # ── 1. Backend Build, Integration & E2E Tests (JDK 21 LTS + pgvector + Redis) ──
   backend-test:
-    name: Backend Test (Java 21 LTS)
+    name: Backend Test & Live Services (Java 21 LTS)
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: agentforge
+          POSTGRES_USER: af_user
+          POSTGRES_PASSWORD: af_password_2026
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agentforge
+      SPRING_DATASOURCE_USERNAME: af_user
+      SPRING_DATASOURCE_PASSWORD: af_password_2026
+      SPRING_DATA_REDIS_HOST: localhost
+      SPRING_DATA_REDIS_PORT: 6379
 
     steps:
       - name: Checkout Source Code
@@ -23,7 +55,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run AgentForge Backend 52+ Unit Tests (100% Green)
+      - name: Run AgentForge Backend 66+ Tests (Unit + Integration + Testcontainers)
         working-directory: backend
         run: mvn clean test --batch-mode
 

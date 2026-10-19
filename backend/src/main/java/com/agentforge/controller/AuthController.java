@@ -26,9 +26,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 身份认证与用户权限接口
  */
+@Slf4j
 @Tag(name = "02. 身份认证与权限", description = "提供多租户登录、退出与当前用户信息获取")
 @RestController
 @RequestMapping("/auth")
@@ -38,10 +41,36 @@ public class AuthController {
     private final SysTenantMapper tenantMapper;
     private final SysUserMapper userMapper;
 
+    // 登录防暴力破解限流器 (1 分钟内同一租户+用户名最多尝试 5 次)
+    private static final int MAX_LOGIN_ATTEMPTS = 5;
+    private static final long WINDOW_MS = 60_000L;
+    private final java.util.Map<String, java.util.Queue<Long>> loginAttemptMap = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private void checkLoginRateLimit(String clientKey) {
+        long now = System.currentTimeMillis();
+        loginAttemptMap.compute(clientKey, (key, queue) -> {
+            if (queue == null) {
+                queue = new java.util.concurrent.ConcurrentLinkedQueue<>();
+            }
+            while (!queue.isEmpty() && now - queue.peek() > WINDOW_MS) {
+                queue.poll();
+            }
+            if (queue.size() >= MAX_LOGIN_ATTEMPTS) {
+                log.warn("🛑 [LOGIN_BRUTE_FORCE_BLOCKED] 检测到登录暴力破解或高频请求，触发安全限流拦截！clientKey={}", clientKey);
+                throw new BusinessException(ErrorCode.RATE_LIMIT_EXCEEDED, "登录尝试过于频繁，已触发防爆破风控保护，请 1 分钟后再试");
+            }
+            queue.offer(now);
+            return queue;
+        });
+    }
+
     @Operation(summary = "用户登录 (支持多租户)")
     @PostMapping("/login")
     public Result<LoginVO> login(@Valid @RequestBody LoginRequest request) {
         String tenantCode = StrUtil.isNotBlank(request.getTenantCode()) ? request.getTenantCode() : "tenant_default";
+
+        // 0. 安全防爆破限流校验
+        checkLoginRateLimit(tenantCode + ":" + request.getUsername());
 
         // 1. 查询租户
         SysTenant tenant = tenantMapper.selectOne(

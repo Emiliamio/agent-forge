@@ -66,26 +66,8 @@ public class TenantInterceptor implements HandlerInterceptor {
             // 未登录或非登录请求继续往下走公开租户兜底
         }
 
-        // 2. 未登录态接口 (如 /auth/login 等)，尝试解析请求头或默认租户
-        String tenantHeader = request.getHeader(HEADER_TENANT_ID);
-        if (StrUtil.isNotBlank(tenantHeader)) {
-            try {
-                TenantContextHolder.setTenantId(Long.parseLong(tenantHeader));
-                return true;
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        String tenantParam = request.getParameter(PARAM_TENANT_ID);
-        if (StrUtil.isNotBlank(tenantParam)) {
-            try {
-                TenantContextHolder.setTenantId(Long.parseLong(tenantParam));
-                return true;
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        // 3. 兜底为系统默认租户
+        // 2. 未登录态接口 (如 /auth/login, /system/health 等)，严格锁定为系统默认公共租户
+        // 彻底杜绝未登录请求通过伪造 X-Tenant-Id 或 URL 参数越权预置上下文
         TenantContextHolder.setTenantId(TenantContextHolder.DEFAULT_TENANT_ID);
         return true;
     }

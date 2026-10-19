@@ -142,7 +142,26 @@ public class AuthAndTenantSecurityMvcTest {
     }
 
     @Test
-    @DisplayName("测试未登录时通过 Header 正确设置租户上下文")
+    @DisplayName("测试同一账号连续高频登录尝试超过 5 次后触发防爆破限流 RATE_LIMIT_EXCEEDED")
+    void testLoginRateLimitTriggered() {
+        LoginRequest request = new LoginRequest();
+        request.setTenantCode("tenant_default");
+        request.setUsername("brute_force_user");
+        request.setPassword("any_password");
+
+        // 前 5 次尝试因租户或密码错误失败，但消耗尝试额度
+        for (int i = 0; i < 5; i++) {
+            assertThrows(BusinessException.class, () -> authController.login(request));
+        }
+
+        // 第 6 次应当直接被限流拦截，不进入后续 DB 查询
+        BusinessException ex = assertThrows(BusinessException.class, () -> authController.login(request));
+        assertEquals(ErrorCode.RATE_LIMIT_EXCEEDED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("防爆破风控保护"));
+    }
+
+    @Test
+    @DisplayName("测试未登录时即使携带 Header 也严格锁定系统默认租户，拒绝未授权伪造")
     void testUnauthenticatedHeaderTenant() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(TenantInterceptor.HEADER_TENANT_ID, "888");
@@ -150,7 +169,7 @@ public class AuthAndTenantSecurityMvcTest {
 
         boolean canHandle = tenantInterceptor.preHandle(request, response, new Object());
         assertTrue(canHandle);
-        assertEquals(888L, TenantContextHolder.getTenantId());
+        assertEquals(TenantContextHolder.DEFAULT_TENANT_ID, TenantContextHolder.getTenantId());
 
         tenantInterceptor.afterCompletion(request, response, new Object(), null);
         assertEquals(TenantContextHolder.DEFAULT_TENANT_ID, TenantContextHolder.getTenantId());

@@ -46,12 +46,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .order(1);
     }
 
+    @Value("${agentforge.security.cors.allowed-origins:http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:80,http://127.0.0.1:80}")
+    private List<String> corsAllowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOrigins(corsAllowedOrigins.toArray(new String[0]))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("*")
+                .allowedHeaders("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With", "X-Tenant-Id")
                 .allowCredentials(true)
                 .maxAge(3600);
     }
