@@ -37,6 +37,7 @@ sa-token:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.agentforge.entity
+  type-handlers-package: com.agentforge.config.mybatis
   global-config:
     db-config:
       id-type: auto

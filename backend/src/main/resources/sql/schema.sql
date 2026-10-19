@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS sys_tenant (
     wallet_balance      NUMERIC(12, 4) NOT NULL DEFAULT 100.0000, -- 租户钱包可用余额(元)
     white_label_config  JSONB DEFAULT '{"logo": "", "title": "AgentForge", "theme": "dark", "copyright": "© 2026 AgentForge Inc."}'::jsonb,
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 正常, 0: 禁用, 2: 欠费冻结
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_tenant_code ON sys_tenant(code);
 
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS sys_user (
     email               VARCHAR(128),
     role                VARCHAR(32) NOT NULL DEFAULT 'EDITOR', -- OWNER, ADMIN, EDITOR, VIEWER
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 正常, 0: 禁用
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_tenant_username UNIQUE (tenant_id, username)
 );
 CREATE INDEX IF NOT EXISTS idx_user_tenant_id ON sys_user(tenant_id);
@@ -47,9 +47,9 @@ CREATE TABLE IF NOT EXISTS api_key (
     rate_limit_rpm      INT NOT NULL DEFAULT 60, -- 每分钟请求数限制
     rate_limit_tpm      INT NOT NULL DEFAULT 100000, -- 每分钟 Token 数限制
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 启用, 0: 禁用
-    expired_at          TIMESTAMP WITH TIME ZONE,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    expired_at          TIMESTAMP,
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_api_key_tenant ON api_key(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_api_key_hash ON api_key(key_hash);
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS dataset (
     chunk_size          INT NOT NULL DEFAULT 500,
     chunk_overlap       INT NOT NULL DEFAULT 50,
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 正常, 0: 隐藏/下线
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_dataset_tenant ON dataset(tenant_id);
 
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS document (
     chunk_count         INT NOT NULL DEFAULT 0,
     parse_status        VARCHAR(32) NOT NULL DEFAULT 'PENDING', -- PENDING, PARSING, SUCCESS, FAILED
     error_msg           TEXT,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_document_dataset ON document(dataset_id);
 CREATE INDEX IF NOT EXISTS idx_document_tenant ON document(tenant_id);
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS document_chunk (
     token_count         INT NOT NULL DEFAULT 0,
     metadata            JSONB DEFAULT '{}'::jsonb, -- 包含段落序号、页码、原始标题层级等
     tsv_content         tsvector, -- BM25 全文检索分词向量
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 核心索引配置:
@@ -145,8 +145,8 @@ CREATE TABLE IF NOT EXISTS agent_app (
     tools_config        JSONB DEFAULT '[]'::jsonb, -- 启用的内置与外部 OpenAPI 工具列表
     dataset_ids         JSONB DEFAULT '[]'::jsonb, -- 关联知识库 ID 数组
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 启用, 0: 禁用
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_agent_app_tenant ON agent_app(tenant_id);
 
@@ -160,8 +160,8 @@ CREATE TABLE IF NOT EXISTS workflow_definition (
     dag_json            JSONB NOT NULL DEFAULT '{"nodes": [], "edges": []}'::jsonb,
     version             INT NOT NULL DEFAULT 1,
     status              SMALLINT NOT NULL DEFAULT 1,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_workflow_app ON workflow_definition(app_id);
 CREATE INDEX IF NOT EXISTS idx_workflow_tenant ON workflow_definition(tenant_id);
@@ -179,8 +179,8 @@ CREATE TABLE IF NOT EXISTS workflow_execution (
     step_details        JSONB DEFAULT '[]'::jsonb, -- 包含每个节点的执行耗时、输入输出
     total_duration_ms   BIGINT DEFAULT 0,
     error_msg           TEXT,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_execution_workflow ON workflow_execution(workflow_id);
 CREATE INDEX IF NOT EXISTS idx_execution_tenant ON workflow_execution(tenant_id);
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS token_usage_log (
     is_cached           BOOLEAN NOT NULL DEFAULT FALSE, -- 是否命中向量语义缓存
     cost_amount         NUMERIC(10, 6) NOT NULL DEFAULT 0.000000, -- 消费金额(元)
     duration_ms         BIGINT NOT NULL DEFAULT 0,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_token_log_tenant ON token_usage_log(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_token_log_created_at ON token_usage_log(created_at);
@@ -212,8 +212,8 @@ CREATE TABLE IF NOT EXISTS chat_session (
     app_id              BIGINT NOT NULL,
     title               VARCHAR(255) NOT NULL,
     message_count       INT NOT NULL DEFAULT 0,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_session_tenant_user ON chat_session(tenant_id, user_id);
 
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS chat_message (
     total_tokens        INT DEFAULT 0,
     citations_json      TEXT, -- RAG 原文溯源引用快照
     reasoning_steps_json TEXT, -- ReAct 思考推理步骤快照
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_msg_session ON chat_message(session_id);
 
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS chat_feedback (
     feedback_type       VARCHAR(64), -- 答非所问, 幻觉错误, 格式错乱, 缺乏依据
     comment             TEXT,
     is_resolved         BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at          TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_feedback_tenant ON chat_feedback(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_feedback_message ON chat_feedback(message_id);
