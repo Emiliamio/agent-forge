@@ -1,5 +1,7 @@
 package com.agentforge.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.agentforge.service.system.SystemSelfCheckService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +18,7 @@ import java.util.Map;
 /**
  * 系统健康检查与基础设施状态监控接口
  */
-@Tag(name = "01. 系统健康监控", description = "用于检查容器环境、PostgreSQL+pgvector 与 Redis 运行状态")
+@Tag(name = "01. 系统健康监控与诊断", description = "用于检查容器环境、PostgreSQL+pgvector 与 Redis 运行状态及全量诊断")
 @RestController
 @RequestMapping("/system")
 @RequiredArgsConstructor
@@ -24,8 +26,9 @@ public class HealthController {
 
     private final JdbcTemplate jdbcTemplate;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final SystemSelfCheckService selfCheckService;
 
-    @Operation(summary = "系统全链路健康检查")
+    @Operation(summary = "系统全链路健康检查 (无需鉴权)")
     @GetMapping("/health")
     public Result<Map<String, Object>> checkHealth() {
         Map<String, Object> status = new HashMap<>();
@@ -55,5 +58,12 @@ public class HealthController {
         }
 
         return Result.success("AgentForge 核心系统服务正常", status);
+    }
+
+    @Operation(summary = "执行全量基础设施一键自检诊断 (需登录)")
+    @SaCheckLogin
+    @GetMapping("/diagnostics")
+    public Result<SystemSelfCheckService.DiagnosticReport> getDiagnostics() {
+        return Result.success(selfCheckService.runDiagnostics());
     }
 }
