@@ -1,15 +1,22 @@
 package com.agentforge.config;
 
+import cn.hutool.core.io.IoUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -100,5 +107,29 @@ public class SchemaMigrationIdempotenceTest {
                 initializer.runSchemaPatchMigrations()
         );
         assertTrue(ex.getMessage().contains("agent_app 表缺少必需列 public_enabled"));
+    }
+
+    @Test
+    @DisplayName("白名单表名契约强一致校验：CORE_TABLE_WHITELIST 中声明的全部表名必须严格存在于 schema.sql 中")
+    void testCoreTableWhitelistMatchesSchemaSql() throws Exception {
+        ClassPathResource res = new ClassPathResource("sql/schema.sql");
+        assertTrue(res.exists(), "schema.sql 必须存在于资源目录");
+        String sql = IoUtil.read(res.getInputStream(), StandardCharsets.UTF_8);
+        Matcher matcher = Pattern.compile("(?i)CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?([a-zA-Z0-9_]+)").matcher(sql);
+        Set<String> schemaTables = new HashSet<>();
+        while (matcher.find()) {
+            schemaTables.add(matcher.group(1).toLowerCase());
+        }
+
+        Set<String> whitelist = DatabaseAutoInitializer.CORE_TABLE_WHITELIST;
+        assertNotNull(whitelist, "白名单表集合不可为空");
+        assertFalse(whitelist.isEmpty(), "白名单表集合不可为空");
+
+        // 校验白名单中每一张表都在 schema.sql 中有物理表定义 (杜绝拼写错误如 knowledge_dataset / dataset_document)
+        for (String table : whitelist) {
+            assertTrue(schemaTables.contains(table.toLowerCase()),
+                    "白名单中的表名 [" + table + "] 在 schema.sql 中不存在！可能存在拼写错误导致 TIMESTAMPTZ 无法平滑迁移！");
+        }
+        assertEquals(schemaTables.size(), whitelist.size(), "白名单表集合应当与 schema.sql 核心表数量完全对齐");
     }
 }

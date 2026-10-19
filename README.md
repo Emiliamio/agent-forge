@@ -160,7 +160,8 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 认证中心与公开挂件限流彻底废弃危险的全局 `forward-headers-strategy: framework`，采用 `ClientIpResolver` 自主实现的**从右向左代理信任链剔除算法**：
 - **最小化信任代理**：默认仅信任回环地址（`127.0.0.1`、`::1`），彻底剔除对整个 RFC1918 私网网段的盲目信任。
 - **生产反代显式配置**：若生产环境挂载 Nginx、Kubernetes Ingress 或云负载均衡 SLB，请在 `application.yml` 的 `agentforge.security.trusted-proxies` 中明确指定具体的反代物理 IP，严禁通配私网段；
-- **防伪造真实防御**：外部客户端或局域网直连 8080 端口时，自动忽略所有伪造的 `X-Forwarded-For` 请求头，直接锁定底层物理 Socket IP，彻底封死旋转 XFF 绕过登录防爆破与挂件限流的攻击路径。
+- **防伪造真实防御**：外部客户端或局域网直连 8080 端口时，自动忽略所有伪造的 `X-Forwarded-For` 请求头，直接锁定底层物理 Socket IP，彻底封死旋转 XFF 绕过登录防爆破与挂件限流的攻击路径；
+- **同机与演示环境设计取舍**：由于回环地址 `127.0.0.1` / `::1` 默认在受信任列表中（以原生支持部署在同机上的 Nginx/网关反代架构），因此**同机发起的测试脚本或本机直连进程**若主动伪造 `X-Forwarded-For` 仍会被视作同机上游反代转发处理。防伪造机制已 100% 封死所有局域网（LAN）与公网外部直连伪造；若生产环境反代与应用跨机部署且无同机反代需求，可将 `trusted-proxies` 中回环地址移除或仅配置网关真实物理 IP，彻底收口。
 
 ### 3. 公开挂件 Security-by-Default 规范与存量激活
 - **默认安全阻断 (Security-by-Default)**：无论是新建智能体还是存量老库平滑升级，`public_enabled` 物理默认值均为 `0`（关闭）。未显式开启或 `public_enabled != 1` 时，外部匿名请求一律触发 403 Forbidden 阻断。

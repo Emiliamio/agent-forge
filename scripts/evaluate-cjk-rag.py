@@ -378,10 +378,11 @@ def main():
         if citations:
             top_score = citations[0].get("score", 0.0)
             for idx, cit in enumerate(citations):
-                snippet = cit.get("snippet", "") + " " + cit.get("sectionTitle", "")
-                # 判定条件: 章节匹配 或 命中指定预期关键词组
-                has_section_match = target and (target in snippet)
-                matched_words = [kw for kw in expected if kw in snippet]
+                section_title = cit.get("sectionTitle", "")
+                snippet = cit.get("snippet", "")
+                # 严格判定条件: 章节标称精准对齐切片 sectionTitle，或正文精准命中预期强关键词组
+                has_section_match = target and (target in section_title)
+                matched_words = [kw for kw in expected if kw in snippet or kw in section_title]
                 has_keyword_match = len(matched_words) >= 2 or (len(expected) <= 2 and len(matched_words) >= 1)
 
                 if has_section_match or has_keyword_match:

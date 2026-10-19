@@ -73,9 +73,9 @@ public class DatabaseAutoInitializer implements CommandLineRunner {
     /**
      * 核心业务表白名单：限定仅对 AgentForge 内部实体表执行时间字段平滑转换，严禁污染或误伤同库其它应用表
      */
-    private static final Set<String> CORE_TABLE_WHITELIST = Set.of(
-            "sys_tenant", "sys_user", "agent_app", "knowledge_dataset",
-            "dataset_document", "document_chunk", "chat_session",
+    public static final Set<String> CORE_TABLE_WHITELIST = Set.of(
+            "sys_tenant", "sys_user", "agent_app", "dataset",
+            "document", "document_chunk", "chat_session",
             "chat_message", "chat_feedback", "token_usage_log", "api_key",
             "workflow_definition", "workflow_execution"
     );
