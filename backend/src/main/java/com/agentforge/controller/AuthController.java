@@ -64,21 +64,29 @@ public class AuthController {
             return "127.0.0.1";
         }
         String remoteAddr = servletRequest.getRemoteAddr();
-        // 优先检查反代重写的 X-Real-IP
-        String realIp = servletRequest.getHeader("X-Real-IP");
-        if (StrUtil.isNotBlank(realIp) && !"unknown".equalsIgnoreCase(realIp)) {
-            return realIp.trim();
-        }
-        // X-Forwarded-For 防客户端伪造：取代理链最后一跳真实追加的节点 IP，拒绝信任客户端首段伪造值
-        String xff = servletRequest.getHeader("X-Forwarded-For");
-        if (StrUtil.isNotBlank(xff) && !"unknown".equalsIgnoreCase(xff)) {
-            String[] hops = xff.split(",");
-            String lastHop = hops[hops.length - 1].trim();
-            if (!lastHop.isBlank() && !"unknown".equalsIgnoreCase(lastHop)) {
-                return lastHop;
+        // 仅当直接连接来自受信任内网反向代理时，才采信反向代理传递的真实客户端 IP，杜绝直连时伪造 Header 绕过限流
+        if (isTrustedProxy(remoteAddr)) {
+            String realIp = servletRequest.getHeader("X-Real-IP");
+            if (StrUtil.isNotBlank(realIp) && !"unknown".equalsIgnoreCase(realIp)) {
+                return realIp.trim();
+            }
+            String xff = servletRequest.getHeader("X-Forwarded-For");
+            if (StrUtil.isNotBlank(xff) && !"unknown".equalsIgnoreCase(xff)) {
+                String[] hops = xff.split(",");
+                String lastHop = hops[hops.length - 1].trim();
+                if (!lastHop.isBlank() && !"unknown".equalsIgnoreCase(lastHop)) {
+                    return lastHop;
+                }
             }
         }
         return remoteAddr != null ? remoteAddr : "127.0.0.1";
+    }
+
+    private boolean isTrustedProxy(String ip) {
+        if (ip == null) return false;
+        return ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1") || ip.equals("::1")
+                || ip.startsWith("10.") || ip.startsWith("192.168.")
+                || ip.matches("^172\\.(1[6-9]|2[0-9]|3[0-1])\\..*");
     }
 
     private String buildRateLimitKey(String username) {

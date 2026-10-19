@@ -5,6 +5,7 @@ import com.agentforge.entity.Document;
 import com.agentforge.mapper.DocumentMapper;
 import com.agentforge.service.rag.RagService;
 import com.agentforge.service.rag.search.HybridSearchService;
+import com.agentforge.service.rag.tokenizer.CjkTokenizer;
 import com.agentforge.vo.ChunkSearchResult;
 import com.agentforge.vo.Citation;
 import com.alibaba.fastjson2.JSON;
@@ -97,16 +98,18 @@ public class RagServiceImpl implements RagService {
 
     /**
      * 提取用户 Query 在切片中命中的关键词列表 (用于前端高亮)
+     * 基于 CjkTokenizer 提取自然语言提问中的核心 2-gram 与实体词，解决整句输入时高亮为空的问题
      */
     private List<String> extractMatchedKeywords(String query, String content) {
         if (StrUtil.isBlank(query) || StrUtil.isBlank(content)) {
             return List.of();
         }
-        String[] terms = query.trim().split("\\s+|[，。！？,!?]");
+        List<String> keywords = CjkTokenizer.extractKeywords(query);
+        String lowerContent = content.toLowerCase();
         List<String> matched = new ArrayList<>();
-        for (String term : terms) {
-            String cleanTerm = term.trim();
-            if (cleanTerm.length() >= 2 && content.toLowerCase().contains(cleanTerm.toLowerCase())) {
+        for (String kw : keywords) {
+            String cleanTerm = kw.trim();
+            if (cleanTerm.length() >= 2 && lowerContent.contains(cleanTerm.toLowerCase())) {
                 if (!matched.contains(cleanTerm)) {
                     matched.add(cleanTerm);
                 }

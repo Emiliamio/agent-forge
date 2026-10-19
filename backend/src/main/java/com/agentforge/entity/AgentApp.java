@@ -42,4 +42,8 @@ public class AgentApp extends BaseEntity {
     private String datasetIds; // JSONB: [1, 2]
 
     private Integer status; // 1: 启用, 0: 禁用
+    
+    private Integer publicEnabled; // 1: 允许公开免密挂件访问, 0: 禁用
+    
+    private String publicToken; // 可选的挂件签名密钥/安全分享 Token
 }

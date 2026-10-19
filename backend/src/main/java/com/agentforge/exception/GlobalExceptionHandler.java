@@ -28,11 +28,25 @@ public class GlobalExceptionHandler {
 
     /**
      * 业务自定义异常拦截
+     * 根据业务错误码映射标准 HTTP 状态码 (401/403/404/400/429)，保持响应体 {code, message, data: null} 完全向后兼容
      */
     @ExceptionHandler(BusinessException.class)
-    public Result<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
+    public org.springframework.http.ResponseEntity<Result<Void>> handleBusinessException(BusinessException e, HttpServletRequest request) {
         log.warn("业务异常 [URI: {}]: code={}, message={}", request.getRequestURI(), e.getCode(), e.getMessage());
-        return Result.fail(e.getCode(), e.getMessage());
+        HttpStatus httpStatus = HttpStatus.OK;
+        if (e.getCode() == ErrorCode.UNAUTHORIZED.getCode()) {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+        } else if (e.getCode() == ErrorCode.FORBIDDEN.getCode()) {
+            httpStatus = HttpStatus.FORBIDDEN;
+        } else if (e.getCode() == ErrorCode.NOT_FOUND.getCode() || e.getCode() == ErrorCode.AGENT_APP_NOT_FOUND.getCode()
+                || e.getCode() == ErrorCode.DATASET_NOT_FOUND.getCode() || e.getCode() == ErrorCode.DOCUMENT_NOT_FOUND.getCode()) {
+            httpStatus = HttpStatus.NOT_FOUND;
+        } else if (e.getCode() == ErrorCode.PARAM_ERROR.getCode()) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (e.getCode() == ErrorCode.RATE_LIMIT_EXCEEDED.getCode()) {
+            httpStatus = HttpStatus.TOO_MANY_REQUESTS;
+        }
+        return org.springframework.http.ResponseEntity.status(httpStatus).body(Result.fail(e.getCode(), e.getMessage()));
     }
 
     /**

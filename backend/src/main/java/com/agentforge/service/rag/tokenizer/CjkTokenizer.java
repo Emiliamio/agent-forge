@@ -199,6 +199,58 @@ public class CjkTokenizer {
         return sj.toString();
     }
 
+    /**
+     * 提取自然语言提问中的核心关键词列表 (去除虚词和停用词)
+     * 用于前端高亮显示、关键词召回匹配等场景
+     */
+    public static List<String> extractKeywords(String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+
+        String cleaned = query.trim();
+        for (String stop : STOP_WORDS) {
+            if (stop.length() >= 2 && cleaned.contains(stop)) {
+                cleaned = cleaned.replace(stop, " ");
+            }
+        }
+
+        Set<String> tokenSet = new LinkedHashSet<>();
+
+        Matcher matcher = WORD_PATTERN.matcher(cleaned);
+        while (matcher.find()) {
+            String w = matcher.group().trim();
+            if (w.length() >= 2) {
+                tokenSet.add(w);
+            }
+        }
+
+        StringBuilder currentCjk = new StringBuilder();
+        for (int i = 0; i < cleaned.length(); i++) {
+            char c = cleaned.charAt(i);
+            if (isCjk(c)) {
+                currentCjk.append(c);
+            } else {
+                if (currentCjk.length() > 0) {
+                    processCjkSegment(currentCjk.toString(), tokenSet);
+                    currentCjk.setLength(0);
+                }
+            }
+        }
+        if (currentCjk.length() > 0) {
+            processCjkSegment(currentCjk.toString(), tokenSet);
+        }
+
+        List<String> result = new ArrayList<>();
+        for (String t : tokenSet) {
+            String sanitized = sanitizeToken(t);
+            if (!sanitized.isBlank()) {
+                result.add(sanitized);
+            }
+        }
+        return result;
+    }
+
     private static void processCjkSegment(String segment, Set<String> tokenSet) {
         if (segment.length() == 1) {
             tokenSet.add(segment);

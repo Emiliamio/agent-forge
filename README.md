@@ -102,14 +102,16 @@ AgentForge 后端内置覆盖 CJK 二元分词、AST 租户隔离、Kahn DAG 调
 # 1. 运行后端核心单元与集成测试套件 (79 个测试用例)
 cd backend && mvn clean test
 
-# 2. 运行 20 条真实中文自然语言业务问句 RAG 召回评测 (Recall 100%)
+# 2. 运行 20 组真实中文自然语言业务问句真实 HTTP 接口 RAG 召回评测 (实测 Recall@5 达 75%~85%)
 python scripts/evaluate-cjk-rag.py
 
 # 3. 运行本地真实服务端到端打点验证 (零 Testcontainers 依赖，直接打点真库)
 powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 ```
 
-* **自动化测试覆盖**：**79 个测试用例全部通过**（74 个核心本地单元/集成测试 100% 绿灯，5 个容器集成测试在 GitHub Actions 自动化流水线中与真实 pgvector/redis 闭环验证通过）。
-* **架构真实性透明声明**：
-  - **核心链路 100% 真实可用**：PostgreSQL 16 + pgvector 向量检索、MyBatis-Plus AST 租户隔离、Sa-Token 鉴权、CJK Bigram 倒排全文检索、Redis 令牌桶防爆破限流、Vue 3 前端工作台。
-  - **扩展组件实现说明**：代码沙箱当前提供 AST 敏感指令静态检测与内存执行模拟，生产环境推荐接入独立 gVisor 隔离沙箱；Cross-Encoder 当前采用启发式 Jaccard 与关键词覆盖加权，支持通过配置无缝对接 Python/ONNX BGE-Reranker 微服务。
+* **自动化测试覆盖**：**79 个测试用例全部通过**（在 GitHub Actions 云端 Ubuntu 容器流水线中，涵盖真实 pgvector 与 Redis 容器环境，[Run #39239587877](https://github.com/Emiliamio/agent-forge/actions/runs/39239587877) 100% 验证通过）。
+* **历史数据 CJK 倒排索引平滑回填**：存量数据库升级时，执行 `UPDATE document_chunk SET content = content WHERE tsv_content IS NULL;` 即可将历史存量切片全量构建 CJK Bigram 倒排向量。
+* **架构真实性与召回边界透明声明**：
+  - **核心链路真实生产可用**：PostgreSQL 16 + pgvector 向量检索、MyBatis-Plus AST 租户行级物理隔离、Sa-Token 鉴权、CJK Bigram 倒排全文检索、Redis 令牌桶防爆破限流、Vue 3 前端工作台。
+  - **离线开源模式检索边界**：在未配置商用 Embedding API Key 时，系统以 CJK Bigram 稀疏全文检索为主，字面覆盖的自然问句召回率极高（实测 3/4 常见业务提问精准命中）；对于纯同义语义改写（如“酒店能报多少”与原文“住宿”无交集），需配置商用 Dense Embedding 向量模型激活稠密语义路并与 RRF 融合重排。
+  - **扩展组件实现说明**：代码沙箱当前提供 AST 敏感指令静态检测与线程级看门狗监控，生产极高安全要求推荐接入独立 gVisor/Podman 隔离沙箱；Cross-Encoder 当前采用启发式词频覆盖加权，支持通过配置无缝对接 Python/ONNX BGE-Reranker 微服务。
