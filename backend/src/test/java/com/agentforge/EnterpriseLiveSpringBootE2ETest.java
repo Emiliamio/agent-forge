@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 3. DocumentChunkMapper 真实 pgvector 与 jsonb 写入及 <=> 检索闭环 (完全不撞车 JSqlParser)
  */
 @Testcontainers(disabledWithoutDocker = true)
+@org.junit.jupiter.api.condition.EnabledIf("isDockerAvailable")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DisplayName("企业级全上下文 SpringBootTest + Testcontainers 真实闭环集成测试")
@@ -61,12 +62,17 @@ public class EnterpriseLiveSpringBootE2ETest {
             pg.start();
 
             rd = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
+                    .withCommand("redis-server", "--requirepass", "redis123")
                     .withExposedPorts(6379);
             rd.start();
         } catch (Throwable ignored) {
         }
         postgres = pg;
         redis = rd;
+    }
+
+    public static boolean isDockerAvailable() {
+        return postgres != null && postgres.isRunning() && redis != null && redis.isRunning();
     }
 
     @DynamicPropertySource
@@ -79,7 +85,10 @@ public class EnterpriseLiveSpringBootE2ETest {
         if (redis != null && redis.isRunning()) {
             registry.add("spring.data.redis.host", redis::getHost);
             registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-            registry.add("spring.data.redis.password", () -> "");
+            registry.add("spring.data.redis.password", () -> "redis123");
+            registry.add("spring.redis.host", redis::getHost);
+            registry.add("spring.redis.port", redis::getFirstMappedPort);
+            registry.add("spring.redis.password", () -> "redis123");
             registry.add("spring.data.redis.timeout", () -> "3000ms");
         }
     }
