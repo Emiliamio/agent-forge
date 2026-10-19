@@ -54,6 +54,20 @@
         </div>
       </div>
 
+      <!-- User & Logout -->
+      <div class="flex items-center justify-between px-2 pt-1 border-t border-dark-border/60">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[11px] text-slate-300 font-bold font-mono">
+            {{ username.charAt(0).toUpperCase() }}
+          </div>
+          <span class="text-xs text-slate-300 font-medium truncate max-w-[90px]">{{ username }}</span>
+        </div>
+        <button @click="handleLogout" class="text-[11px] text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
+          <LogOut class="w-3.5 h-3.5" />
+          <span>退出</span>
+        </button>
+      </div>
+
       <!-- Engine Status -->
       <div class="text-[11px] text-slate-500 flex justify-between items-center px-1 font-mono">
         <span>Reactor Virtual Threads</span>
@@ -65,17 +79,29 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import {
   LayoutDashboard,
   Database,
   GitFork,
   Bot,
   Receipt,
-  Sparkles
+  Sparkles,
+  LogOut
 } from 'lucide-vue-next'
 
 const route = useRoute()
+const router = useRouter()
+
+const username = computed(() => localStorage.getItem('agentforge_username') || 'admin')
+const tenantId = computed(() => localStorage.getItem('agentforge_tenant_id') || '1')
+
+const handleLogout = () => {
+  localStorage.removeItem('agentforge_token')
+  localStorage.removeItem('agentforge_tenant_id')
+  localStorage.removeItem('agentforge_username')
+  router.push('/login')
+}
 
 const navItems = [
   { name: '控制台概览', path: '/', icon: LayoutDashboard },

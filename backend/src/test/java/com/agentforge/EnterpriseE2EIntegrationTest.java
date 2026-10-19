@@ -211,4 +211,42 @@ public class EnterpriseE2EIntegrationTest {
         assertTrue(topResult.getScore() > 0.0, "召回切片必须具备有效的融合相关性得分");
         assertTrue(topResult.getContent().contains("pgvector"), "召回切片内容必须吻合测试数据");
     }
+
+    @Test
+    @Order(4)
+    @DisplayName("集成测试 4: 未登录匿名访问受保护路由严格 Fail-Closed (拒绝静默兜底租户 1)")
+    void test4_UnauthenticatedAccessFailClosed() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/agents");
+        request.setMethod("GET");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                tenantInterceptor.preHandle(request, response, new Object())
+        );
+
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("请先登录"), "未登录必须明确提示请先登录");
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("集成测试 5: 向量检索与关键词检索方法 @InterceptorIgnore 契约静态锁死 (防 JSqlParser <=> 崩溃)")
+    void test5_DocumentChunkMapperInterceptorIgnoreAnnotationCheck() throws Exception {
+        java.lang.reflect.Method vectorMethod = DocumentChunkMapper.class.getMethod(
+                "searchByVector", Long.class, List.class, String.class, double.class, int.class
+        );
+        com.baomidou.mybatisplus.annotation.InterceptorIgnore vectorIgnore =
+                vectorMethod.getAnnotation(com.baomidou.mybatisplus.annotation.InterceptorIgnore.class);
+        assertNotNull(vectorIgnore, "searchByVector 必须标注 @InterceptorIgnore 防止 JSqlParser 解析 pgvector <=> 报错");
+        assertEquals("true", vectorIgnore.tenantLine(), "tenantLine 必须为 true 忽略租户改写");
+
+        java.lang.reflect.Method keywordMethod = DocumentChunkMapper.class.getMethod(
+                "searchByKeyword", Long.class, List.class, String.class, int.class
+        );
+        com.baomidou.mybatisplus.annotation.InterceptorIgnore keywordIgnore =
+                keywordMethod.getAnnotation(com.baomidou.mybatisplus.annotation.InterceptorIgnore.class);
+        assertNotNull(keywordIgnore, "searchByKeyword 必须标注 @InterceptorIgnore");
+        assertEquals("true", keywordIgnore.tenantLine());
+    }
 }

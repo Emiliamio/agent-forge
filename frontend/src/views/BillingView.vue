@@ -172,7 +172,7 @@ const handleRecharge = async () => {
   if (rechargeAmount.value <= 0) return
   recharging.value = true
   try {
-    await client.post(`/billing/recharge?amount=${rechargeAmount.value}`)
+    await client.post('/billing/recharge', { amount: rechargeAmount.value })
     alert(`充值成功！已注入 ¥${rechargeAmount.value}.00 到租户可用钱包余额！`)
     showRechargeModal.value = false
     await fetchBilling()

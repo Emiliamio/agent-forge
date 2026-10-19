@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.agentforge.config.mybatis.PgJsonbTypeHandler;
 import com.agentforge.config.mybatis.PgVectorTypeHandler;
 
 /**
@@ -50,6 +51,7 @@ public class DocumentChunk implements Serializable {
     /**
      * 结构化元数据 (JSONB 格式：包含 page, title, source 等)
      */
+    @TableField(typeHandler = PgJsonbTypeHandler.class)
     private String metadata;
 
     /**

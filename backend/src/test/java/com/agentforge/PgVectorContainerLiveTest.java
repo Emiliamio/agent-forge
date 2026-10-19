@@ -71,4 +71,70 @@ public class PgVectorContainerLiveTest {
             assertEquals(0.0, rs.getDouble("distance"), 0.001, "自身与自身余弦距离必须为 0");
         }
     }
+
+    @Test
+    @DisplayName("测试真实 PostgreSQL 容器中验证 vector(3) 与 jsonb 混合写入和 <=> 运算符无报错")
+    void testPgVectorAndJsonbTypeHandling() throws Exception {
+        assertTrue(postgres.isRunning(), "PostgreSQL 容器必须正常运行");
+
+        try (Connection conn = DriverManager.getConnection(
+                postgres.getJdbcUrl() + "&stringtype=unspecified",
+                postgres.getUsername(),
+                postgres.getPassword()
+        ); Statement stmt = conn.createStatement()) {
+
+            stmt.execute("CREATE EXTENSION IF NOT EXISTS vector;");
+
+            // 1. 创建包含 vector 与 jsonb 的表
+            stmt.execute("""
+                    CREATE TEMPORARY TABLE test_chunk_table (
+                        id SERIAL PRIMARY KEY,
+                        tenant_id BIGINT NOT NULL,
+                        content TEXT,
+                        embedding vector(3),
+                        metadata JSONB
+                    );
+                    """);
+
+            // 2. 插入测试数据 (包含 PGobject jsonb 与 vector)
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO test_chunk_table (tenant_id, content, embedding, metadata) VALUES (?, ?, ?, ?)")) {
+                ps.setLong(1, 1L);
+                ps.setString(2, "AgentForge 企业中台规范");
+
+                org.postgresql.util.PGobject vecObj = new org.postgresql.util.PGobject();
+                vecObj.setType("vector");
+                vecObj.setValue("[0.1, 0.2, 0.3]");
+                ps.setObject(3, vecObj);
+
+                org.postgresql.util.PGobject jsonObj = new org.postgresql.util.PGobject();
+                jsonObj.setType("jsonb");
+                jsonObj.setValue("{\"page\":1,\"title\":\"架构文档\"}");
+                ps.setObject(4, jsonObj);
+
+                int rows = ps.executeUpdate();
+                assertEquals(1, rows, "成功写入 1 条包含 vector 与 jsonb 的切片记录");
+            }
+
+            // 3. 执行 <=> 距离运算与 jsonb 字段查询
+            try (java.sql.PreparedStatement queryPs = conn.prepareStatement("""
+                    SELECT id, content, metadata->>'title' AS title, (1 - (embedding <=> ?::vector)) AS score
+                    FROM test_chunk_table
+                    WHERE tenant_id = ?
+                    ORDER BY embedding <=> ?::vector ASC
+                    LIMIT 1
+                    """)) {
+                queryPs.setString(1, "[0.1, 0.2, 0.3]");
+                queryPs.setLong(2, 1L);
+                queryPs.setString(3, "[0.1, 0.2, 0.3]");
+
+                try (ResultSet rs = queryPs.executeQuery()) {
+                    assertTrue(rs.next(), "必须查到刚插入的记录");
+                    assertEquals("AgentForge 企业中台规范", rs.getString("content"));
+                    assertEquals("架构文档", rs.getString("title"));
+                    assertEquals(1.0, rs.getDouble("score"), 0.001, "自身与自身相似度得分必须为 1.0");
+                }
+            }
+        }
+    }
 }

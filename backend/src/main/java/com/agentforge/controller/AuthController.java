@@ -26,6 +26,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.time.Duration;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,23 +50,66 @@ public class AuthController {
 
     private final SysTenantMapper tenantMapper;
     private final SysUserMapper userMapper;
+    private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
+    private final HttpServletRequest servletRequest;
 
-    // 登录防暴力破解限流器 (1 分钟内同一租户+用户名最多尝试 5 次)
+    // 登录防暴力破解限流器 (1 分钟内同一 IP + 用户名最多尝试 5 次)
     private static final int MAX_LOGIN_ATTEMPTS = 5;
+    private static final long WINDOW_SECONDS = 60L;
     private static final long WINDOW_MS = 60_000L;
-    private final java.util.Map<String, java.util.Queue<Long>> loginAttemptMap = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, Queue<Long>> inMemoryAttemptMap = new ConcurrentHashMap<>();
 
-    private void checkLoginRateLimit(String clientKey) {
+    private String getClientIp() {
+        if (servletRequest == null) {
+            return "127.0.0.1";
+        }
+        String ip = servletRequest.getHeader("X-Forwarded-For");
+        if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+            int idx = ip.indexOf(",");
+            return idx > 0 ? ip.substring(0, idx).trim() : ip.trim();
+        }
+        ip = servletRequest.getHeader("X-Real-IP");
+        if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+            return ip.trim();
+        }
+        return servletRequest.getRemoteAddr() != null ? servletRequest.getRemoteAddr() : "127.0.0.1";
+    }
+
+    private String buildRateLimitKey(String username) {
+        return "auth:ratelimit:login:" + getClientIp() + ":" + (username != null ? username.trim() : "anonymous");
+    }
+
+    private void checkLoginRateLimit(String rateLimitKey) {
+        StringRedisTemplate redis = redisTemplateProvider != null ? redisTemplateProvider.getIfAvailable() : null;
+        if (redis != null) {
+            try {
+                Long attempts = redis.opsForValue().increment(rateLimitKey);
+                if (attempts != null && attempts == 1) {
+                    redis.expire(rateLimitKey, Duration.ofSeconds(WINDOW_SECONDS));
+                }
+                if (attempts != null && attempts > MAX_LOGIN_ATTEMPTS) {
+                    log.warn("🛑 [LOGIN_BRUTE_FORCE_BLOCKED] Redis 检测到暴力破解或高频请求，触发安全限流拦截！key={}", rateLimitKey);
+                    throw new BusinessException(ErrorCode.RATE_LIMIT_EXCEEDED, "登录尝试过于频繁，已触发防爆破风控保护，请 1 分钟后再试");
+                }
+                return;
+            } catch (BusinessException be) {
+                throw be;
+            } catch (Exception e) {
+                log.warn("Redis 限流探针异常，自动平滑降级至内存限流: {}", e.getMessage());
+            }
+        }
+
+        // 内存兜底降级
         long now = System.currentTimeMillis();
-        loginAttemptMap.compute(clientKey, (key, queue) -> {
+        inMemoryAttemptMap.compute(rateLimitKey, (key, queue) -> {
             if (queue == null) {
-                queue = new java.util.concurrent.ConcurrentLinkedQueue<>();
+                queue = new ConcurrentLinkedQueue<>();
             }
             while (!queue.isEmpty() && now - queue.peek() > WINDOW_MS) {
                 queue.poll();
             }
             if (queue.size() >= MAX_LOGIN_ATTEMPTS) {
-                log.warn("🛑 [LOGIN_BRUTE_FORCE_BLOCKED] 检测到登录暴力破解或高频请求，触发安全限流拦截！clientKey={}", clientKey);
+                log.warn("🛑 [LOGIN_BRUTE_FORCE_BLOCKED] 内存限流拦截！key={}", rateLimitKey);
                 throw new BusinessException(ErrorCode.RATE_LIMIT_EXCEEDED, "登录尝试过于频繁，已触发防爆破风控保护，请 1 分钟后再试");
             }
             queue.offer(now);
@@ -64,13 +117,25 @@ public class AuthController {
         });
     }
 
+    private void clearLoginRateLimit(String rateLimitKey) {
+        try {
+            StringRedisTemplate redis = redisTemplateProvider != null ? redisTemplateProvider.getIfAvailable() : null;
+            if (redis != null) {
+                redis.delete(rateLimitKey);
+            }
+        } catch (Exception ignored) {
+        }
+        inMemoryAttemptMap.remove(rateLimitKey);
+    }
+
     @Operation(summary = "用户登录 (支持多租户)")
     @PostMapping("/login")
     public Result<LoginVO> login(@Valid @RequestBody LoginRequest request) {
         String tenantCode = StrUtil.isNotBlank(request.getTenantCode()) ? request.getTenantCode() : "tenant_default";
+        String rateLimitKey = buildRateLimitKey(request.getUsername());
 
-        // 0. 安全防爆破限流校验
-        checkLoginRateLimit(tenantCode + ":" + request.getUsername());
+        // 0. 安全防爆破限流校验 (基于 IP + 用户名)
+        checkLoginRateLimit(rateLimitKey);
 
         // 1. 查询租户
         SysTenant tenant = tenantMapper.selectOne(
@@ -111,6 +176,9 @@ public class AuthController {
         // 4. 执行 Sa-Token 登录，附加租户与角色信息到 Session 中，全面兼容 Redis 与内存存储
         StpUtil.login(user.getId());
         StpUtil.getSession().set("tenantId", tenant.getId()).set("role", user.getRole());
+
+        // 5. 登录成功，立即销毁防爆破计数，杜绝针对合法用户的账号级 DoS
+        clearLoginRateLimit(rateLimitKey);
 
         LoginVO loginVO = LoginVO.builder()
                 .token(StpUtil.getTokenValue())

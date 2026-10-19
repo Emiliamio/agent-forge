@@ -1,5 +1,7 @@
 package com.agentforge.entity;
 
+import com.agentforge.config.mybatis.PgJsonbTypeHandler;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@TableName("workflow_execution")
+@TableName(value = "workflow_execution", autoResultMap = true)
 public class WorkflowExecution extends BaseEntity {
 
     private Long tenantId;
@@ -28,10 +30,13 @@ public class WorkflowExecution extends BaseEntity {
 
     private String status; // RUNNING, SUCCESS, FAILED, TIMEOUT
 
+    @TableField(typeHandler = PgJsonbTypeHandler.class)
     private String inputSnapshot; // JSONB
 
+    @TableField(typeHandler = PgJsonbTypeHandler.class)
     private String outputSnapshot; // JSONB
 
+    @TableField(typeHandler = PgJsonbTypeHandler.class)
     private String stepDetails; // JSONB
 
     private Long totalDurationMs;

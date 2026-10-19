@@ -33,8 +33,13 @@ client.interceptors.response.use(response => {
   return res.data
 }, error => {
   if (error.response && error.response.status === 401) {
-    console.warn('登录已过期或未授权，清除本地 Token')
+    console.warn('登录已过期或未授权，清除本地 Token 并重定向至登录页')
     localStorage.removeItem('agentforge_token')
+    localStorage.removeItem('agentforge_tenant_id')
+    localStorage.removeItem('agentforge_username')
+    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      window.location.href = '/login'
+    }
   }
   console.error('Network Error:', error.message)
   return Promise.reject(error)

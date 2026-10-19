@@ -43,7 +43,7 @@ jobs:
       DB_NAME: agentforge
       DB_USER: postgres
       DB_PASSWORD: password123
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agentforge
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agentforge?stringtype=unspecified
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password123
       REDIS_HOST: localhost

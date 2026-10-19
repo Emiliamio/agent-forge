@@ -61,12 +61,21 @@ springdoc:
 agentforge:
   security:
     white-list:
+      - /auth/login
+      - /auth/register
+      - /system/health
+      - /health/**
+      - /v3/api-docs/**
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /doc.html
       - /api/auth/login
       - /api/auth/register
       - /api/system/health
       - /api/v3/api-docs/**
       - /api/swagger-ui/**
       - /api/swagger-ui.html
+      - /api/doc.html
   llm:
     default-provider: deepseek
     deepseek:

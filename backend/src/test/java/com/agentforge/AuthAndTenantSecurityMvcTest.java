@@ -164,6 +164,7 @@ public class AuthAndTenantSecurityMvcTest {
     @DisplayName("测试未登录时即使携带 Header 也严格锁定系统默认租户，拒绝未授权伪造")
     void testUnauthenticatedHeaderTenant() {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/auth/login");
         request.addHeader(TenantInterceptor.HEADER_TENANT_ID, "888");
         MockHttpServletResponse response = new MockHttpServletResponse();
 

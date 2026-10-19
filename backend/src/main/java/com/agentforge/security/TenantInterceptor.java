@@ -24,8 +24,36 @@ public class TenantInterceptor implements HandlerInterceptor {
     public static final String HEADER_TENANT_ID = "X-Tenant-Id";
     public static final String PARAM_TENANT_ID = "tenantId";
 
+    private static final String[] PUBLIC_PREFIXES = {
+            "/auth/login",
+            "/auth/register",
+            "/system/health",
+            "/system/diagnostics",
+            "/v3/api-docs",
+            "/swagger-ui",
+            "/doc.html",
+            "/favicon.ico",
+            "/error"
+    };
+
+    private boolean isPublicPath(String uri) {
+        if (uri == null) return false;
+        String path = uri.startsWith("/api/") ? uri.substring(4) : uri;
+        for (String prefix : PUBLIC_PREFIXES) {
+            if (path.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // 0. 放行 OPTIONS 跨域预检请求
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 1. 若当前用户已登录，强制从 Sa-Token 登录会话中获取绑定的租户 ID
         try {
             if (StpUtil.isLogin()) {
@@ -63,13 +91,19 @@ public class TenantInterceptor implements HandlerInterceptor {
         } catch (BusinessException be) {
             throw be;
         } catch (Exception ignored) {
-            // 未登录或非登录请求继续往下走公开租户兜底
+            // 继续往下走白名单/未登录校验
         }
 
-        // 2. 未登录态接口 (如 /auth/login, /system/health 等)，严格锁定为系统默认公共租户
-        // 彻底杜绝未登录请求通过伪造 X-Tenant-Id 或 URL 参数越权预置上下文
-        TenantContextHolder.setTenantId(TenantContextHolder.DEFAULT_TENANT_ID);
-        return true;
+        // 2. 未登录态接口校验 (Fail-Closed 默认防御)
+        if (isPublicPath(request.getRequestURI())) {
+            // 公开白名单路径 (如 /auth/login, /system/health 等) 预置默认公开租户上下文
+            TenantContextHolder.setTenantId(TenantContextHolder.DEFAULT_TENANT_ID);
+            return true;
+        }
+
+        // 3. 非白名单且未登录的请求，直接抛出未登录拒绝，杜绝隐式回退到租户 1 导致数据泄露
+        log.warn("🛑 [UNAUTHORIZED_ACCESS_BLOCKED] 未登录拒绝：禁止匿名访问受保护业务路径 uri={}", request.getRequestURI());
+        throw new BusinessException(ErrorCode.UNAUTHORIZED, "请先登录系统获取访问凭证");
     }
 
     @Override

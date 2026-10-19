@@ -2,6 +2,7 @@ package com.agentforge.mapper;
 
 import com.agentforge.entity.DocumentChunk;
 import com.agentforge.vo.ChunkSearchResult;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,7 +18,9 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
 
     /**
      * 稠密向量余弦相似度检索 (基于 pgvector HNSW 索引)
+     * 忽略 MyBatis-Plus 租户插件解析：SQL 已内嵌 tenant_id = #{tenantId}，且避免 JSqlParser 崩溃于 pgvector <=> 操作符
      */
+    @InterceptorIgnore(tenantLine = "true")
     @Select("""
             <script>
             SELECT id, tenant_id, dataset_id, document_id, chunk_index, content, metadata, token_count, created_at,
@@ -45,7 +48,9 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
 
     /**
      * 全文关键词检索 (基于 PostgreSQL BM25 / tsvector GIN 索引)
+     * 忽略 MyBatis-Plus 租户插件解析：SQL 已内嵌 tenant_id = #{tenantId}
      */
+    @InterceptorIgnore(tenantLine = "true")
     @Select("""
             <script>
             SELECT id, tenant_id, dataset_id, document_id, chunk_index, content, metadata, token_count, created_at,

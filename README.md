@@ -6,7 +6,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-blue.svg?style=flat&logo=postgresql)](https://github.com/pgvector/pgvector)
 [![Redis](https://img.shields.io/badge/Redis-7.2-red.svg?style=flat&logo=redis)](https://redis.io/)
 [![CI/CD Pipeline](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/Emiliamio/agent-forge/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-52%20Passed%20(100%25)-success.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-76%20Passed%20(100%25)-success.svg)]()
 [![License](https://img.shields.io/badge/License-Commercial%20%2F%20Enterprise-blue.svg)](COMMERCIAL_LICENSE.md)
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
@@ -101,4 +101,4 @@ AgentForge 后端内置覆盖 AST 租户隔离、Kahn DAG 调度、RAG 混合检
 ```bash
 cd backend && mvn clean test
 ```
-* **自动化测试通过率**：**62 / 62 全部通过 (100% 绿灯，覆盖 JSqlParser AST 防注入、跨租户越权拦截、pgvector 向量类型映射、PostgreSQL 存储过程分句状态机解析)**
+* **自动化测试通过率**：**76 / 76 全部通过 (100% 绿灯，覆盖 JSqlParser AST 防注入、跨租户越权拦截、pgvector 向量距离计算、PgJsonbTypeHandler 类型映射、PostgreSQL 存储过程分句状态机解析、Testcontainers 真实容器闭环)**

@@ -231,7 +231,7 @@ const sendMessage = async () => {
 
 const saveAgent = async () => {
   try {
-    await client.post('/apps', {
+    await client.post('/agents', {
       name: agentConfig.value.name,
       description: agentConfig.value.systemPrompt.substring(0, 100),
       appType: 'AGENT',
@@ -241,7 +241,7 @@ const saveAgent = async () => {
     })
     alert('智能体配置已成功保存入库！')
   } catch (e) {
-    alert('配置已在本地生效：已挂载知识库与 MCP 工具链！')
+    alert('保存智能体失败: ' + (e.message || '接口调用异常'))
   }
 }
 

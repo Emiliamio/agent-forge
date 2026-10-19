@@ -5,8 +5,10 @@ import WorkflowView from '../views/WorkflowView.vue'
 import AgentView from '../views/AgentView.vue'
 import BillingView from '../views/BillingView.vue'
 import UserCopilotView from '../views/portal/UserCopilotView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
+  { path: '/login', name: 'Login', component: LoginView },
   { path: '/', name: 'Dashboard', component: DashboardView },
   { path: '/copilot', name: 'UserCopilot', component: UserCopilotView },
   { path: '/datasets', name: 'Datasets', component: DatasetView },
@@ -18,6 +20,18 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// 全局前置导航守卫：未登录强制跳转至 /login 登录页
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('agentforge_token')
+  if (to.path !== '/login' && !token) {
+    next('/login')
+  } else if (to.path === '/login' && token) {
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router
