@@ -146,22 +146,29 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 ## 🛡️ 生产安全与存量老库平滑升级说明
 
 ### 1. 存量老库平滑演进与 Zero-DBA 自愈能力
-系统内置 `DatabaseAutoInitializer` 增量自愈机制，在面对非空老库启动时**绝不跳过结构打补丁**，每次服务拉起自动幂等执行：
+系统内置 `DatabaseAutoInitializer` 基于 `schema_version` 版本化管理增量自愈机制，在面对非空老库启动时**绝不跳过结构打补丁**，同时保证只执行一次增量迁移，彻底杜绝重启性能风暴：
+- **版本化幂等迁移 (`schema_version`)**：记录已应用的版本（如 `V1_0_1__timestamptz_alignment`、`V1_0_2__cjk_bigram_functions`、`V1_0_3__agent_public_columns`、`V1_0_4__cjk_bigram_backfill`），仅首次执行全量倒排索引重算，后续重启秒级就绪。
 - **智能体挂件字段自愈**：
   ```sql
   ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 0;
   ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_token VARCHAR(64);
   ```
-- **CJK Bigram 倒排索引函数与触发器升级**：自动检测并替换 `cjk_bigram_tokenize` 状态机函数与 `trg_chunk_tsv_update` 触发器，历史切片自动执行 `UPDATE document_chunk SET content = content;` 触发全量倒排重算。
-- **历史时间列自愈**：自动扫描并将历史遗留的 `TIMESTAMPTZ`（`timestamp with time zone`）平滑转换为标准 `TIMESTAMP WITHOUT TIME ZONE`，彻底杜绝 PostgreSQL JDBC 驱动抛出 `Cannot convert TIMESTAMPTZ to LocalDateTime`。
+- **CJK Bigram 倒排索引函数与触发器升级**：自动检测并替换 `cjk_bigram_tokenize` 状态机函数与 `trg_chunk_tsv_update` 触发器，历史切片自动触发全量倒排重算。
+- **核心白名单时间列自愈**：严格限定在 13 张核心业务表白名单内扫描，将历史遗留的 `TIMESTAMPTZ`（`timestamp with time zone`）平滑转换为标准 `TIMESTAMP WITHOUT TIME ZONE`，杜绝触碰非系统表，并彻底解决 PostgreSQL JDBC 驱动抛出 `Cannot convert TIMESTAMPTZ to LocalDateTime`。
 
 ### 2. 网络安全：客户端真实 IP 解析与防伪造 X-Forwarded-For
 认证中心与公开挂件限流彻底废弃危险的全局 `forward-headers-strategy: framework`，采用 `ClientIpResolver` 自主实现的**从右向左代理信任链剔除算法**：
-- 仅当连接来源于 `agentforge.security.trusted-proxies` 白名单指定的反代节点时，才解析 `X-Forwarded-For`；
-- 外部恶意客户端直连 8080 端口时，自动忽略所有伪造的 XFF 请求头，直接取底层物理 Socket IP，彻底封死旋转 X-Forwarded-For 绕过登录防爆破与挂件限流的漏洞。
+- **最小化信任代理**：默认仅信任回环地址（`127.0.0.1`、`::1`），彻底剔除对整个 RFC1918 私网网段的盲目信任。
+- **生产反代显式配置**：若生产环境挂载 Nginx、Kubernetes Ingress 或云负载均衡 SLB，请在 `application.yml` 的 `agentforge.security.trusted-proxies` 中明确指定具体的反代物理 IP，严禁通配私网段；
+- **防伪造真实防御**：外部客户端或局域网直连 8080 端口时，自动忽略所有伪造的 `X-Forwarded-For` 请求头，直接锁定底层物理 Socket IP，彻底封死旋转 XFF 绕过登录防爆破与挂件限流的攻击路径。
 
-### 3. 公开挂件 Security-by-Default 规范
-- **默认安全阻断**：所有新建智能体 `public_enabled` 物理默认值为 `0`。未显式开启或 `public_enabled != 1` 时，外部请求直接触发 403 Forbidden 阻断。
+### 3. 公开挂件 Security-by-Default 规范与存量激活
+- **默认安全阻断 (Security-by-Default)**：无论是新建智能体还是存量老库平滑升级，`public_enabled` 物理默认值均为 `0`（关闭）。未显式开启或 `public_enabled != 1` 时，外部匿名请求一律触发 403 Forbidden 阻断。
+- **存量系统激活公开挂件**：老库升级后若需要对外部访客开放免登录聊天挂件（如 ID 为 1 的默认智能体），请管理员在数据库中显式开启：
+  ```sql
+  -- 显式开启 ID 为 1 的智能体公开挂件免登录对话权限
+  UPDATE agent_app SET public_enabled = 1 WHERE id = 1;
+  ```
 - **恒定时间凭据比对**：挂件安全密钥（`public_token`）采用 `MessageDigest.isEqual` 进行常量时间比对，杜绝基于响应延迟的计时侧信道攻击。
 - **凭据传输收敛**：安全 Token 仅允许通过 Header (`X-Public-Token` 或 `Authorization`) 或请求体传递，严禁在 URL Query String 中暴露，防止网关日志与浏览器历史泄密。
 

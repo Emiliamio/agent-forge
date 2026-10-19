@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 public class ClientIpResolver {
 
-    @Value("${agentforge.security.trusted-proxies:127.0.0.1,::1,0:0:0:0:0:0:0:1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}")
+    @Value("${agentforge.security.trusted-proxies:127.0.0.1,::1,0:0:0:0:0:0:0:1}")
     private List<String> trustedProxyPatterns;
 
     private final List<CidrMatcher> matchers = new ArrayList<>();
