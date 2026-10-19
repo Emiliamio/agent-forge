@@ -37,7 +37,6 @@ sa-token:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.agentforge.entity
-  type-handlers-package: com.agentforge.config.mybatis
   global-config:
     db-config:
       id-type: auto
@@ -64,6 +63,7 @@ agentforge:
     white-list:
       - /auth/login
       - /auth/register
+      - /public/**
       - /system/health
       - /health/**
       - /v3/api-docs/**
@@ -72,6 +72,7 @@ agentforge:
       - /doc.html
       - /api/auth/login
       - /api/auth/register
+      - /api/public/**
       - /api/system/health
       - /api/v3/api-docs/**
       - /api/swagger-ui/**

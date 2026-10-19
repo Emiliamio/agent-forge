@@ -28,7 +28,7 @@ public class TenantInterceptor implements HandlerInterceptor {
             "/auth/login",
             "/auth/register",
             "/system/health",
-            "/system/diagnostics",
+            "/public/",
             "/v3/api-docs",
             "/swagger-ui",
             "/doc.html",

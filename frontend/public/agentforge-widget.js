@@ -99,7 +99,7 @@
     appendMessage('user', text);
 
     try {
-      const response = await fetch(`${apiUrl}/agents/${appId}/chat`, {
+      const response = await fetch(`${apiUrl}/public/agents/${appId}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })

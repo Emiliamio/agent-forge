@@ -54,7 +54,10 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
     @Select("""
             <script>
             SELECT id, tenant_id, dataset_id, document_id, chunk_index, content, metadata, token_count, created_at,
-                   ts_rank(tsv_content, plainto_tsquery('simple', #{keyword})) AS score
+                   GREATEST(
+                       ts_rank(tsv_content, websearch_to_tsquery('simple', #{keyword})),
+                       ts_rank(tsv_content, plainto_tsquery('simple', #{keyword}))
+                   ) AS score
             FROM document_chunk
             WHERE tenant_id = #{tenantId}
             <if test="datasetIds != null and datasetIds.size() > 0">
@@ -63,7 +66,10 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
                   #{dId}
               </foreach>
             </if>
-              AND tsv_content @@ plainto_tsquery('simple', #{keyword})
+              AND (
+                  tsv_content @@ websearch_to_tsquery('simple', #{keyword})
+                  OR tsv_content @@ plainto_tsquery('simple', #{keyword})
+              )
             ORDER BY score DESC
             LIMIT #{topK}
             </script>

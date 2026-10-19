@@ -63,16 +63,22 @@ public class AuthController {
         if (servletRequest == null) {
             return "127.0.0.1";
         }
-        String ip = servletRequest.getHeader("X-Forwarded-For");
-        if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
-            int idx = ip.indexOf(",");
-            return idx > 0 ? ip.substring(0, idx).trim() : ip.trim();
+        String remoteAddr = servletRequest.getRemoteAddr();
+        // 优先检查反代重写的 X-Real-IP
+        String realIp = servletRequest.getHeader("X-Real-IP");
+        if (StrUtil.isNotBlank(realIp) && !"unknown".equalsIgnoreCase(realIp)) {
+            return realIp.trim();
         }
-        ip = servletRequest.getHeader("X-Real-IP");
-        if (StrUtil.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
-            return ip.trim();
+        // X-Forwarded-For 防客户端伪造：取代理链最后一跳真实追加的节点 IP，拒绝信任客户端首段伪造值
+        String xff = servletRequest.getHeader("X-Forwarded-For");
+        if (StrUtil.isNotBlank(xff) && !"unknown".equalsIgnoreCase(xff)) {
+            String[] hops = xff.split(",");
+            String lastHop = hops[hops.length - 1].trim();
+            if (!lastHop.isBlank() && !"unknown".equalsIgnoreCase(lastHop)) {
+                return lastHop;
+            }
         }
-        return servletRequest.getRemoteAddr() != null ? servletRequest.getRemoteAddr() : "127.0.0.1";
+        return remoteAddr != null ? remoteAddr : "127.0.0.1";
     }
 
     private String buildRateLimitKey(String username) {

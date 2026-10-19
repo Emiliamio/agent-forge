@@ -1,5 +1,6 @@
 package com.agentforge.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.agentforge.service.system.SystemSelfCheckService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,14 @@ public class HealthCheckController {
 
     private final SystemSelfCheckService selfCheckService;
 
-    @Operation(summary = "执行全量基础设施一键自检诊断")
+    @Operation(summary = "轻量级系统存活健康探针 (无需鉴权)")
+    @GetMapping("/health")
+    public Result<String> health() {
+        return Result.success("UP");
+    }
+
+    @Operation(summary = "执行全量基础设施一键自检诊断 (需登录)")
+    @SaCheckLogin
     @GetMapping("/diagnostics")
     public Result<SystemSelfCheckService.DiagnosticReport> getDiagnostics() {
         return Result.success(selfCheckService.runDiagnostics());

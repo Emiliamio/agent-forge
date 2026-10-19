@@ -26,6 +26,7 @@ public class SysTenant extends BaseEntity {
 
     private BigDecimal walletBalance;
 
+    @com.baomidou.mybatisplus.annotation.TableField(typeHandler = com.agentforge.config.mybatis.PgJsonbTypeHandler.class)
     private String whiteLabelConfig; // JSONB 格式
 
     private Integer status; // 1: 正常, 0: 禁用, 2: 欠费冻结

@@ -34,7 +34,7 @@ public class RagController {
     @PostMapping("/search")
     public Result<List<Citation>> search(@RequestBody RagSearchRequest request) {
         int topK = request.getTopK() > 0 ? request.getTopK() : 5;
-        double minScore = request.getMinScore() > 0 ? request.getMinScore() : 0.4;
+        double minScore = request.getMinScore() != null ? request.getMinScore() : 0.4;
         List<Citation> citations = ragService.retrieveCitations(request.getDatasetIds(), request.getQuery(), topK, minScore);
         return Result.success("检索完成", citations);
     }
@@ -54,7 +54,7 @@ public class RagController {
         @Schema(description = "召回 Top-K 数量", example = "5")
         private int topK = 5;
 
-        @Schema(description = "相似度最低阈值", example = "0.45")
-        private double minScore = 0.45;
+        @Schema(description = "相似度最低阈值 (支持传 0.0 关闭阈值截断以供调试)", example = "0.45")
+        private Double minScore;
     }
 }

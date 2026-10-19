@@ -4,6 +4,7 @@ import com.agentforge.context.TenantContextHolder;
 import com.agentforge.mapper.DocumentChunkMapper;
 import com.agentforge.service.rag.VectorUtils;
 import com.agentforge.service.rag.embedding.EmbeddingService;
+import com.agentforge.service.rag.tokenizer.CjkTokenizer;
 import com.agentforge.vo.ChunkSearchResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,11 +60,14 @@ public class HybridSearchService {
             log.error("pgvector 稠密向量检索失败: tenantId={}, datasetIds={}, error={}", tenantId, datasetIds, e.getMessage(), e);
         }
 
-        // 2. 第二路：稀疏全文检索 (Sparse BM25 via PostgreSQL tsvector)
+        // 2. 第二路：稀疏全文检索 (Sparse BM25 via CJK Bigram + PostgreSQL tsvector)
         List<ChunkSearchResult> keywordResults = Collections.emptyList();
         Exception keywordEx = null;
         try {
-            keywordResults = chunkMapper.searchByKeyword(tenantId, datasetIds, query.trim(), candidateLimit);
+            String rawQuery = query.trim();
+            String webQuery = CjkTokenizer.toWebSearchQuery(rawQuery);
+            String effectiveQuery = (webQuery != null && !webQuery.isBlank()) ? webQuery : rawQuery;
+            keywordResults = chunkMapper.searchByKeyword(tenantId, datasetIds, effectiveQuery, candidateLimit);
         } catch (Exception e) {
             keywordEx = e;
             log.error("PostgreSQL 全文检索失败: tenantId={}, datasetIds={}, error={}", tenantId, datasetIds, e.getMessage(), e);
