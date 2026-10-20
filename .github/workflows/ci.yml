@@ -212,6 +212,11 @@ jobs:
           python3 scripts/check_benchmark.py \
               --baseline docs/benchmark/stable.json --current /tmp/latest.json
 
+      - name: Benchmark doc drift check
+        run: |
+          python3 scripts/check_benchmark_doc.py \
+            --stable docs/benchmark/stable.json --doc docs/BENCHMARK.md
+
       - name: Upload benchmark artifact
         if: always()
         uses: actions/upload-artifact@v4

@@ -125,6 +125,13 @@ def render_markdown(data):
     lines.append("```")
     lines.append("")
 
+    stable_payload = {
+        "corpus": corpus,
+        "stable": stable
+    }
+    fingerprint_json = json.dumps(stable_payload, sort_keys=True, separators=(",", ":"))
+    lines.append(f"<!-- BENCHMARK-STABLE: {fingerprint_json} -->")
+
     return "\n".join(lines)
 
 def main():
