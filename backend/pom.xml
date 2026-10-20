@@ -193,6 +193,13 @@
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
+            <!-- ArchUnit 架构分层契约守卫 -->
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>1.2.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
