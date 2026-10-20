@@ -5,6 +5,9 @@
 
 ## 🚀 [v1.3.0] - 2026-10-20
 
+### Added
+- 租户账单用量查询接口：`GET /billing/tenant/{tenantId}/usage` 支持查询租户实时 Token 消耗与账单统计（带跨租户 403 权限隔离拦截）
+
 ### Security
 - 系统诊断接口：`/system/diagnostics` 权限收紧为仅允许 ADMIN 或 OWNER 角色访问（普通租户/VIEWER 访问返回 403 为安全加固设计行为）
 
