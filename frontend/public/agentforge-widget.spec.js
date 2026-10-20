@@ -7,7 +7,6 @@ describe('AgentForge Widget Header Builder', () => {
     expect(headers).toBeDefined()
     expect(headers['Content-Type']).toBe('application/json')
     expect(headers['X-Public-Token']).toBeUndefined()
-    expect(headers['X-Public-Token']).toBeUndefined()
     expect(headers['X-AgentForge-Public-Token']).toBeUndefined()
     expect(headers['X-Tenant-Id']).toBeUndefined()
   })
