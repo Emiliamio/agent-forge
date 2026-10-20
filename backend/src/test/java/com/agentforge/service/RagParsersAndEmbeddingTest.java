@@ -12,7 +12,12 @@ import com.agentforge.service.rag.embedding.DefaultEmbeddingService;
 import com.agentforge.service.rag.parser.DocxDocumentParser;
 import com.agentforge.service.rag.parser.ParsedDocument;
 import com.agentforge.service.rag.parser.PdfDocumentParser;
+import com.agentforge.service.rag.parser.excel.ResilientExcelParser;
 import com.agentforge.service.rag.parser.hardened.HardenedStreamingDocumentParser;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.util.Date;
 import com.agentforge.service.rag.parser.sidecar.VisionSidecarParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -165,6 +170,105 @@ public class RagParsersAndEmbeddingTest {
     }
 
     @Test
+    @DisplayName("ResilientExcelParser: 韧性 Excel 解析与合并单元格修复全分支覆盖")
+    void testResilientExcelParser() throws Exception {
+        ResilientExcelParser parser = new ResilientExcelParser();
+
+        // 1. supports 分支
+        assertTrue(parser.supports("xlsx"));
+        assertTrue(parser.supports("XLSX"));
+        assertTrue(parser.supports(".xlsx"));
+        assertTrue(parser.supports("xls"));
+        assertTrue(parser.supports("csv"));
+        assertFalse(parser.supports(""));
+        assertFalse(parser.supports("   "));
+        assertFalse(parser.supports(null));
+        assertFalse(parser.supports("pdf"));
+
+        // 2. 内存构造多 Sheet 工作簿 (包含合并单元格、公式、日期、整数/小数、布尔值、空行与空单元格)
+        try (Workbook wb = new XSSFWorkbook()) {
+            // Sheet 1: 核心业务表
+            Sheet sheet1 = wb.createSheet("财务审计表");
+
+            // Row 0: 表头
+            Row header = sheet1.createRow(0);
+            header.createCell(0).setCellValue("部门");
+            header.createCell(1).setCellValue("预算");
+            header.createCell(2).setCellValue("核算");
+            header.createCell(3).setCellValue("公式状态");
+            header.createCell(4).setCellValue("审计日期");
+            header.createCell(5).setCellValue("是否合规");
+
+            // Row 1: 数据行 1 (第 0 列作为合并主格)
+            Row row1 = sheet1.createRow(1);
+            row1.createCell(0).setCellValue("研发架构部");
+            row1.createCell(1).setCellValue(100000.0); // 整数 numeric: num == (long) num
+            row1.createCell(2).setCellValue(99999.55); // 小数 numeric
+            Cell formulaCell1 = row1.createCell(3);
+            formulaCell1.setCellFormula("B2+C2"); // 正常公式
+
+            Cell dateCell = row1.createCell(4);
+            dateCell.setCellValue(new Date());
+            CellStyle dateStyle = wb.createCellStyle();
+            dateStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("yyyy-MM-dd"));
+            dateCell.setCellStyle(dateStyle);
+
+            row1.createCell(5).setCellValue(true); // 布尔值
+
+            // Row 2: 数据行 2 (被合并单元格覆盖的一行)
+            Row row2 = sheet1.createRow(2);
+            row2.createCell(1).setCellValue(50000.0);
+            row2.createCell(2, CellType.BLANK); // 空 Cell
+            Cell formulaErrCell = row2.createCell(3);
+            formulaErrCell.setCellFormula("UNKNOWN_FUNC_XYZ(1)"); // 触发公式除零异常 -> [公式待刷新]
+            row2.createCell(5).setCellValue(false);
+
+            // 合并 (1,0) 到 (2,0)
+            sheet1.addMergedRegion(new CellRangeAddress(1, 2, 0, 0));
+
+            // Row 3: 纯空行 (用于触发 !isRowEmpty 过滤)
+            Row emptyRow = sheet1.createRow(3);
+            emptyRow.createCell(0).setCellValue("");
+            emptyRow.createCell(1).setCellValue("   ");
+
+            // Row 4: 不完整列数据行 (用于触发 row.size() < headers.size() 自动补齐)
+            Row row4 = sheet1.createRow(4);
+            row4.createCell(0).setCellValue("测试组");
+            row4.createCell(1).setCellValue(20000.0);
+
+            // Sheet 2: 纯空 Sheet (用于触发 rowDataList.isEmpty() 分支)
+            wb.createSheet("空白附表");
+
+            // Sheet 3: 第二个有效工作表 (验证多工作表遍历)
+            Sheet sheet3 = wb.createSheet("补充说明");
+            Row s3r0 = sheet3.createRow(0);
+            s3r0.createCell(0).setCellValue("事项");
+            Row s3r1 = sheet3.createRow(1);
+            s3r1.createCell(0).setCellValue("全链路自动化门禁通过");
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            wb.write(bos);
+
+            ParsedDocument parsed = parser.parse(new ByteArrayInputStream(bos.toByteArray()), "audit.xlsx");
+            assertNotNull(parsed);
+            assertTrue(parsed.getFullText().contains("财务审计表"));
+            assertTrue(parsed.getFullText().contains("研发架构部"));
+            assertTrue(parsed.getFullText().contains("100000"));
+            assertTrue(parsed.getFullText().contains("99999.55"));
+            assertTrue(parsed.getFullText().contains("true"));
+            assertTrue(parsed.getFullText().contains("false"));
+            assertTrue(parsed.getFullText().contains("[公式待刷新]"));
+            assertTrue(parsed.getFullText().contains("补充说明"));
+            assertEquals(3, parsed.getSections().size());
+        }
+
+        // 3. 损坏输入流异常分支
+        RuntimeException ex = assertThrows(RuntimeException.class, () ->
+                parser.parse(new ByteArrayInputStream("corrupted excel stream".getBytes(StandardCharsets.UTF_8)), "bad.xlsx"));
+        assertTrue(ex.getMessage().contains("Excel 数据清洗解析异常"));
+    }
+
+    @Test
     @DisplayName("HardenedStreamingDocumentParser: 防爆流式解析器全分支")
     void testHardenedStreamingDocumentParser() throws Exception {
         HardenedStreamingDocumentParser parser = new HardenedStreamingDocumentParser();
@@ -289,10 +393,8 @@ public class RagParsersAndEmbeddingTest {
 
         // 1. 提交异步任务
         service.submitAsyncChunkingTask(10L, "长正文内容", 1L, 2L, "doc.txt");
-        Thread.sleep(150); // 等待虚拟线程执行完毕
-
-        verify(documentMapper, atLeastOnce()).updateById(any());
-        verify(chunkMapper, atLeast(2)).insert(any());
+        verify(documentMapper, timeout(3000).atLeastOnce()).updateById(any());
+        verify(chunkMapper, timeout(3000).atLeast(2)).insert(any());
 
         // 2. 进度查询
         AsyncDocumentChunkerService.IngestionProgress mockProgress = AsyncDocumentChunkerService.IngestionProgress.builder()
