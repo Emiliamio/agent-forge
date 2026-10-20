@@ -4,15 +4,27 @@
       <!-- Brand Logo -->
       <div class="h-16 flex items-center px-6 gap-3 border-b border-dark-border">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <svg
+            class="w-5 h-5 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
           </svg>
         </div>
         <div>
           <h1 class="font-bold text-base tracking-wide text-white flex items-center gap-1.5">
             AgentForge <span class="text-[10px] bg-brand-500/20 text-brand-400 border border-brand-500/30 px-1.5 py-0.2 rounded">PRO</span>
           </h1>
-          <p class="text-[11px] text-slate-400 font-mono">Enterprise AI Platform</p>
+          <p class="text-[11px] text-slate-400 font-mono">
+            Enterprise AI Platform
+          </p>
         </div>
       </div>
 
@@ -26,10 +38,16 @@
           :class="isActive(item.path) ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'"
         >
           <div class="flex items-center gap-3">
-            <component :is="item.icon" class="w-4 h-4" />
+            <component
+              :is="item.icon"
+              class="w-4 h-4"
+            />
             <span>{{ item.name }}</span>
           </div>
-          <span v-if="item.badge" class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30 font-medium">
+          <span
+            v-if="item.badge"
+            class="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30 font-medium"
+          >
             {{ item.badge }}
           </span>
         </router-link>
@@ -45,9 +63,11 @@
             T1
           </div>
           <div>
-            <p class="text-xs font-medium text-slate-200">默认主租户</p>
+            <p class="text-xs font-medium text-slate-200">
+              默认主租户
+            </p>
             <p class="text-[10px] text-emerald-400 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               pgvector 混合隔离
             </p>
           </div>
@@ -62,7 +82,10 @@
           </div>
           <span class="text-xs text-slate-300 font-medium truncate max-w-[90px]">{{ username }}</span>
         </div>
-        <button @click="handleLogout" class="text-[11px] text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
+        <button
+          class="text-[11px] text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1"
+          @click="handleLogout"
+        >
           <LogOut class="w-3.5 h-3.5" />
           <span>退出</span>
         </button>
@@ -94,7 +117,6 @@ const route = useRoute()
 const router = useRouter()
 
 const username = computed(() => localStorage.getItem('agentforge_username') || 'admin')
-const tenantId = computed(() => localStorage.getItem('agentforge_tenant_id') || '1')
 
 const handleLogout = () => {
   localStorage.removeItem('agentforge_token')

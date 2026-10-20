@@ -1,125 +1,206 @@
 /**
- * AgentForge 商业级嵌入式 Web Component 智能体挂件
- * 支持 Shadow DOM 样式绝对隔离、自适应抽屉展开与实时对话
+ * AgentForge 智能客服 Web Component 嵌入挂件
+ * 基于 Shadow DOM 隔离宿主样式，开箱即用无样式污染
  */
+
+function buildWidgetHeaders(options = {}) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (options && options.publicToken) {
+    headers['X-AgentForge-Public-Token'] = options.publicToken
+  }
+  if (options && options.tenantId !== undefined && options.tenantId !== null && options.tenantId !== '') {
+    headers['X-Tenant-Id'] = String(options.tenantId)
+  }
+  return headers
+}
+
 (function () {
-  const scriptTag = document.currentScript;
-  const apiUrl = (scriptTag && scriptTag.getAttribute('data-api-url')) || 'http://localhost:8080/api';
-  const appId = (scriptTag && scriptTag.getAttribute('data-app-id')) || '1';
-  const publicToken = (scriptTag && scriptTag.getAttribute('data-token')) || '';
-  const botTitle = (scriptTag && scriptTag.getAttribute('data-title')) || 'AgentForge 智能顾问';
-  const primaryColor = (scriptTag && scriptTag.getAttribute('data-primary-color')) || '#4f46e5';
+  if (typeof document === 'undefined' || !document.body) {
+    return
+  }
 
-  const host = document.createElement('div');
-  host.id = 'agentforge-widget-container';
-  document.body.appendChild(host);
+  const scriptTag = document.currentScript
+  const apiUrl = (scriptTag && scriptTag.getAttribute('data-api-url')) || 'http://localhost:8080/api'
+  const appId = (scriptTag && scriptTag.getAttribute('data-app-id')) || '1'
+  const publicToken = (scriptTag && (scriptTag.getAttribute('data-token') || scriptTag.getAttribute('data-public-token'))) || ''
+  const tenantId = (scriptTag && scriptTag.getAttribute('data-tenant-id')) || ''
+  const botTitle = (scriptTag && scriptTag.getAttribute('data-title')) || 'AgentForge 智能助理'
+  const primaryColor = (scriptTag && scriptTag.getAttribute('data-primary-color')) || '#4f46e5'
 
-  const shadowRoot = host.attachShadow({ mode: 'open' });
+  const host = document.createElement('div')
+  host.id = 'agentforge-widget-container'
+  document.body.appendChild(host)
+
+  const shadowRoot = host.attachShadow({ mode: 'open' })
   shadowRoot.innerHTML = `
     <style>
-      :host {
-        --primary: ${primaryColor};
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      .af-widget-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: ${primaryColor};
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        z-index: 999999;
+        transition: transform 0.2s ease;
       }
-      .af-floating-btn {
-        position: fixed; bottom: 24px; right: 24px; width: 58px; height: 58px;
-        border-radius: 50%; background: var(--primary); color: #fff;
-        box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35); display: flex; align-items: center;
-        justify-content: center; cursor: pointer; z-index: 2147483647; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-size: 26px; border: none; outline: none;
+      .af-widget-btn:hover {
+        transform: scale(1.05);
       }
-      .af-floating-btn:hover { transform: scale(1.08); box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45); }
       .af-chat-window {
-        position: fixed; bottom: 96px; right: 24px; width: 390px; height: 580px; max-height: calc(100vh - 120px);
-        background: #181825; border: 1px solid #313244; border-radius: 20px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45); display: none; flex-direction: column;
-        overflow: hidden; z-index: 2147483647; animation: slideUp 0.3s ease-out;
+        position: fixed;
+        bottom: 96px;
+        right: 24px;
+        width: 380px;
+        height: 540px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 999999;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
-      @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-      .af-header { background: #1e1e2e; padding: 16px 20px; color: #cdd6f4; font-weight: 600; border-bottom: 1px solid #313244; display: flex; justify-content: space-between; align-items: center; }
-      .af-header-title { display: flex; align-items: center; gap: 8px; font-size: 15px; }
-      .af-header-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
-      .af-close-btn { cursor: pointer; background: transparent; border: none; color: #a6adc8; font-size: 18px; line-height: 1; padding: 4px; border-radius: 6px; }
-      .af-close-btn:hover { background: #313244; color: #fff; }
-      .af-messages { flex: 1; padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; background: #11111b; }
-      .af-msg { max-width: 82%; padding: 11px 15px; border-radius: 14px; font-size: 14px; line-height: 1.55; word-break: break-word; }
-      .af-msg-user { align-self: flex-end; background: var(--primary); color: #ffffff; border-bottom-right-radius: 4px; }
-      .af-msg-bot { align-self: flex-start; background: #1e1e2e; color: #cdd6f4; border: 1px solid #313244; border-bottom-left-radius: 4px; }
-      .af-input-area { padding: 14px; background: #181825; border-top: 1px solid #313244; display: flex; gap: 10px; align-items: center; }
-      .af-input { flex: 1; background: #1e1e2e; border: 1px solid #313244; border-radius: 10px; padding: 10px 14px; color: #cdd6f4; outline: none; font-size: 14px; }
-      .af-input:focus { border-color: var(--primary); }
-      .af-send-btn { background: var(--primary); border: none; color: #fff; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
-      .af-send-btn:hover { opacity: 0.9; }
-      @media (max-width: 640px) {
-        .af-chat-window { bottom: 0; right: 0; width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; }
-        .af-floating-btn { bottom: 16px; right: 16px; }
+      .af-chat-header {
+        background: ${primaryColor};
+        color: white;
+        padding: 16px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .af-chat-messages {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .af-msg {
+        max-width: 80%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .af-msg-user {
+        align-self: flex-end;
+        background: #f3f4f6;
+        color: #1f2937;
+      }
+      .af-msg-bot {
+        align-self: flex-start;
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #dbeafe;
+      }
+      .af-chat-input-area {
+        padding: 12px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 8px;
+      }
+      .af-chat-input {
+        flex: 1;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        outline: none;
+      }
+      .af-send-btn {
+        background: ${primaryColor};
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 500;
       }
     </style>
-
-    <button class="af-floating-btn" id="af-btn" title="点击展开智能助理">🤖</button>
-    <div class="af-chat-window" id="af-window">
-      <div class="af-header">
-        <div class="af-header-title">
-          <div class="af-header-dot"></div>
-          <span>${botTitle}</span>
-        </div>
-        <button class="af-close-btn" id="af-close">✕</button>
+    <button class="af-widget-btn" id="af-toggle-btn">💬</button>
+    <div class="af-chat-window" id="af-chat-window">
+      <div class="af-chat-header">
+        <span>${botTitle}</span>
+        <span style="cursor:pointer;" id="af-close-btn">✕</span>
       </div>
-      <div class="af-messages" id="af-msg-box">
-        <div class="af-msg af-msg-bot">您好！我是您的专属企业级 AI 助理。请问有什么可以帮助您？</div>
+      <div class="af-chat-messages" id="af-messages">
+        <div class="af-msg af-msg-bot">您好！我是您的智能助理，请问有什么可以帮您？</div>
       </div>
-      <div class="af-input-area">
-        <input type="text" class="af-input" id="af-input-field" placeholder="请输入您的问题..." />
-        <button class="af-send-btn" id="af-send-action">发送</button>
+      <div class="af-chat-input-area">
+        <input type="text" class="af-chat-input" id="af-input" placeholder="输入您的问题..." />
+        <button class="af-send-btn" id="af-send-btn">发送</button>
       </div>
     </div>
-  `;
+  `
 
-  const btn = shadowRoot.getElementById('af-btn');
-  const win = shadowRoot.getElementById('af-window');
-  const close = shadowRoot.getElementById('af-close');
-  const msgBox = shadowRoot.getElementById('af-msg-box');
-  const inputField = shadowRoot.getElementById('af-input-field');
-  const sendBtn = shadowRoot.getElementById('af-send-action');
+  const toggleBtn = shadowRoot.getElementById('af-toggle-btn')
+  const closeBtn = shadowRoot.getElementById('af-close-btn')
+  const chatWindow = shadowRoot.getElementById('af-chat-window')
+  const messagesContainer = shadowRoot.getElementById('af-messages')
+  const inputField = shadowRoot.getElementById('af-input')
+  const sendBtn = shadowRoot.getElementById('af-send-btn')
 
-  btn.onclick = () => { win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; };
-  close.onclick = () => { win.style.display = 'none'; };
+  let isOpen = false
+  function toggleChat() {
+    isOpen = !isOpen
+    chatWindow.style.display = isOpen ? 'flex' : 'none'
+    if (isOpen) inputField.focus()
+  }
 
-  function appendMessage(role, text) {
-    const div = document.createElement('div');
-    div.className = `af-msg ${role === 'user' ? 'af-msg-user' : 'af-msg-bot'}`;
-    div.textContent = text;
-    msgBox.appendChild(div);
-    msgBox.scrollTop = msgBox.scrollHeight;
+  toggleBtn.onclick = toggleChat
+  closeBtn.onclick = toggleChat
+
+  function appendMessage(sender, text) {
+    const msg = document.createElement('div')
+    msg.className = `af-msg af-msg-${sender}`
+    msg.innerText = text
+    messagesContainer.appendChild(msg)
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
   }
 
   async function handleSend() {
-    const text = inputField.value.trim();
-    if (!text) return;
-    inputField.value = '';
-    appendMessage('user', text);
+    const text = inputField.value.trim()
+    if (!text) return
+    inputField.value = ''
+    appendMessage('user', text)
 
     try {
-      const reqHeaders = { 'Content-Type': 'application/json' };
-      if (publicToken) {
-        reqHeaders['X-Public-Token'] = publicToken;
-      }
+      const reqHeaders = buildWidgetHeaders({ publicToken, tenantId })
       const response = await fetch(`${apiUrl}/public/agents/${appId}/chat`, {
         method: 'POST',
         headers: reqHeaders,
         body: JSON.stringify({ message: text })
-      });
-      const resData = await response.json();
+      })
+      const resData = await response.json()
       if (resData.code === 200 && resData.data) {
-        appendMessage('bot', resData.data.finalAnswer || '回答已生成');
+        appendMessage('bot', resData.data.finalAnswer || '已收到您的回复')
       } else {
-        appendMessage('bot', '服务响应异常: ' + (resData.message || '未知错误'));
+        appendMessage('bot', '服务响应异常: ' + (resData.message || '请稍后再试'))
       }
-    } catch (e) {
-      appendMessage('bot', '网络连接出现异常，请稍后重试。');
+    } catch {
+      appendMessage('bot', '网络连接失败，请检查网络配置')
     }
   }
 
-  sendBtn.onclick = handleSend;
-  inputField.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
-})();
+  sendBtn.onclick = handleSend
+  inputField.onkeypress = (e) => { if (e.key === 'Enter') handleSend() }
+})()
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { buildWidgetHeaders }
+}
+
+export { buildWidgetHeaders };

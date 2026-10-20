@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!--
+      False positive: DefaultEmbeddingService#generateDeterministicVector initializes java.util.Random
+      with a deterministic seed derived from the input text's SHA-256 hash to generate deterministic pseudo-random
+      embedding fallback vectors. The single-use per generation is intentional by design for reproducible embeddings.
+    -->
+    <Match>
+        <Class name="com.agentforge.service.rag.embedding.DefaultEmbeddingService"/>
+        <Method name="generateDeterministicVector"/>
+        <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE"/>
+    </Match>
+</FindBugsFilter>

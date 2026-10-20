@@ -3,30 +3,58 @@
     <!-- Left: Agent Configuration -->
     <div class="w-1/2 p-8 overflow-y-auto border-r border-dark-border space-y-6">
       <div>
-        <h2 class="text-2xl font-bold text-white tracking-tight">ReAct 智能体编排与调试</h2>
-        <p class="text-sm text-slate-400 mt-1">配置 System Prompt、挂载知识库与勾选动态 Function Calling & MCP 工具箱</p>
+        <h2 class="text-2xl font-bold text-white tracking-tight">
+          ReAct 智能体编排与调试
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">
+          配置 System Prompt、挂载知识库与勾选动态 Function Calling & MCP 工具箱
+        </p>
       </div>
 
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1.5">智能体名称</label>
-          <input v-model="agentConfig.name" class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none" />
+          <input
+            v-model="agentConfig.name"
+            class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none"
+          >
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1.5">主模型 (带 Fallback 容灾)</label>
-            <select v-model="agentConfig.model" class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none font-mono">
-              <option value="deepseek-chat">DeepSeek-V3 (首选)</option>
-              <option value="deepseek-reasoner">DeepSeek-R1 (深度推理)</option>
-              <option value="gpt-4o">OpenAI GPT-4o (备用)</option>
+            <select
+              v-model="agentConfig.model"
+              class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none font-mono"
+            >
+              <option value="deepseek-chat">
+                DeepSeek-V3 (首选)
+              </option>
+              <option value="deepseek-reasoner">
+                DeepSeek-R1 (深度推理)
+              </option>
+              <option value="gpt-4o">
+                OpenAI GPT-4o (备用)
+              </option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1.5">挂载知识库 (Hybrid + pgvector)</label>
-            <select v-model="agentConfig.dataset" class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none">
-              <option v-if="datasets.length === 0" value="1">企业数字化与技术规范知识库 (ID: 1)</option>
-              <option v-for="ds in datasets" :key="ds.id" :value="ds.id">
+            <select
+              v-model="agentConfig.dataset"
+              class="w-full px-4 py-2.5 bg-dark-card border border-dark-border rounded-xl text-sm text-white focus:border-brand-500 outline-none"
+            >
+              <option
+                v-if="datasets.length === 0"
+                value="1"
+              >
+                企业数字化与技术规范知识库 (ID: 1)
+              </option>
+              <option
+                v-for="ds in datasets"
+                :key="ds.id"
+                :value="ds.id"
+              >
                 {{ ds.name }} (ID: {{ ds.id }})
               </option>
             </select>
@@ -35,7 +63,11 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1.5">系统人设与提示词 (System Prompt)</label>
-          <textarea rows="4" v-model="agentConfig.systemPrompt" class="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-xl text-xs text-slate-200 focus:border-brand-500 outline-none font-mono leading-relaxed"></textarea>
+          <textarea
+            v-model="agentConfig.systemPrompt"
+            rows="4"
+            class="w-full px-4 py-3 bg-dark-card border border-dark-border rounded-xl text-xs text-slate-200 focus:border-brand-500 outline-none font-mono leading-relaxed"
+          />
         </div>
 
         <!-- Dynamic Tools Checklist -->
@@ -45,12 +77,24 @@
             <span class="text-[10px] text-brand-400 font-mono">6 项已就绪</span>
           </label>
           <div class="grid grid-cols-2 gap-3">
-            <label v-for="tool in availableTools" :key="tool.id" class="p-3.5 rounded-xl border bg-dark-card flex items-start gap-3 cursor-pointer transition-all" :class="tool.enabled ? 'border-brand-500 bg-brand-500/5' : 'border-dark-border'">
-              <input type="checkbox" v-model="tool.enabled" class="mt-0.5 rounded border-slate-700 text-brand-600 focus:ring-brand-500" />
+            <label
+              v-for="tool in availableTools"
+              :key="tool.id"
+              class="p-3.5 rounded-xl border bg-dark-card flex items-start gap-3 cursor-pointer transition-all"
+              :class="tool.enabled ? 'border-brand-500 bg-brand-500/5' : 'border-dark-border'"
+            >
+              <input
+                v-model="tool.enabled"
+                type="checkbox"
+                class="mt-0.5 rounded border-slate-700 text-brand-600 focus:ring-brand-500"
+              >
               <div>
                 <p class="text-xs font-bold text-white flex items-center gap-1.5">
                   <span>{{ tool.name }}</span>
-                  <span v-if="tool.isMcp" class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">MCP</span>
+                  <span
+                    v-if="tool.isMcp"
+                    class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono"
+                  >MCP</span>
                 </p>
                 <p class="text-[10px] text-slate-400 mt-0.5">{{ tool.desc }}</p>
               </div>
@@ -58,7 +102,10 @@
           </div>
         </div>
 
-        <button @click="saveAgent" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-brand-600/20 transition-all cursor-pointer">
+        <button
+          class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-brand-600/20 transition-all cursor-pointer"
+          @click="saveAgent"
+        >
           保存智能体配置
         </button>
       </div>
@@ -68,7 +115,7 @@
     <div class="w-1/2 flex flex-col h-full bg-slate-900/40">
       <div class="p-4 border-b border-dark-border bg-dark-card flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
           <span class="text-xs font-bold text-white">智能体沙盒实时联调预览</span>
         </div>
         <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">多租户安全上下文</span>
@@ -76,7 +123,11 @@
 
       <!-- Messages Stream -->
       <div class="flex-1 p-6 overflow-y-auto space-y-4">
-        <div v-for="(msg, index) in chatMessages" :key="index" class="space-y-2">
+        <div
+          v-for="(msg, index) in chatMessages"
+          :key="index"
+          class="space-y-2"
+        >
           <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
             <div
               :class="msg.role === 'user'
@@ -84,8 +135,15 @@
                 : 'bg-dark-card border border-dark-border text-slate-200 rounded-2xl rounded-tl-sm p-4 max-w-xl text-xs space-y-3 shadow-sm'"
             >
               <!-- Thought Steps (ReAct Chain) -->
-              <div v-if="msg.steps && msg.steps.length > 0" class="space-y-2 pb-2 border-b border-dark-border font-mono text-[11px]">
-                <div v-for="(step, sIndex) in msg.steps" :key="sIndex" class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1">
+              <div
+                v-if="msg.steps && msg.steps.length > 0"
+                class="space-y-2 pb-2 border-b border-dark-border font-mono text-[11px]"
+              >
+                <div
+                  v-for="(step, sIndex) in msg.steps"
+                  :key="sIndex"
+                  class="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80 space-y-1"
+                >
                   <p class="text-amber-400 font-semibold flex items-center gap-1.5">
                     <span>💭 思维链:</span> {{ step.thought }}
                   </p>
@@ -98,11 +156,20 @@
                 </div>
               </div>
 
-              <div class="whitespace-pre-wrap leading-relaxed">{{ msg.content }}</div>
+              <div class="whitespace-pre-wrap leading-relaxed">
+                {{ msg.content }}
+              </div>
 
               <!-- Citations -->
-              <div v-if="msg.citations && msg.citations.length > 0" class="pt-2 border-t border-dark-border flex flex-wrap gap-2">
-                <span v-for="(c, cIndex) in msg.citations" :key="cIndex" class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700 font-mono">
+              <div
+                v-if="msg.citations && msg.citations.length > 0"
+                class="pt-2 border-t border-dark-border flex flex-wrap gap-2"
+              >
+                <span
+                  v-for="(c, cIndex) in msg.citations"
+                  :key="cIndex"
+                  class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700 font-mono"
+                >
                   🔗 知识库切片: {{ c.documentName || c.docName || c.title || '企业规章' }}
                 </span>
               </div>
@@ -113,19 +180,32 @@
 
       <!-- Chat Input Area -->
       <div class="p-4 bg-dark-card border-t border-dark-border">
-        <form @submit.prevent="sendMessage" class="flex gap-2">
+        <form
+          class="flex gap-2"
+          @submit.prevent="sendMessage"
+        >
           <input
             v-model="inputQuery"
             placeholder="输入自然语言提问，测试真实 RAG 检索与工具链调度..."
             class="flex-1 px-4 py-3 bg-slate-900 border border-dark-border rounded-xl text-xs text-white placeholder-slate-500 focus:border-brand-500 outline-none"
-          />
+          >
           <button
             type="submit"
             :disabled="sending"
             class="px-5 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-brand-600/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <span>{{ sending ? '检索中...' : '发送' }}</span>
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            /></svg>
           </button>
         </form>
       </div>

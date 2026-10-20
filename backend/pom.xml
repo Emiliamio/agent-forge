@@ -204,6 +204,54 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution><id>prepare-agent</id><goals><goal>prepare-agent</goal></goals></execution>
+                    <execution><id>report</id><phase>test</phase><goals><goal>report</goal></goals></execution>
+                    <execution>
+                        <id>check</id><phase>verify</phase><goals><goal>check</goal></goals>
+                        <configuration>
+                            <rules>
+                                <rule><element>BUNDLE</element>
+                                    <limits><limit><counter>LINE</counter><value>COVEREDRATIO</value><minimum>0.60</minimum></limit></limits>
+                                </rule>
+                                <rule><element>PACKAGE</element>
+                                    <includes><include>com.agentforge.service.*</include></includes>
+                                    <limits><limit><counter>LINE</counter><value>COVEREDRATIO</value><minimum>0.70</minimum></limit></limits>
+                                </rule>
+                            </rules>
+                            <excludes>
+                                <exclude>**/entity/**</exclude><exclude>**/vo/**</exclude><exclude>**/dto/**</exclude>
+                                <exclude>**/AgentForgeApplication.*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.6.4</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>High</threshold>
+                    <failOnError>true</failOnError>
+                    <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>1.13.0</version>
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <executions>
+                    <execution><id>check</id><phase>verify</phase><goals><goal>check</goal></goals></execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

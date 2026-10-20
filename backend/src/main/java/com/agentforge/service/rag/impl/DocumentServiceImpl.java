@@ -162,7 +162,6 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
             List<float[]> embeddings = embeddingService.embedBatch(chunkContents);
 
             // 5. 批量写入 document_chunk 向量表
-            List<DocumentChunk> entityList = new ArrayList<>(chunks.size());
             LocalDateTime now = LocalDateTime.now();
 
             for (int i = 0; i < chunks.size(); i++) {

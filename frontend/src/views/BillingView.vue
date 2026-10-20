@@ -3,11 +3,28 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-white tracking-tight">商业计量与计费中心</h2>
-        <p class="text-sm text-slate-400 mt-1">毫秒级 Token 消耗审计、Redis 语义向量降本分析与租户钱包管理</p>
+        <h2 class="text-2xl font-bold text-white tracking-tight">
+          商业计量与计费中心
+        </h2>
+        <p class="text-sm text-slate-400 mt-1">
+          毫秒级 Token 消耗审计、Redis 语义向量降本分析与租户钱包管理
+        </p>
       </div>
-      <button @click="showRechargeModal = true" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium transition-all shadow-md shadow-emerald-600/20 flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+      <button
+        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium transition-all shadow-md shadow-emerald-600/20 flex items-center gap-2"
+        @click="showRechargeModal = true"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+        /></svg>
         租户钱包在线充值
       </button>
     </div>
@@ -61,7 +78,7 @@
     <div class="p-6 rounded-2xl bg-dark-card border border-dark-border space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-brand-400"></span>
+          <span class="w-2 h-2 rounded-full bg-brand-400" />
           Token 消耗审计明细流水
         </h3>
         <span class="text-xs text-slate-400 font-mono">共 {{ usageLogs.length }} 条调用记录</span>
@@ -71,38 +88,81 @@
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-900/60 text-slate-400 font-semibold uppercase tracking-wider border-b border-dark-border">
             <tr>
-              <th class="py-3 px-4">调用时间</th>
-              <th class="py-3 px-4">调用模型</th>
-              <th class="py-3 px-4">Prompt Tokens</th>
-              <th class="py-3 px-4">Completion Tokens</th>
-              <th class="py-3 px-4">总 Token</th>
-              <th class="py-3 px-4">语义缓存</th>
-              <th class="py-3 px-4">扣费金额</th>
-              <th class="py-3 px-4">耗时</th>
+              <th class="py-3 px-4">
+                调用时间
+              </th>
+              <th class="py-3 px-4">
+                调用模型
+              </th>
+              <th class="py-3 px-4">
+                Prompt Tokens
+              </th>
+              <th class="py-3 px-4">
+                Completion Tokens
+              </th>
+              <th class="py-3 px-4">
+                总 Token
+              </th>
+              <th class="py-3 px-4">
+                语义缓存
+              </th>
+              <th class="py-3 px-4">
+                扣费金额
+              </th>
+              <th class="py-3 px-4">
+                耗时
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-dark-border text-slate-300">
             <tr v-if="usageLogs.length === 0">
-              <td colspan="8" class="py-8 text-center text-slate-500 font-mono">
+              <td
+                colspan="8"
+                class="py-8 text-center text-slate-500 font-mono"
+              >
                 暂无 Token 消耗流水记录
               </td>
             </tr>
-            <tr v-for="(log, idx) in usageLogs" :key="idx" class="hover:bg-slate-800/40 transition-colors">
-              <td class="py-3.5 px-4 font-mono text-slate-400">{{ log.createdAt ? log.createdAt.replace('T', ' ').substring(0, 19) : log.time }}</td>
-              <td class="py-3.5 px-4 font-mono text-white">{{ log.modelName || log.model }}</td>
-              <td class="py-3.5 px-4 font-mono">{{ log.promptTokens }}</td>
-              <td class="py-3.5 px-4 font-mono">{{ log.completionTokens }}</td>
-              <td class="py-3.5 px-4 font-bold text-brand-400 font-mono">{{ log.totalTokens }}</td>
+            <tr
+              v-for="(log, idx) in usageLogs"
+              :key="idx"
+              class="hover:bg-slate-800/40 transition-colors"
+            >
+              <td class="py-3.5 px-4 font-mono text-slate-400">
+                {{ log.createdAt ? log.createdAt.replace('T', ' ').substring(0, 19) : log.time }}
+              </td>
+              <td class="py-3.5 px-4 font-mono text-white">
+                {{ log.modelName || log.model }}
+              </td>
+              <td class="py-3.5 px-4 font-mono">
+                {{ log.promptTokens }}
+              </td>
+              <td class="py-3.5 px-4 font-mono">
+                {{ log.completionTokens }}
+              </td>
+              <td class="py-3.5 px-4 font-bold text-brand-400 font-mono">
+                {{ log.totalTokens }}
+              </td>
               <td class="py-3.5 px-4">
-                <span v-if="log.isCached" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
+                <span
+                  v-if="log.isCached"
+                  class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono"
+                >
                   &check; 命中缓存 (¥0)
                 </span>
-                <span v-else class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-mono">
+                <span
+                  v-else
+                  class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] font-mono"
+                >
                   未命中
                 </span>
               </td>
-              <td class="py-3.5 px-4 text-emerald-400 font-bold font-mono">¥ {{ Number(log.costAmount || 0).toFixed(6) }}</td>
-              <td class="py-3.5 px-4 text-slate-500 font-mono">{{ log.durationMs ? log.durationMs + 'ms' : '24ms' }}</td>
+              <td class="py-3.5 px-4 text-emerald-400 font-bold font-mono">
+                ¥ {{ Number(log.costAmount || 0).toFixed(6) }}
+              </td>
+              <td class="py-3.5 px-4 text-slate-500 font-mono">
+                {{ log.durationMs ? log.durationMs + 'ms' : '24ms' }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -110,17 +170,39 @@
     </div>
 
     <!-- Recharge Modal -->
-    <div v-if="showRechargeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div
+      v-if="showRechargeModal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    >
       <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-sm p-6 space-y-5 shadow-2xl">
-        <h3 class="text-lg font-bold text-white">租户钱包充值</h3>
-        <p class="text-xs text-slate-400">充值金额将即刻汇入当前租户资金账户，支持毫秒级防穿透防护：</p>
+        <h3 class="text-lg font-bold text-white">
+          租户钱包充值
+        </h3>
+        <p class="text-xs text-slate-400">
+          充值金额将即刻汇入当前租户资金账户，支持毫秒级防穿透防护：
+        </p>
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1.5">充值金额 (元)</label>
-          <input v-model.number="rechargeAmount" type="number" min="10" step="10" class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-base font-bold text-emerald-400 focus:border-brand-500 outline-none font-mono" />
+          <input
+            v-model.number="rechargeAmount"
+            type="number"
+            min="10"
+            step="10"
+            class="w-full px-3.5 py-2.5 bg-slate-900 border border-dark-border rounded-xl text-base font-bold text-emerald-400 focus:border-brand-500 outline-none font-mono"
+          >
         </div>
         <div class="flex justify-end gap-3 pt-2">
-          <button @click="showRechargeModal = false" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition-colors">取消</button>
-          <button @click="handleRecharge" :disabled="recharging" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all">
+          <button
+            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-xl transition-colors"
+            @click="showRechargeModal = false"
+          >
+            取消
+          </button>
+          <button
+            :disabled="recharging"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all"
+            @click="handleRecharge"
+          >
             {{ recharging ? '充值中...' : '确认充值' }}
           </button>
         </div>
