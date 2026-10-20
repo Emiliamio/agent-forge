@@ -1,0 +1,61 @@
+Copyright (c) 2026 Emiliamio (郑锦城) <mio2110767128@163.com>
+All rights reserved.
+
+AgentForge Proprietary License
+==============================
+
+This software, including its source code, documentation, database schemas,
+migration scripts, benchmark suites, and any accompanying materials
+(collectively, "the Software"), is proprietary and confidential.
+
+1. NO GENERAL LICENSE
+   No permission is granted to use, copy, modify, merge, publish, distribute,
+   sublicense, host as a service, or sell copies of the Software, in whole or
+   in part, except as expressly granted below or in a separate written
+   agreement signed by the copyright holder.
+
+2. LIMITED EVALUATION LICENSE
+   A prospective customer is granted a non-exclusive, non-transferable,
+   revocable license to install and run the Software for a period of thirty
+   (30) days, solely to evaluate its fitness for the customer's intended use,
+   provided that:
+     a) the Software is run only in a non-production environment;
+     b) the Software is not used to provide services to third parties;
+     c) no copy is redistributed, published, or disclosed to any third party;
+     d) this notice and all copyright notices are retained in full.
+   Evaluation rights do not include production use, commercial use, or the
+   right to create derivative works for distribution.
+
+3. PRODUCTION AND COMMERCIAL USE
+   Production deployment, multi-tenant SaaS hosting, redistribution, embedding
+   into another product, and any revenue-generating use require a commercial
+   license. Terms are set out in COMMERCIAL_LICENSE.md and in the signed
+   agreement between the parties.
+
+4. RESTRICTIONS
+   You may not reverse engineer, decompile, or disassemble the Software except
+   to the extent permitted by applicable law; remove or alter any proprietary
+   notices or license-enforcement mechanisms; or use the Software to build a
+   competing product for distribution.
+
+5. THIRD-PARTY COMPONENTS
+   The Software includes third-party open-source components that remain under
+   their own licenses. See THIRD-PARTY-NOTICES.md. Nothing in this license
+   restricts, and nothing in this license grants, rights beyond those licenses.
+
+6. NO TRADEMARK RIGHTS
+   This license grants no rights to the "AgentForge" name, logos, or other
+   trademarks of the copyright holder.
+
+7. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY
+   ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.
+
+8. TERMINATION
+   Any breach of this license terminates all rights granted herein
+   immediately. Upon termination you must cease all use and destroy all copies.
+
+For commercial licensing: mio2110767128@163.com

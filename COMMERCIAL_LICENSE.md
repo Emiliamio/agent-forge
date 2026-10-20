@@ -1,39 +1,69 @@
-﻿# AgentForge Commercial Dual-Licensing & Enterprise Agreement
+# AgentForge 商业授权与 SLA 说明
 
-**Copyright (c) 2026 郑锦城 (Zheng Jincheng / Emiliamio) <mio2110767128@163.com>**  
+**Copyright (c) 2026 郑锦城（Emiliamio）<mio2110767128@163.com>**
 **All Rights Reserved.**
 
----
-
-## 1. Dual-Licensing Overview
-
-AgentForge is licensed under a **Dual-Licensing Model** designed to support both open-source exploration and mission-critical enterprise production deployments:
-
-1. **Community Edition (Open-Source)**:
-   - Licensed under standard terms for personal learning, academic research, non-commercial evaluation, and prototype testing.
-2. **Enterprise Commercial License (Private Delivery & Production)**:
-   - Required for production deployments, multi-tenant SaaS hosting, closed-source derivative products, government/banking Xinchuang procurements, or revenue-generating services.
+> 本文件是商业授权的**要约说明**，不构成合同。正式权利义务以双方签署的书面协议为准。
+> 未经签约，本软件仅授予 `LICENSE` 第 2 条约定的 30 天评估使用权。
 
 ---
 
-## 2. Enterprise SLA & Support Commitments
+## 1. 授权模式
 
-For Enterprise Commercial Licensees, the following Service Level Agreements (SLAs) are guaranteed:
+AgentForge 采用**单一商业授权模式**（源码私有，All Rights Reserved）。不存在开源许可分支。
 
-| Metric | Commitment Target | Description |
-|:---|:---|:---|
-| **Service Availability** | **99.95%** | Monthly uptime for RAG retrieval and reactive DAG workflow engines. |
-| **Data Isolation** | **0.00% Cross-Tenant Leakage** | JsqlParser AST physical tenant isolation verification. |
-| **P95 Retrieval Latency** | **< 200 ms** | 3-way hybrid search (pgvector HNSW + tsvector GIN + RRF). |
-| **Response Time (P0 Issue)** | **< 1 Hour** | Critical system crash or security breach intervention. |
+| 使用场景 | 是否需要商业授权 |
+| :--- | :--- |
+| 30 天内非生产环境的功能评估 / 技术选型 POC | 否（依 `LICENSE` 第 2 条） |
+| 任何生产环境部署（含单机内网） | **是** |
+| 多租户 SaaS / 对外提供服务的托管部署 | **是** |
+| 嵌入其它产品对外分发、二次销售、OEM | **是** |
+| 信创 / 政务 / 金融等需要合规来源证明的采购 | **是**（可提供授权书与来源声明） |
+| 二次开发后内部自用（不对外分发） | **是**（可协商源码开发授权） |
+
+授权按**部署实例数 / 租户规模 / 支持等级**分档，支持源码交付与定制开发。
 
 ---
 
-## 3. Commercial Procurement & Inquiries
+## 2. 授权范围（签约后授予）
 
-For commercial licensing, customized private deployments, Xinchuang localization adaptations, or technical consulting:
+1. 在约定数量与约定域名/主机范围内的**生产部署权**，永久或按年（以合同为准）。
+2. 约定范围内的**内部修改权**（修改衍生作品的所有权归被授权方，但不得对外分发原始或衍生源码，除非另有书面约定）。
+3. 约定范围内的**升级与补丁获取权**（版本范围与期限以合同为准）。
+4. 可选：源码托管/escrow、私有化部署实施、信创适配、培训。
 
-- **Primary Contact / Author**: 郑锦城 (Emiliamio)
-- **Email**: `mio2110767128@163.com` / `2110767128@qq.com`
-- **Official GitHub**: [https://github.com/Emiliamio/agent-forge](https://github.com/Emiliamio/agent-forge)
-- **Technical Whitepapers**: [https://emiliamio.github.io](https://emiliamio.github.io)
+## 3. 明确排除
+
+- 反向工程、去除授权与版权标识、绕过技术保护措施（法律强制允许的除外）。
+- 将本软件或其衍生作品作为独立产品**对外销售、分发、公开托管**给第三方。
+- 以本软件为基础提供与原产品实质竞争的同类商业服务。
+- 使用 "AgentForge" 名称与标识做对外宣传（需另行书面许可）。
+
+---
+
+## 4. 服务与 SLA（仅对已签约企业客户，具体指标以合同为准）
+
+| 指标 | 目标值 | 说明 |
+| :--- | :--- | :--- |
+| 服务可用性 | **99.9%**（月度） | RAG 检索与 DAG 工作流主链路；不含计划内维护窗口 |
+| P95 检索延迟 | **< 200 ms** | 混合检索（pgvector HNSW + tsvector GIN + RRF）在参考硬件与 6 万切片规模下的目标值 |
+| 租户数据隔离 | **零跨租户泄漏** | 由 `AuthzMatrixTest` 与 `TenantIsolationTest` 在每次发布前自动验证 |
+| P0 故障响应 | **1 小时内首响** | 仅限工作时段内、已签约支持等级的客户 |
+| 安全漏洞通报 | **72 小时内首响** | 见 `SECURITY.md` |
+
+> SLA 数值为**签约目标**，实际保障以合同条款与赔付约定为准；未签约不构成任何可用性承诺。
+
+---
+
+## 5. 第三方组件
+
+本软件包含 Apache-2.0 / MIT / BSD / MulanPSL-2.0 等宽松许可的第三方组件（Spring Boot、MyBatis-Plus、Sa-Token、LangChain4j、Apache POI、PDFBox、Redisson、fastjson2、Hutool、Vue 3 等），各自仍受其原始许可约束，清单见 `THIRD-PARTY-NOTICES.md`。商业授权**不改变**这些组件的许可，也不对其提供担保。
+
+---
+
+## 6. 联系方式
+
+- 作者 / 授权联系人：郑锦城（Emiliamio）
+- 邮箱：`mio2110767128@163.com` / `2110767128@qq.com`
+- 技术站点：<https://emiliamio.github.io>
+- 仓库：私有（源码交付按合同执行，不公开托管）
