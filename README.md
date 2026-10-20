@@ -118,6 +118,22 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 - **字面覆盖问句硬门禁 (1~18)**：Recall@5 与 MRR 稳定达标并由机器基线锁定，明细见 [docs/BENCHMARK.md](docs/BENCHMARK.md)
 - **完整 20 组业务提问评测明细、环境参数与防漂移门禁**：请直接参阅 [docs/BENCHMARK.md](docs/BENCHMARK.md)
 
+### ⚙️ 混合检索可调参数（`agentforge.rag.search.*`）
+
+| 配置键 | 默认值 | 作用 |
+| :--- | :--- | :--- |
+| `dense-weight` | `0.5` | 正常模式下稠密向量路在 RRF 中的权重 |
+| `sparse-weight` | `0.5` | 正常模式下稀疏全文路在 RRF 中的权重 |
+| `dense-degraded-weight` | `0.0` | 无真实 Embedding 时的稠密路权重（0 = 不参与融合，避免伪向量噪声） |
+| `sparse-degraded-weight` | `1.0` | 无真实 Embedding 时的稀疏路权重 |
+| `rrf-k` | `60` | RRF 倒数排名平滑常数 |
+| `score-threshold` | `0.01` | 最终分数截断阈值（仅当 API 未显式传 `minScore > 0` 时生效） |
+| `candidate-multiplier` | `2` | 初筛候选池 = `topK × multiplier` |
+| `candidate-floor` | `60` | 初筛候选池下限 |
+| `rerank-enabled` | `true` | 是否启用启发式二次重排 |
+| `rerank-model-weight` | `0.5` | 重排交叉分在最终混合分中的权重（其余权重给归一化 RRF 分） |
+| `rrf-normalize-factor` | `30.0` | RRF 分归一化系数 |
+
 ---
 
 ## 🛡️ 生产安全与存量老库平滑升级说明
