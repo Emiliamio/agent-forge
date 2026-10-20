@@ -19564,13 +19564,6 @@
       {
         "phase": "build"
       }
-    ],
-    "tools": [
-      {
-        "name": "cli",
-        "vendor": "npm",
-        "version": "10.9.2"
-      }
     ]
   },
   "specVersion": "1.5",

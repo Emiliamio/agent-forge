@@ -15,6 +15,11 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
   * 生成命令：`bash scripts/refresh-sbom.sh`
 - 前端 SBOM 产物：[`docs/sbom/frontend-bom.json`](docs/sbom/frontend-bom.json)
   * 生成命令：`bash scripts/refresh-sbom.sh`
+- **证据范围与防漂移**：SBOM 仅记录依赖构件、版本与许可证（`components` / `dependencies`），
+  已剔除 `serialNumber` / `metadata.timestamp` / `metadata.tools` 等随执行环境变化的字段
+  （生成工具版本由构建配置固定：`cyclonedx-maven-plugin 2.8.0` 见 `backend/pom.xml`，npm 版本见 CI 镜像），
+  因此同一份依赖图在任何机器上重新生成的结果逐字节一致。CI 的 `sbom-drift` job 会重跑
+  `scripts/refresh-sbom.sh` 并执行 `git diff --exit-code docs/sbom/`，一旦 SBOM 与真实依赖不符即构建失败。
 
 根据 CycloneDX SBOM（Software Bill of Materials）机器审计，本项目的许可证分布结论如下：
 1. **无 AGPL、无 GPLv3 等强传染性协议**：后端 172 项构件与前端 348 项依赖中，AGPL/GPLv3 组件数为 **0**；
