@@ -16,7 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -335,7 +336,7 @@ public class AuthzMatrixTest {
             assertEquals(200, res.getResponse().getStatus(), "前 3 次调用应当放行通过");
         }
 
-        // 第 4 次调用触发限流熔断 (返回 HTTP 429 + code: 429 (P1-4 改为 1008) + Retry-After: 60)
+        // 第 4 次调用触发限流熔断 (返回 HTTP 429 + code: 1008 + Retry-After: 60)
         MvcResult res4 = mockMvc.perform(post("/public/agents/1/chat")
                         .with(request -> {
                             request.setRemoteAddr(testIp);
@@ -347,6 +348,6 @@ public class AuthzMatrixTest {
                 .andExpect(header().string("Retry-After", "60"))
                 .andReturn();
 
-        assertSecurityResponse(res4, 429, 429);
+        assertSecurityResponse(res4, 429, 1008);
     }
 }

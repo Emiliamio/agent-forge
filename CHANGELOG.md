@@ -3,6 +3,13 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## 🚀 [v1.3.0] - 2026-10-20
+
+### Changed
+- 限流响应：HTTP 状态码统一为 429 并携带 Retry-After，业务码保持 1008（v1.0 前的既有契约不变）
+
+---
+
 ## 🚀 [v1.2.0] - 2026-10-15 (Enterprise Apex Full Perfection Edition)
 
 ### 🌟 新增 Apex 核心中枢与交互升级 (Apex Features & Interactive Studio)
