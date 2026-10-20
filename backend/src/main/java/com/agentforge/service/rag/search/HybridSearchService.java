@@ -71,21 +71,16 @@ public class HybridSearchService {
         }
 
         Long tenantId = TenantContextHolder.getTenantId();
-        int multiplier = (searchProperties != null && searchProperties.getCandidateMultiplier() > 0)
+        int multiplier = searchProperties.getCandidateMultiplier() > 0
                 ? searchProperties.getCandidateMultiplier() : 2;
-        int candidateFloor = (searchProperties != null && searchProperties.getCandidateFloor() > 0)
-                ? searchProperties.getCandidateFloor() : 60;
+        int candidateFloor = searchProperties.getCandidateFloor();
         int candidateLimit = Math.max(topK * multiplier, candidateFloor); // 保证初筛候选池充足以支撑 Reranker 全局视野
 
         boolean isDegraded = embeddingService != null && embeddingService.degraded();
-        double denseWeight = (searchProperties != null)
-                ? (isDegraded ? searchProperties.getDenseDegradedWeight() : searchProperties.getDenseWeight())
-                : (isDegraded ? 0.0 : 0.5);
-        double sparseWeight = (searchProperties != null)
-                ? (isDegraded ? searchProperties.getSparseDegradedWeight() : searchProperties.getSparseWeight())
-                : (isDegraded ? 1.0 : 0.5);
-        double rrfK = (searchProperties != null) ? searchProperties.getRrfK() : 60.0;
-        double configuredThreshold = (searchProperties != null) ? searchProperties.getScoreThreshold() : 0.01;
+        double denseWeight = isDegraded ? searchProperties.getDenseDegradedWeight() : searchProperties.getDenseWeight();
+        double sparseWeight = isDegraded ? searchProperties.getSparseDegradedWeight() : searchProperties.getSparseWeight();
+        double rrfK = searchProperties.getRrfK();
+        double configuredThreshold = searchProperties.getScoreThreshold();
 
         // 1. 第一路：稠密向量检索 (仅在 denseWeight > 0.0 且非降级时执行，避免伪向量污染 RRF 排名并节省 DB 往返)
         List<ChunkSearchResult> vectorResults = Collections.emptyList();
