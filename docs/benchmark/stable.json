@@ -1,0 +1,116 @@
+{
+  "corpus": {
+    "name": "default",
+    "documents": 1,
+    "chunks": 60
+  },
+  "stable": {
+    "recall_at_1": 0.8889,
+    "recall_at_3": 1.0,
+    "recall_at_5": 1.0,
+    "mrr": 0.9444,
+    "ndcg_at_5": 0.959,
+    "per_case": [
+      {
+        "id": 1,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 2,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 3,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 4,
+        "rank": 2,
+        "hit": true
+      },
+      {
+        "id": 5,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 6,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 7,
+        "rank": 2,
+        "hit": true
+      },
+      {
+        "id": 8,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 9,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 10,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 11,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 12,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 13,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 14,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 15,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 16,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 17,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 18,
+        "rank": 1,
+        "hit": true
+      },
+      {
+        "id": 19,
+        "rank": 3,
+        "hit": true
+      },
+      {
+        "id": 20,
+        "rank": 1,
+        "hit": true
+      }
+    ]
+  }
+}

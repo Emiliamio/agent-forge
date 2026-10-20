@@ -38,3 +38,7 @@ replay_pid*
 # Environment & local config
 .env
 .env.local
+
+# Python cache
+__pycache__/
+*.pyc
