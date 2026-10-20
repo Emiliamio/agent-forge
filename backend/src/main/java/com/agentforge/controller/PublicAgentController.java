@@ -50,6 +50,7 @@ public class PublicAgentController {
             @PathVariable Long id,
             @Valid @RequestBody WidgetChatRequest request,
             @RequestHeader(value = "X-Public-Token", required = false) String headerToken,
+            @RequestHeader(value = "X-AgentForge-Public-Token", required = false) String legacyToken,
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             HttpServletRequest servletRequest
     ) {
@@ -70,16 +71,22 @@ public class PublicAgentController {
 
         // 4. 安全 Token 校验 (常量时间比对防时序侧信道攻击，禁止从 Query String 传输防日志泄露)
         if (StrUtil.isNotBlank(app.getPublicToken())) {
-            String incomingToken = StrUtil.isNotBlank(headerToken) ? headerToken : request.getToken();
-            if (StrUtil.isBlank(incomingToken) && StrUtil.isNotBlank(authHeader)) {
+            String incomingToken = null;
+            if (StrUtil.isNotBlank(headerToken)) {
+                incomingToken = headerToken.trim();
+            } else if (StrUtil.isNotBlank(legacyToken)) {
+                incomingToken = legacyToken.trim();
+            } else if (StrUtil.isNotBlank(authHeader)) {
                 incomingToken = authHeader.startsWith("Bearer ") ? authHeader.substring(7).trim() : authHeader.trim();
+            } else if (request != null && StrUtil.isNotBlank(request.getToken())) {
+                incomingToken = request.getToken().trim();
             }
 
             boolean tokenMatches = false;
             if (StrUtil.isNotBlank(incomingToken)) {
                 tokenMatches = MessageDigest.isEqual(
                         app.getPublicToken().getBytes(StandardCharsets.UTF_8),
-                        incomingToken.trim().getBytes(StandardCharsets.UTF_8)
+                        incomingToken.getBytes(StandardCharsets.UTF_8)
                 );
             }
 
@@ -128,9 +135,21 @@ public class PublicAgentController {
 
     @Data
     public static class WidgetChatRequest {
-        @NotBlank(message = "提问内容不能为空")
         private String message;
+        private String prompt;
         private int maxIterations = 3;
         private String token; // 安全挂件访问凭证
+
+        @NotBlank(message = "提问内容不能为空")
+        public String getMessage() {
+            return cn.hutool.core.util.StrUtil.isNotBlank(message) ? message : prompt;
+        }
+
+        public void setPrompt(String prompt) {
+            this.prompt = prompt;
+            if (cn.hutool.core.util.StrUtil.isBlank(this.message)) {
+                this.message = prompt;
+            }
+        }
     }
 }

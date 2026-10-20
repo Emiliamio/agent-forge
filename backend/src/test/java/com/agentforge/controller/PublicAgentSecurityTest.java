@@ -58,7 +58,7 @@ public class PublicAgentSecurityTest {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                publicAgentController.widgetChat(1L, req, null, null, servletRequest)
+                publicAgentController.widgetChat(1L, req, null, null, null, servletRequest)
         );
         assertEquals(ErrorCode.FORBIDDEN.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("未开启公开挂件访问权限"));
@@ -66,7 +66,7 @@ public class PublicAgentSecurityTest {
         // 测试 publicEnabled == null 的边界
         app.setPublicEnabled(null);
         BusinessException exNull = assertThrows(BusinessException.class, () ->
-                publicAgentController.widgetChat(1L, req, null, null, servletRequest)
+                publicAgentController.widgetChat(1L, req, null, null, null, servletRequest)
         );
         assertEquals(ErrorCode.FORBIDDEN.getCode(), exNull.getCode());
     }
@@ -91,15 +91,21 @@ public class PublicAgentSecurityTest {
 
         // 1. 未传 Token
         BusinessException ex1 = assertThrows(BusinessException.class, () ->
-                publicAgentController.widgetChat(1L, req, null, null, servletRequest)
+                publicAgentController.widgetChat(1L, req, null, null, null, servletRequest)
         );
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex1.getCode());
 
-        // 2. 传入错误 Token
+        // 2. 传入错误 Token (主头)
         BusinessException ex2 = assertThrows(BusinessException.class, () ->
-                publicAgentController.widgetChat(1L, req, "wrong-token", null, servletRequest)
+                publicAgentController.widgetChat(1L, req, "wrong-token", null, null, servletRequest)
         );
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex2.getCode());
+
+        // 3. 传入错误 Token (兼容头)
+        BusinessException ex3 = assertThrows(BusinessException.class, () ->
+                publicAgentController.widgetChat(1L, req, null, "wrong-token", null, servletRequest)
+        );
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex3.getCode());
     }
 
     @Test
@@ -126,14 +132,21 @@ public class PublicAgentSecurityTest {
 
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 
-        // 通过 X-Public-Token 请求头验证
-        Result<ReActAgentService.AgentExecutionResult> res = publicAgentController.widgetChat(
-                1L, req, "my-secure-token", null, servletRequest
+        // 1. 通过 X-Public-Token 请求头验证
+        Result<ReActAgentService.AgentExecutionResult> res1 = publicAgentController.widgetChat(
+                1L, req, "my-secure-token", null, null, servletRequest
         );
+        assertNotNull(res1);
+        assertEquals(200, res1.getCode());
+        assertEquals("北京住宿报销上限为 800 元/天。", res1.getData().getFinalAnswer());
 
-        assertNotNull(res);
-        assertEquals(200, res.getCode());
-        assertEquals("北京住宿报销上限为 800 元/天。", res.getData().getFinalAnswer());
+        // 2. 通过 X-AgentForge-Public-Token 兼容头验证
+        Result<ReActAgentService.AgentExecutionResult> res2 = publicAgentController.widgetChat(
+                1L, req, null, "my-secure-token", null, servletRequest
+        );
+        assertNotNull(res2);
+        assertEquals(200, res2.getCode());
+        assertEquals("北京住宿报销上限为 800 元/天。", res2.getData().getFinalAnswer());
     }
 
     @Test
@@ -148,7 +161,7 @@ public class PublicAgentSecurityTest {
         MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                publicAgentController.widgetChat(999L, req, null, null, servletRequest)
+                publicAgentController.widgetChat(999L, req, null, null, null, servletRequest)
         );
         assertEquals(ErrorCode.AGENT_APP_NOT_FOUND.getCode(), ex.getCode());
     }

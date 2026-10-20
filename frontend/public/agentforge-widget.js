@@ -6,6 +6,7 @@
 function buildWidgetHeaders(options = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (options && options.publicToken) {
+    headers['X-Public-Token'] = options.publicToken
     headers['X-AgentForge-Public-Token'] = options.publicToken
   }
   if (options && options.tenantId !== undefined && options.tenantId !== null && options.tenantId !== '') {
