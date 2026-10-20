@@ -25,7 +25,7 @@ public enum ErrorCode {
     USER_PASSWORD_ERROR(1005, "用户名或密码错误"),
     USER_DISABLED(1006, "用户已被冻结禁用"),
     API_KEY_INVALID(1007, "API Key 无效或已过期"),
-    RATE_LIMIT_EXCEEDED(1008, "请求触发限流，请稍后重试"),
+    RATE_LIMIT_EXCEEDED(429, "请求触发限流，请稍后重试"),
 
     // 知识库与 RAG 相关 (2001 - 2099)
     DATASET_NOT_FOUND(2001, "知识库数据集不存在"),

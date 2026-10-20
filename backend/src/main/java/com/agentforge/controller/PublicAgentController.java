@@ -39,6 +39,9 @@ public class PublicAgentController {
     private final AgentAppMapper agentAppMapper;
     private final ReActAgentService reActAgentService;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
+
+    @org.springframework.beans.factory.annotation.Value("${agentforge.widget.rate-limit-rpm:5}")
+    private int rateLimitRpm = 5;
     private final ClientIpResolver clientIpResolver;
 
     @Operation(summary = "挂件免登录对话 (支持跨租户定位、安全开关与常量时间凭据校验)")
@@ -112,7 +115,7 @@ public class PublicAgentController {
                 if (count != null && count == 1) {
                     redis.expire(key, Duration.ofMinutes(1));
                 }
-                if (count != null && count > 30) {
+                if (count != null && count > rateLimitRpm) {
                     throw new BusinessException(ErrorCode.RATE_LIMIT_EXCEEDED, "挂件提问频次过高，请稍后再试");
                 }
             } catch (BusinessException be) {

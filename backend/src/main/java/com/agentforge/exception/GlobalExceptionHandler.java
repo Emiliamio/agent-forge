@@ -46,7 +46,11 @@ public class GlobalExceptionHandler {
         } else if (e.getCode() == ErrorCode.RATE_LIMIT_EXCEEDED.getCode()) {
             httpStatus = HttpStatus.TOO_MANY_REQUESTS;
         }
-        return org.springframework.http.ResponseEntity.status(httpStatus).body(Result.fail(e.getCode(), e.getMessage()));
+        org.springframework.http.ResponseEntity.BodyBuilder responseBuilder = org.springframework.http.ResponseEntity.status(httpStatus);
+        if (httpStatus == HttpStatus.TOO_MANY_REQUESTS) {
+            responseBuilder.header("Retry-After", "60");
+        }
+        return responseBuilder.body(Result.fail(e.getCode(), e.getMessage()));
     }
 
     /**

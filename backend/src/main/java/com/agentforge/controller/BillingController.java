@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,16 @@ public class BillingController {
         stats.put("estimatedCostSaved", String.format("¥ %.2f", cachedCalls * 0.005));
 
         return Result.success(stats);
+    }
+
+    @Operation(summary = "按租户 ID 查询用量详情 (跨租户越权防护)")
+    @GetMapping("/tenant/{tenantId}/usage")
+    public Result<Map<String, Object>> getTenantUsage(@PathVariable("tenantId") Long targetTenantId) {
+        Long currentTenantId = TenantContextHolder.getTenantId();
+        if (currentTenantId == null || !currentTenantId.equals(targetTenantId)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN, "跨租户安全拦截：严禁越权访问其他租户资产");
+        }
+        return getBillingStats();
     }
 
     @Operation(summary = "分页查询 Token 消耗审计日志")

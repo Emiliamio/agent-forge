@@ -1,6 +1,8 @@
 package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaMode;
 import com.agentforge.service.system.SystemSelfCheckService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +63,7 @@ public class HealthController {
     }
 
     @Operation(summary = "执行全量基础设施一键自检诊断 (需登录)")
-    @SaCheckLogin
+    @SaCheckRole(value = {"ADMIN", "OWNER"}, mode = SaMode.OR)
     @GetMapping("/diagnostics")
     public Result<SystemSelfCheckService.DiagnosticReport> getDiagnostics() {
         return Result.success(selfCheckService.runDiagnostics());
