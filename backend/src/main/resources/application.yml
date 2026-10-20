@@ -59,6 +59,8 @@ springdoc:
 
 # AgentForge 平台核心参数
 agentforge:
+  widget:
+    rate-limit-rpm: 30
   security:
     trusted-proxies:
       - 127.0.0.1

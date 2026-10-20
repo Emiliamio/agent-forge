@@ -40,8 +40,8 @@ public class PublicAgentController {
     private final ReActAgentService reActAgentService;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
 
-    @org.springframework.beans.factory.annotation.Value("${agentforge.widget.rate-limit-rpm:5}")
-    private int rateLimitRpm = 5;
+    @org.springframework.beans.factory.annotation.Value("${agentforge.widget.rate-limit-rpm:30}")
+    private int rateLimitRpm = 30;
     private final ClientIpResolver clientIpResolver;
 
     @Operation(summary = "挂件免登录对话 (支持跨租户定位、安全开关与常量时间凭据校验)")

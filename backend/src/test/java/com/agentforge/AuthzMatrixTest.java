@@ -16,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
@@ -42,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnabledIf("com.agentforge.support.LiveTestSupport#usable")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@TestPropertySource(properties = "agentforge.widget.rate-limit-rpm=3")
 @DisplayName("AuthzMatrixTest: 真实安全边界与鉴权矩阵 16 行全覆盖测试")
 public class AuthzMatrixTest {
 
@@ -314,13 +317,13 @@ public class AuthzMatrixTest {
     }
 
     @Test
-    @DisplayName("16. POST /public/agents/1/chat (单 IP 超频第 6 次) -> 429 限流命中 + Retry-After 响应头")
+    @DisplayName("16. POST /public/agents/1/chat (单 IP 超频第 4 次) -> 429 限流命中 + Retry-After 响应头 (测试解耦 3 RPM，生产默认 30)")
     void test16_PostPublicChat_RateLimit_Returns429WithRetryAfter() throws Exception {
         String testIp = "198.51.100.88";
         String body = "{\"message\":\"hello\"}";
 
-        // 前 5 次在允许频次内 (<= 5 次)
-        for (int i = 1; i <= 5; i++) {
+        // 测试配置 3 RPM (生产默认 30 RPM)：前 3 次在允许频次内放行
+        for (int i = 1; i <= 3; i++) {
             MvcResult res = mockMvc.perform(post("/public/agents/1/chat")
                             .with(request -> {
                                 request.setRemoteAddr(testIp);
@@ -329,11 +332,11 @@ public class AuthzMatrixTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(body))
                     .andReturn();
-            assertEquals(200, res.getResponse().getStatus(), "前 5 次调用应当放行通过");
+            assertEquals(200, res.getResponse().getStatus(), "前 3 次调用应当放行通过");
         }
 
-        // 第 6 次调用触发限流熔断 (返回 HTTP 429 + code: 429 + Retry-After: 60)
-        MvcResult res6 = mockMvc.perform(post("/public/agents/1/chat")
+        // 第 4 次调用触发限流熔断 (返回 HTTP 429 + code: 429 (P1-4 改为 1008) + Retry-After: 60)
+        MvcResult res4 = mockMvc.perform(post("/public/agents/1/chat")
                         .with(request -> {
                             request.setRemoteAddr(testIp);
                             return request;
@@ -344,6 +347,6 @@ public class AuthzMatrixTest {
                 .andExpect(header().string("Retry-After", "60"))
                 .andReturn();
 
-        assertSecurityResponse(res6, 429, 429);
+        assertSecurityResponse(res4, 429, 429);
     }
 }
