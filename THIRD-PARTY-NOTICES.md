@@ -16,10 +16,18 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 - 前端 SBOM 产物：[`docs/sbom/frontend-bom.json`](docs/sbom/frontend-bom.json)
   * 生成命令：`cd frontend && npm sbom --sbom-format cyclonedx > ../docs/sbom/frontend-bom.json`
 
-根据软件供应链合规审查与 CycloneDX SBOM（Software Bill of Materials）规范化审计：
-1. **零强传染性开源协议（0 GPL / 0 AGPL）**：本项目未静态链接或依赖任何 GPLv3、AGPL 或其他强传染性 Copyleft 许可证组件。
-2. **双许可证明确选型（Dual-License Election）**：对于提供多许可证选型的组件（如 JSqlParser 提供 Apache-2.0 与 LGPL-2.1 双许可证，Logback 提供 EPL-1.0 与 LGPL-2.1 双许可证），本项目严格依照其官方授权协议明确选择并适用其**非强传染性宽松许可条款（Apache-2.0 / EPL）**。
-3. **接口动态链接（Dynamic API Linking）**：Jakarta 相关 API（`jakarta.annotation-api`、`jakarta.servlet-api`）均遵循带有 **Classpath Exception** 的标准开源协议，允许独立商业软件正常编译与动态链接。
+根据 CycloneDX SBOM（Software Bill of Materials）机器审计，本项目的许可证分布结论如下：
+1. **无 AGPL、无 GPLv3 等强传染性协议**：后端 172 项构件与前端 348 项依赖中，AGPL/GPLv3 组件数为 **0**；
+   GPL 仅以 `GPL-2.0-with-classpath-exception` 形式出现在 Jakarta EE 规范 API
+   （`jakarta.annotation-api`、`jakarta.servlet-api`）上，属 Jakarta EE 的标准授权形态，
+   其 Classpath Exception 明确允许商业软件编译、链接与再分发，不构成传染。
+2. **双许可组件显式选型（Dual-License Election）**：
+   - **JSqlParser 4.6**：上游声明 LGPL-2.1 / Apache-2.0 双许可，本项目**按 Apache-2.0 条款使用**；
+   - **Logback 1.4.14**：上游声明 EPL-1.0 / LGPL-2.1 双许可，本项目**按 EPL-1.0 条款使用**。
+   > 说明：`docs/sbom/backend-bom.json` 中上述构件仅归类为其 Maven POM 声明的单一许可证（LGPL-2.1-only），
+   > 双许可事实以上游项目声明为准，出处见第 4 节。
+3. **第三方依赖以独立构件分发**：所有第三方 jar / npm 包均以独立构件随包提供，未做源码级合并或静态链接，
+   满足 LGPL 类许可证对"可替换性"的要求。
 
 ---
 
@@ -40,8 +48,8 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 | **Hutool** (`5.8.25`) | `cn.hutool` | MulanPSL-2.0 | Java 通用工具库（木兰宽松许可证） |
 | **pgvector-java** (`0.1.4`) | `com.pgvector` | MIT | PostgreSQL pgvector 扩展驱动适配 |
 | **PostgreSQL JDBC** (`42.6.1`) | `org.postgresql` | BSD-2-Clause | 关系型数据库底层连接驱动 |
-| **JSqlParser** (`4.6`) | `com.github.jsqlparser` | Apache-2.0 (Dual LGPL) | SQL 语法树解析与租户字段自动拼接 |
-| **Logback** (`1.4.14`) | `ch.qos.logback` | EPL-1.0 (Dual LGPL) | 结构化日志门面实现 |
+| **JSqlParser** (`4.6`) | `com.github.jsqlparser` | Apache-2.0（上游双许可 LGPL-2.1 / Apache-2.0，本项目选 Apache-2.0） | SQL 语法树解析与租户字段自动拼接 |
+| **Logback** (`1.4.14`) | `ch.qos.logback` | EPL-1.0（上游双许可 EPL-1.0 / LGPL-2.1，本项目选 EPL-1.0） | 结构化日志门面实现 |
 | **Jakarta Annotations / Servlet** | `jakarta.*` | EPL-2.0 / Classpath Ex | 标准 Java 企业级规范接口定义 |
 
 ---
@@ -72,5 +80,9 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 ## 4. 完整许可证文本索引与溯源
 
 第三方组件的完整许可证文本与版权归属声明，均可在各组件官方代码仓库或发行构件（JAR 文件与 npm 包内附带的 `META-INF/LICENSE`、`LICENSE`）中查阅。
+
+- JSqlParser 双许可声明：<https://github.com/JSQLParser/JSqlParser>（README「License」章节）
+- Jakarta EE 规范 API 的 Classpath Exception 说明：<https://www.eclipse.org/legal/epl-2.0/>
+- 机器核验：`python -c "import json;d=json.load(open('docs/sbom/backend-bom.json', encoding='utf-8')); print(sorted({(l.get('license',{}).get('id') or l.get('license',{}).get('name')) for c in d['components'] for l in (c.get('licenses') or [])}))"`
 
 AgentForge 对所有第三方开源贡献者表达最崇高的敬意与感谢。
