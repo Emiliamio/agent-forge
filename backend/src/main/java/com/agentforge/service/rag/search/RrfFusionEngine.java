@@ -1,6 +1,8 @@
 package com.agentforge.service.rag.search;
 
+import com.agentforge.config.SearchProperties;
 import com.agentforge.vo.ChunkSearchResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,23 +17,24 @@ import java.util.Map;
 @Component
 public class RrfFusionEngine {
 
-    /**
-     * RRF 平滑常数 (工业标准默认为 60)
-     */
-    private static final double K = 60.0;
+    private final SearchProperties searchProperties;
+
+    @Autowired
+    public RrfFusionEngine(SearchProperties searchProperties) {
+        this.searchProperties = searchProperties;
+    }
+
+    public RrfFusionEngine() {
+        this(new SearchProperties());
+    }
 
     /**
-     * 稠密向量权重 (与稀疏关键词平衡融合)
+     * 默认倒数排名平滑常数 K (若未配置时兜底为 60)
      */
-    private static final double DENSE_WEIGHT = 1.0;
+    private static final double DEFAULT_K = 60.0;
 
     /**
-     * 稀疏全文检索权重
-     */
-    private static final double SPARSE_WEIGHT = 1.0;
-
-    /**
-     * 对稠密向量列表与全文检索列表执行 RRF 融合打分
+     * 对稠密向量列表与全文检索列表执行 RRF 融合打分 (使用配置默认权重)
      *
      * @param vectorResults  向量检索候选集
      * @param keywordResults 关键词检索候选集
@@ -43,25 +46,64 @@ public class RrfFusionEngine {
             List<ChunkSearchResult> keywordResults,
             int topK
     ) {
+        double denseWeight = searchProperties != null ? searchProperties.getDenseWeight() : 0.5;
+        double sparseWeight = searchProperties != null ? searchProperties.getSparseWeight() : 0.5;
+        double k = searchProperties != null ? searchProperties.getRrfK() : DEFAULT_K;
+        return fuse(vectorResults, keywordResults, topK, denseWeight, sparseWeight, k);
+    }
+
+    /**
+     * 显式指定 dense 与 sparse 权重执行 RRF 融合打分 (平滑常数 K 使用配置)
+     */
+    public List<ChunkSearchResult> fuse(
+            List<ChunkSearchResult> vectorResults,
+            List<ChunkSearchResult> keywordResults,
+            int topK,
+            double denseWeight,
+            double sparseWeight
+    ) {
+        double k = searchProperties != null ? searchProperties.getRrfK() : DEFAULT_K;
+        return fuse(vectorResults, keywordResults, topK, denseWeight, sparseWeight, k);
+    }
+
+    /**
+     * 全参数 RRF 融合打分核心实现
+     *
+     * @param vectorResults  向量检索候选集
+     * @param keywordResults 关键词检索候选集
+     * @param topK           融合后保留的最大数量
+     * @param denseWeight    稠密路融合权重
+     * @param sparseWeight   稀疏路融合权重
+     * @param k              平滑常数
+     * @return 融合重排后的切片结果
+     */
+    public List<ChunkSearchResult> fuse(
+            List<ChunkSearchResult> vectorResults,
+            List<ChunkSearchResult> keywordResults,
+            int topK,
+            double denseWeight,
+            double sparseWeight,
+            double k
+    ) {
         Map<Long, ChunkSearchResult> chunkMap = new HashMap<>();
         Map<Long, Double> rrfScoreMap = new HashMap<>();
 
-        // 1. 累计稠密向量召回的 RRF 得分
-        if (vectorResults != null) {
+        // 1. 累计稠密向量召回的 RRF 得分 (仅当 denseWeight > 0 时计入)
+        if (vectorResults != null && denseWeight > 0.0) {
             for (int rank = 0; rank < vectorResults.size(); rank++) {
                 ChunkSearchResult chunk = vectorResults.get(rank);
-                double rrf = DENSE_WEIGHT / (K + rank + 1);
+                double rrf = denseWeight / (k + rank + 1);
                 rrfScoreMap.put(chunk.getId(), rrfScoreMap.getOrDefault(chunk.getId(), 0.0) + rrf);
                 chunk.setRecallType("VECTOR");
                 chunkMap.putIfAbsent(chunk.getId(), chunk);
             }
         }
 
-        // 2. 累计稀疏全文召回的 RRF 得分
-        if (keywordResults != null) {
+        // 2. 累计稀疏全文召回的 RRF 得分 (仅当 sparseWeight > 0 时计入)
+        if (keywordResults != null && sparseWeight > 0.0) {
             for (int rank = 0; rank < keywordResults.size(); rank++) {
                 ChunkSearchResult chunk = keywordResults.get(rank);
-                double rrf = SPARSE_WEIGHT / (K + rank + 1);
+                double rrf = sparseWeight / (k + rank + 1);
                 rrfScoreMap.put(chunk.getId(), rrfScoreMap.getOrDefault(chunk.getId(), 0.0) + rrf);
                 if (chunkMap.containsKey(chunk.getId())) {
                     chunkMap.get(chunk.getId()).setRecallType("HYBRID");

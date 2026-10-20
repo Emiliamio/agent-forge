@@ -27,4 +27,14 @@ public interface EmbeddingService {
      * 获取当前 Embedding 模型的向量维度 (如 1536, 1024, 768)
      */
     int getDimension();
+
+    /**
+     * 当前 Embedding 服务是否处于降级状态 (如未配置线上 Key，使用本地确定性哈希向量兜底)
+     */
+    boolean degraded();
+
+    /**
+     * 获取当前 Embedding 服务供应商标识
+     */
+    String providerName();
 }

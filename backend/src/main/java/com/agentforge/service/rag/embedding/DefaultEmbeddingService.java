@@ -106,6 +106,16 @@ public class DefaultEmbeddingService implements EmbeddingService {
         return dimension;
     }
 
+    @Override
+    public boolean degraded() {
+        return !isOnlineModelAvailable;
+    }
+
+    @Override
+    public String providerName() {
+        return isOnlineModelAvailable ? "openai-text-embedding-3-small" : "local-deterministic-sha256";
+    }
+
     /**
      * 确定性高维语义哈希向量生成 (用于离线开发、测试与兜底)
      * 基于 SHA-256 + 伪随机种子保证相同文本始终生成完全相同的 1536 维归一化向量

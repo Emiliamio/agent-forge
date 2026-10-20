@@ -47,6 +47,19 @@ public interface DocumentChunkMapper extends BaseMapper<DocumentChunk> {
     );
 
     /**
+     * 语义检索兼容别名方法 (等价于 searchByVector)
+     */
+    default List<ChunkSearchResult> searchSimilarChunks(
+            Long tenantId,
+            List<Long> datasetIds,
+            String queryVector,
+            double minScore,
+            int topK
+    ) {
+        return searchByVector(tenantId, datasetIds, queryVector, minScore, topK);
+    }
+
+    /**
      * 全文关键词检索 (基于 PostgreSQL BM25 / tsvector GIN 索引)
      * 忽略 MyBatis-Plus 租户插件解析：SQL 已内嵌 tenant_id = #{tenantId}
      */

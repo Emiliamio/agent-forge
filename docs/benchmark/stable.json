@@ -5,11 +5,11 @@
     "chunks": 60
   },
   "stable": {
-    "recall_at_1": 0.8889,
+    "recall_at_1": 0.9444,
     "recall_at_3": 1.0,
     "recall_at_5": 1.0,
-    "mrr": 0.9444,
-    "ndcg_at_5": 0.959,
+    "mrr": 0.9722,
+    "ndcg_at_5": 0.9795,
     "per_case": [
       {
         "id": 1,
@@ -43,7 +43,7 @@
       },
       {
         "id": 7,
-        "rank": 2,
+        "rank": 1,
         "hit": true
       },
       {
@@ -103,8 +103,8 @@
       },
       {
         "id": 19,
-        "rank": 3,
-        "hit": true
+        "rank": 0,
+        "hit": false
       },
       {
         "id": 20,

@@ -1,9 +1,10 @@
 package com.agentforge.service.rag.search;
 
 import cn.hutool.core.util.StrUtil;
+import com.agentforge.config.SearchProperties;
 import com.agentforge.vo.ChunkSearchResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,8 +18,16 @@ import java.util.List;
 @Service
 public class RerankerService {
 
-    @Value("${agentforge.rag.rerank-enabled:true}")
-    private boolean rerankEnabled = true;
+    private final SearchProperties searchProperties;
+
+    @Autowired
+    public RerankerService(SearchProperties searchProperties) {
+        this.searchProperties = searchProperties;
+    }
+
+    public RerankerService() {
+        this(new SearchProperties());
+    }
 
     /**
      * 对候选切片执行二次重排序打分
@@ -29,9 +38,13 @@ public class RerankerService {
      * @return 精确排序后的结果列表
      */
     public List<ChunkSearchResult> rerank(String query, List<ChunkSearchResult> candidates, int finalTopK) {
-        if (candidates == null || candidates.isEmpty() || !rerankEnabled) {
+        boolean enabled = searchProperties != null ? searchProperties.isRerankEnabled() : true;
+        if (candidates == null || candidates.isEmpty() || !enabled) {
             return candidates != null ? candidates.stream().limit(finalTopK).toList() : List.of();
         }
+
+        double rerankWeight = searchProperties != null ? searchProperties.getRerankModelWeight() : 0.5;
+        double baseWeight = 1.0 - rerankWeight;
 
         List<ChunkSearchResult> scoredList = new ArrayList<>(candidates.size());
 
@@ -43,7 +56,7 @@ public class RerankerService {
             double crossScore = computeCrossMatchScore(query, fullContext);
             // 归一化 RRF 分数 (单路满分约 0.0164，双路满分约 0.0328)
             double rrfNormalized = (chunk.getScore() != null ? Math.min(1.0, chunk.getScore() * 30.0) : 0.0);
-            double combinedScore = (rrfNormalized * 0.3) + (crossScore * 0.7);
+            double combinedScore = (rrfNormalized * baseWeight) + (crossScore * rerankWeight);
             chunk.setScore(Math.round(combinedScore * 10000.0) / 10000.0);
             scoredList.add(chunk);
         }

@@ -347,6 +347,8 @@ public class RagParsersAndEmbeddingTest {
 
         // 4. 维度与静态方法
         assertEquals(1536, service.getDimension());
+        assertTrue(service.degraded());
+        assertEquals("local-deterministic-sha256", service.providerName());
         float[] customDim = DefaultEmbeddingService.generateDeterministicVector("test", 768);
         assertEquals(768, customDim.length);
 
@@ -357,6 +359,8 @@ public class RagParsersAndEmbeddingTest {
 
         ReflectionTestUtils.setField(service, "embeddingModel", mockOnlineModel);
         ReflectionTestUtils.setField(service, "isOnlineModelAvailable", true);
+        assertFalse(service.degraded());
+        assertEquals("openai-text-embedding-3-small", service.providerName());
 
         float[] onlineVec = service.embed("在线文本");
         assertEquals(1536, onlineVec.length);

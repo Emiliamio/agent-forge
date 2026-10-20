@@ -113,4 +113,13 @@ agentforge:
     default-embedding-dim: 1536
     default-top-k: 5
     default-similarity-threshold: 0.65
-    rerank-enabled: true
+    search:
+      dense-weight: 0.5
+      sparse-weight: 0.5
+      dense-degraded-weight: 0.0  # 降级模式下 dense 权重
+      sparse-degraded-weight: 1.0 # 降级模式下 sparse 权重
+      rrf-k: 60
+      score-threshold: 0.01
+      candidate-multiplier: 2      # topK * multiplier 召回候选
+      rerank-enabled: true
+      rerank-model-weight: 0.5     # 重排器与原检索分的混合权重
