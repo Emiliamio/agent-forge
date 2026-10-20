@@ -22,7 +22,7 @@ public class RerankerService {
 
     @Autowired
     public RerankerService(SearchProperties searchProperties) {
-        this.searchProperties = searchProperties;
+        this.searchProperties = searchProperties != null ? searchProperties : new SearchProperties();
     }
 
     public RerankerService() {
@@ -38,13 +38,14 @@ public class RerankerService {
      * @return 精确排序后的结果列表
      */
     public List<ChunkSearchResult> rerank(String query, List<ChunkSearchResult> candidates, int finalTopK) {
-        boolean enabled = searchProperties != null ? searchProperties.isRerankEnabled() : true;
+        boolean enabled = searchProperties.isRerankEnabled();
         if (candidates == null || candidates.isEmpty() || !enabled) {
             return candidates != null ? candidates.stream().limit(finalTopK).toList() : List.of();
         }
 
-        double rerankWeight = searchProperties != null ? searchProperties.getRerankModelWeight() : 0.5;
+        double rerankWeight = searchProperties.getRerankModelWeight();
         double baseWeight = 1.0 - rerankWeight;
+        double rrfFactor = searchProperties.getRrfNormalizeFactor();
 
         List<ChunkSearchResult> scoredList = new ArrayList<>(candidates.size());
 
@@ -55,7 +56,7 @@ public class RerankerService {
             }
             double crossScore = computeCrossMatchScore(query, fullContext);
             // 归一化 RRF 分数 (单路满分约 0.0164，双路满分约 0.0328)
-            double rrfNormalized = (chunk.getScore() != null ? Math.min(1.0, chunk.getScore() * 30.0) : 0.0);
+            double rrfNormalized = (chunk.getScore() != null ? Math.min(1.0, chunk.getScore() * rrfFactor) : 0.0);
             double combinedScore = (rrfNormalized * baseWeight) + (crossScore * rerankWeight);
             chunk.setScore(Math.round(combinedScore * 10000.0) / 10000.0);
             scoredList.add(chunk);

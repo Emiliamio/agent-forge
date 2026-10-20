@@ -48,6 +48,11 @@ public class SearchProperties {
     private int candidateMultiplier = 2;
 
     /**
+     * 初筛候选池下限（与 topK * multiplier 取较大值，默认 60）
+     */
+    private int candidateFloor = 60;
+
+    /**
      * 是否启用 Cross-Encoder 二次重排序 (默认 true)
      */
     private boolean rerankEnabled = true;
@@ -56,4 +61,9 @@ public class SearchProperties {
      * 重排模型交叉注意力得分在最终混合得分中的权重 (默认 0.5)
      */
     private double rerankModelWeight = 0.5;
+
+    /**
+     * RRF 分归一化系数（RRF 单路满分约 1/(K+1)，默认 30.0）
+     */
+    private double rrfNormalizeFactor = 30.0;
 }

@@ -39,7 +39,7 @@ public class HybridSearchService {
         this.embeddingService = embeddingService;
         this.rrfFusionEngine = rrfFusionEngine;
         this.rerankerService = rerankerService;
-        this.searchProperties = searchProperties;
+        this.searchProperties = searchProperties != null ? searchProperties : new SearchProperties();
     }
 
     public HybridSearchService(
@@ -73,7 +73,9 @@ public class HybridSearchService {
         Long tenantId = TenantContextHolder.getTenantId();
         int multiplier = (searchProperties != null && searchProperties.getCandidateMultiplier() > 0)
                 ? searchProperties.getCandidateMultiplier() : 2;
-        int candidateLimit = Math.max(topK * multiplier, 60); // 保证初筛候选池充足以支撑 Reranker 全局视野
+        int candidateFloor = (searchProperties != null && searchProperties.getCandidateFloor() > 0)
+                ? searchProperties.getCandidateFloor() : 60;
+        int candidateLimit = Math.max(topK * multiplier, candidateFloor); // 保证初筛候选池充足以支撑 Reranker 全局视野
 
         boolean isDegraded = embeddingService != null && embeddingService.degraded();
         double denseWeight = (searchProperties != null)

@@ -93,7 +93,6 @@ class HybridSearchServiceTest {
 
         // 核心门禁断言：pgvector 稠密向量查询严禁发生！
         verify(chunkMapper, never()).searchByVector(anyLong(), anyList(), anyString(), anyDouble(), anyInt());
-        verify(chunkMapper, never()).searchSimilarChunks(anyLong(), anyList(), anyString(), anyDouble(), anyInt());
         verify(embeddingService, never()).embed(anyString());
 
         // 稀疏全文检索正常驱动

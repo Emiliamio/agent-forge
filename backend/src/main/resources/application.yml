@@ -121,5 +121,7 @@ agentforge:
       rrf-k: 60
       score-threshold: 0.01
       candidate-multiplier: 2      # topK * multiplier 召回候选
+      candidate-floor: 60
       rerank-enabled: true
       rerank-model-weight: 0.5     # 重排器与原检索分的混合权重
+      rrf-normalize-factor: 30.0
