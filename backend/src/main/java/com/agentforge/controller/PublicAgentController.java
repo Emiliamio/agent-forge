@@ -135,21 +135,9 @@ public class PublicAgentController {
 
     @Data
     public static class WidgetChatRequest {
+        @NotBlank(message = "提问内容不能为空")
         private String message;
-        private String prompt;
         private int maxIterations = 3;
         private String token; // 安全挂件访问凭证
-
-        @NotBlank(message = "提问内容不能为空")
-        public String getMessage() {
-            return cn.hutool.core.util.StrUtil.isNotBlank(message) ? message : prompt;
-        }
-
-        public void setPrompt(String prompt) {
-            this.prompt = prompt;
-            if (cn.hutool.core.util.StrUtil.isBlank(this.message)) {
-                this.message = prompt;
-            }
-        }
     }
 }

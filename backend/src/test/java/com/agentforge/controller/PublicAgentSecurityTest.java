@@ -15,7 +15,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import com.agentforge.exception.GlobalExceptionHandler;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -164,5 +172,19 @@ public class PublicAgentSecurityTest {
                 publicAgentController.widgetChat(999L, req, null, null, null, servletRequest)
         );
         assertEquals(ErrorCode.AGENT_APP_NOT_FOUND.getCode(), ex.getCode());
+    }
+
+    @Test
+    @DisplayName("请求入参校验：未申报的 prompt 别名入参必须触发校验失败抛出 400/PARAM_ERROR")
+    void testPromptAliasRejectedAndThrowsParamError() throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(publicAgentController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+
+        mockMvc.perform(post("/public/agents/1/chat")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"prompt\":\"hi\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(ErrorCode.PARAM_ERROR.getCode()));
     }
 }
