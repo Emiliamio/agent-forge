@@ -12,9 +12,9 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 
 本项目提供完整的机器可读与行业标准的 CycloneDX 1.5 格式软件物料清单（SBOM）证据产物：
 - 后端 SBOM 产物：[`docs/sbom/backend-bom.json`](docs/sbom/backend-bom.json)
-  * 生成命令：`cd backend && mvn -B cyclonedx:makeAggregateBom && cp target/bom.json ../docs/sbom/backend-bom.json`
+  * 生成命令：`bash scripts/refresh-sbom.sh`
 - 前端 SBOM 产物：[`docs/sbom/frontend-bom.json`](docs/sbom/frontend-bom.json)
-  * 生成命令：`cd frontend && npm sbom --sbom-format cyclonedx > ../docs/sbom/frontend-bom.json`
+  * 生成命令：`bash scripts/refresh-sbom.sh`
 
 根据 CycloneDX SBOM（Software Bill of Materials）机器审计，本项目的许可证分布结论如下：
 1. **无 AGPL、无 GPLv3 等强传染性协议**：后端 172 项构件与前端 348 项依赖中，AGPL/GPLv3 组件数为 **0**；

@@ -132,6 +132,36 @@ jobs:
           trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
                     --skip-dirs node_modules --skip-dirs backend/target .
 
+  sbom-drift:
+    name: SBOM · drift check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: SBOM drift check
+        run: |
+          bash scripts/refresh-sbom.sh
+          git diff --exit-code docs/sbom/ || {
+            echo "[FAIL] docs/sbom 与当前依赖不一致，请运行 scripts/refresh-sbom.sh 并提交"; exit 1; }
+
   benchmark-drift:
     name: Benchmark · stable-metric drift check
     runs-on: ubuntu-latest
