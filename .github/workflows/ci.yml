@@ -212,6 +212,9 @@ jobs:
           python3 scripts/check_benchmark.py \
               --baseline docs/benchmark/stable.json --current /tmp/latest.json
 
+      - name: Benchmark doc checker self-test
+        run: python3 scripts/check_benchmark_doc.py --self-test
+
       - name: Benchmark doc drift check
         run: |
           python3 scripts/check_benchmark_doc.py \
