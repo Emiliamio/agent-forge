@@ -1,4 +1,4 @@
-name: AgentForge CI/CD Automated Pipeline
+name: AgentForge CI
 
 on:
   push:
@@ -6,12 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:
-  # ── 1. Backend Build, Integration & E2E Tests (JDK 21 LTS + pgvector + Redis) ──
-  backend-test:
-    name: Backend Test & Live Services (Java 21 LTS)
-    runs-on: ubuntu-latest
+permissions:
+  contents: read
 
+env:
+  DB_HOST: localhost
+  DB_PORT: "5432"
+  DB_NAME: agentforge
+  DB_USER: postgres
+  DB_PASSWORD: password123
+  REDIS_HOST: localhost
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: redis123
+
+jobs:
+  backend-test:
+    name: Backend · tests (live) + coverage + spotbugs
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -19,43 +30,18 @@ jobs:
           POSTGRES_DB: agentforge
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password123
-        ports:
-          - 5432:5432
+        ports: [ "5432:5432" ]
         options: >-
           --health-cmd "pg_isready -U postgres -d agentforge"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 5
-
+          --health-interval 5s --health-timeout 3s --health-retries 5
       redis:
         image: redis:7-alpine
-        ports:
-          - 6379:6379
+        ports: [ "6379:6379" ]
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 5
-
-    env:
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_NAME: agentforge
-      DB_USER: postgres
-      DB_PASSWORD: password123
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/agentforge?stringtype=unspecified
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password123
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ""
-      SPRING_DATA_REDIS_HOST: localhost
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: ""
-
+          --health-cmd "redis-cli -a redis123 ping"
+          --health-interval 5s --health-timeout 3s --health-retries 5
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -64,42 +50,142 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run AgentForge Backend 66+ Tests (Unit + Integration + Testcontainers)
+      - name: Prepare live test database (agentforge_it)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          export PGPASSWORD=password123
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE agentforge_it;"
+          psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 \
+               -f backend/src/main/resources/sql/schema.sql
+          psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 \
+               -f backend/src/main/resources/sql/seed-data.sql
+
+      - name: Run tests with live channel + JaCoCo gate + SpotBugs
         working-directory: backend
-        run: mvn clean test --batch-mode
+        env:
+          LIVE_TESTS: "true"
+        run: mvn -B clean verify -Dlive=true
 
-  # ── 2. Frontend Production Build (Node.js 20 + Vite + Vue 3.4) ──
+      - name: Upload test & coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-reports
+          path: |
+            backend/target/surefire-reports/**
+            backend/target/site/jacoco/**
+            backend/target/spotbugsXml.xml
+          if-no-files-found: warn
+
   frontend-build:
-    name: Frontend Build (Node 20 + Vue 3.4)
+    name: Frontend · lint + vitest + build
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Dependencies & Build Frontend
+      - name: Verify frontend quality gates
         working-directory: frontend
         run: |
           npm ci
+          npm run lint
+          npm test
           npm run build
 
-  # ── 3. Security SAST & Dependency Vulnerability Audit ──
   security-audit:
-    name: Security SAST & CVE Audit Gate
+    name: Security · gitleaks + OSV + trivy
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Run Security Audit
+      - name: Secret leak gate (gitleaks)
         run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-          trivy fs --severity CRITICAL,HIGH --exit-code 0 . || echo "Security SAST passed with 0 critical blockers."
+          GITLEAKS_VERSION=8.18.4
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks detect --no-git --source . --config .gitleaks.toml --redact --exit-code 1 --verbose
+
+      - name: Install OSV-Scanner
+        run: |
+          # v1.9.x 命令为 osv-scanner -r ./ ； v2.x 改为 osv-scanner scan source -r .
+          OSV_VERSION=1.9.3
+          curl -sSfL "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64" \
+            -o /usr/local/bin/osv-scanner
+          chmod +x /usr/local/bin/osv-scanner
+          osv-scanner --version
+
+      - name: Dependency vulnerability gate (OSV)
+        run: osv-scanner -r ./
+
+      - name: Filesystem CVE gate (trivy)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sudo sh -s -- -b /usr/local/bin
+          trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
+                    --skip-dirs node_modules --skip-dirs backend/target .
+
+  benchmark-drift:
+    name: Benchmark · stable-metric drift check
+    runs-on: ubuntu-latest
+    needs: backend-test
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: agentforge
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d agentforge"
+          --health-interval 5s --health-timeout 3s --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: [ "6379:6379" ]
+        options: >-
+          --health-cmd "redis-cli -a redis123 ping"
+          --health-interval 5s --health-timeout 3s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Boot backend
+        working-directory: backend
+        run: |
+          nohup mvn -q -DskipTests spring-boot:run > /tmp/backend.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/api/system/health | grep -q '"code":200'; then
+              echo "[OK] backend up"; break
+            fi
+            sleep 3
+          done
+          curl -sf http://localhost:8080/api/system/health | grep -q '"code":200' \
+            || { echo "[FAIL] backend not healthy"; tail -n 80 /tmp/backend.log; exit 1; }
+
+      - name: Re-run benchmark and compare stable metrics
+        run: |
+          python3 scripts/benchmark.py --out /tmp/latest.json
+          python3 scripts/check_benchmark.py \
+              --baseline docs/benchmark/stable.json --current /tmp/latest.json
+
+      - name: Upload benchmark artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-run
+          path: /tmp/latest.json
+          if-no-files-found: warn

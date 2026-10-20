@@ -1,0 +1,18 @@
+title = "AgentForge gitleaks config"
+
+[allowlist]
+description = "明文示例或测试 Key（无真实凭据）"
+paths = [
+  '''docker-compose\.ya?ml''',
+  '''docker-compose-prod\.yml''',
+  '''backend/src/main/resources/sql/seed-data\.sql''',
+  '''backend/src/test/.*''',
+  '''\.env\.example''',
+]
+regexes = [
+  '''password123''',
+  '''redis123''',
+  '''redis123456''',
+  '''admin123456''',
+  '''sk-placeholder''',
+]
