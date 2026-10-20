@@ -141,6 +141,7 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 - **同机与演示环境设计取舍**：由于回环地址 `127.0.0.1` / `::1` 默认在受信任列表中（以原生支持部署在同机上的 Nginx/网关反代架构），因此**同机发起的测试脚本或本机直连进程**若主动伪造 `X-Forwarded-For` 仍会被视作同机上游反代转发处理。防伪造机制已 100% 封死所有局域网（LAN）与公网外部直连伪造；若生产环境反代与应用跨机部署且无同机反代需求，可将 `trusted-proxies` 中回环地址移除或仅配置网关真实物理 IP，彻底收口。
 
 ### 3. 公开挂件 Security-by-Default 规范与存量激活
+- **单 IP 速率防护**：公开挂件默认配置 `agentforge.widget.rate-limit-rpm: 30`（30 次/分钟），超频自动触发 HTTP 429 熔断与 `Retry-After: 60` 响应头防护。
 - **默认安全阻断 (Security-by-Default)**：无论是新建智能体还是存量老库平滑升级，`public_enabled` 物理默认值均为 `0`（关闭）。未显式开启或 `public_enabled != 1` 时，外部匿名请求一律触发 403 Forbidden 阻断。
 - **存量系统激活公开挂件**：老库升级后若需要对外部访客开放免登录聊天挂件（如 ID 为 1 的默认智能体），请管理员在数据库中显式开启：
   ```sql
@@ -149,6 +150,12 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
   ```
 - **恒定时间凭据比对**：挂件安全密钥（`public_token`）采用 `MessageDigest.isEqual` 进行常量时间比对，杜绝基于响应延迟的计时侧信道攻击。
 - **凭据传输收敛**：安全 Token 仅允许通过 Header (`X-Public-Token` 或 `Authorization`) 或请求体传递，严禁在 URL Query String 中暴露，防止网关日志与浏览器历史泄密。
+
+### 4. 关键受保护端点与访问控制权限声明
+系统遵循最小权限原则（Principle of Least Privilege），核心端点访问权限管控如下：
+- **系统全维诊断接口 (`GET /system/diagnostics`)**：包含运行时 JVM 线程、数据库连接池、内存分配与依赖健康状态，**严格限定仅允许 ADMIN 或 OWNER 角色访问**；普通租户成员（VIEWER）或未授权访客访问坚决返回 403 Forbidden 拦截。
+- **租户账单用量接口 (`GET /billing/tenant/{tenantId}/usage`)**：租户仅可查看自身所属租户的账单统计；跨租户横向越权请求自动触发 403 Forbidden 阻断。
+- **公开挂件接口 (`POST /public/agents/{id}/chat`)**：默认关闭（`public_enabled = 0`），开启后受 30 RPM 速率限制与凭证校验保护。
 
 ---
 

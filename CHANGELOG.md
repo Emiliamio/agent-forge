@@ -5,6 +5,9 @@
 
 ## 🚀 [v1.3.0] - 2026-10-20
 
+### Security
+- 系统诊断接口：`/system/diagnostics` 权限收紧为仅允许 ADMIN 或 OWNER 角色访问（普通租户/VIEWER 访问返回 403 为安全加固设计行为）
+
 ### Changed
 - 限流响应：HTTP 状态码统一为 429 并携带 Retry-After，业务码保持 1008（v1.0 前的既有契约不变）
 

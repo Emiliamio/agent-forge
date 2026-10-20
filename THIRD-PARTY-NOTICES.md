@@ -10,6 +10,12 @@
 
 AgentForge 商业版采用**私有商业授权（Proprietary License with Evaluation Grant）**。本项目在构建与运行时集成了部分采用宽松开源许可证（Permissive Open-Source Licenses）分发的第三方开源依赖库。
 
+本项目提供完整的机器可读与行业标准的 CycloneDX 1.5 格式软件物料清单（SBOM）证据产物：
+- 后端 SBOM 产物：[`docs/sbom/backend-bom.json`](docs/sbom/backend-bom.json)
+  * 生成命令：`cd backend && mvn -B cyclonedx:makeAggregateBom && cp target/bom.json ../docs/sbom/backend-bom.json`
+- 前端 SBOM 产物：[`docs/sbom/frontend-bom.json`](docs/sbom/frontend-bom.json)
+  * 生成命令：`cd frontend && npm sbom --sbom-format cyclonedx > ../docs/sbom/frontend-bom.json`
+
 根据软件供应链合规审查与 CycloneDX SBOM（Software Bill of Materials）规范化审计：
 1. **零强传染性开源协议（0 GPL / 0 AGPL）**：本项目未静态链接或依赖任何 GPLv3、AGPL 或其他强传染性 Copyleft 许可证组件。
 2. **双许可证明确选型（Dual-License Election）**：对于提供多许可证选型的组件（如 JSqlParser 提供 Apache-2.0 与 LGPL-2.1 双许可证，Logback 提供 EPL-1.0 与 LGPL-2.1 双许可证），本项目严格依照其官方授权协议明确选择并适用其**非强传染性宽松许可条款（Apache-2.0 / EPL）**。

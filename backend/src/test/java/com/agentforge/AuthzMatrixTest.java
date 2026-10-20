@@ -280,6 +280,7 @@ public class AuthzMatrixTest {
     @Test
     @DisplayName("12. GET /system/diagnostics (普通租户 Token) -> 403 越权拦截 (需 ADMIN/OWNER)")
     void test12_GetDiagnostics_ViewerToken_Returns403() throws Exception {
+        // 普通租户 (VIEWER 角色) 访问系统全维诊断接口返回 403 为预期安全加固设计行为 (该接口严格要求 ADMIN 或 OWNER 角色)
         MvcResult res = mockMvc.perform(get("/system/diagnostics")
                         .header("Authorization", "Bearer " + cachedViewerToken))
                 .andReturn();
