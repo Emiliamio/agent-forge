@@ -122,16 +122,19 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 
 ## 🛡️ 生产安全与存量老库平滑升级说明
 
-### 1. 存量老库平滑演进与 Zero-DBA 自愈能力
-系统内置 `DatabaseAutoInitializer` 基于 `schema_version` 版本化管理增量自愈机制，在面对非空老库启动时**绝不跳过结构打补丁**，同时保证只执行一次增量迁移，彻底杜绝重启性能风暴：
-- **版本化幂等迁移 (`schema_version`)**：记录已应用的版本（如 `V1_0_1__timestamptz_alignment`、`V1_0_2__cjk_bigram_functions`、`V1_0_3__agent_public_columns`、`V1_0_4__cjk_bigram_backfill`），仅首次执行全量倒排索引重算，后续重启秒级就绪。
-- **智能体挂件字段自愈**：
-  ```sql
-  ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 0;
-  ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_token VARCHAR(64);
-  ```
-- **CJK Bigram 倒排索引函数与触发器升级**：自动检测并替换 `cjk_bigram_tokenize` 状态机函数与 `trg_chunk_tsv_update` 触发器，历史切片自动触发全量倒排重算。
-- **核心白名单时间列自愈**：严格限定在 13 张核心业务表白名单内扫描，将历史遗留的 `TIMESTAMPTZ`（`timestamp with time zone`）平滑转换为标准 `TIMESTAMP WITHOUT TIME ZONE`，杜绝触碰非系统表，并彻底解决 PostgreSQL JDBC 驱动抛出 `Cannot convert TIMESTAMPTZ to LocalDateTime`。
+### 1. 工业级 Flyway 数据库版本化迁移与老库 Baseline 机制
+系统已全量弃用 Java 运行时 DDL，改由工业级 **Flyway 10** 严格接管数据库生命周期演进（历史补丁表 `schema_version` 已废弃，统一收敛至 `flyway_schema_history`），杜绝运行时动态拼装 DDL 的风险：
+- **版本化迁移脚本矩阵 (`db/migration/`)**：
+  * `V1__baseline.sql`：13 张核心物理表、HNSW 与 GIN 基础索引基线；
+  * `V2__cjk_bigram_functions.sql`：纯 SQL 状态机 `cjk_bigram_tokenize` 分词函数与自动倒排触发器，同时清理废弃的旧 `schema_version` 表；
+  * `V3__agent_public_columns.sql`：智能体公开免密挂件字段（`public_enabled`、`public_token`）平滑扩表；
+  * `V4__chunk_tsv_backfill.sql`：存量文档切片 CJK 倒排索引全量刷新与触发重算；
+  * `V5__time_column_alignment.sql`：存量历史时间字段结构对齐（自动将 `api_key.expired_at` 等存量 `TIMESTAMPTZ` 平滑转换为标准 `TIMESTAMP WITHOUT TIME ZONE`，并配合 `init-sqls: SET TIME ZONE 'UTC'` 保障转换无时区漂移）。
+- **存量老库自动 Baseline 纳管 (`baseline-on-migrate: true`)**：
+  针对非空老库环境，Flyway 启动时自动将现有老结构基线化为 `V1`（`baseline-version: 1`），并自动顺序执行 `V2`~`V5` 增量迁移脚本，实现老系统无缝平滑演进。
+- **健康门禁与数据播种解耦**：
+  * 数据库种子数据由 `DataSeeder` 仅在全新空库（`sys_tenant` 记录数为 0）时幂等注入，生产环境可通过 `agentforge.seed.enabled: false` 显式关闭；
+  * 应用启动前置通过 `SchemaHealthChecker` 严格巡检 `flyway_schema_history` 及核心字段完整性，未迁移时坚决拒绝启动并提示 `mvn flyway:migrate`。
 
 ### 2. 网络安全：客户端真实 IP 解析与防伪造 X-Forwarded-For
 认证中心与公开挂件限流彻底废弃危险的全局 `forward-headers-strategy: framework`，采用 `ClientIpResolver` 自主实现的**从右向左代理信任链剔除算法**：

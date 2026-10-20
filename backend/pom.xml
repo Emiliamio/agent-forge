@@ -31,6 +31,10 @@
         <pdfbox.version>3.0.1</pdfbox.version>
         <poi.version>5.2.5</poi.version>
         <commonmark.version>0.21.0</commonmark.version>
+        <flyway.version>10.10.0</flyway.version>
+        <flyway.user>postgres</flyway.user>
+        <flyway.password>password123</flyway.password>
+        <flyway.url>jdbc:postgresql://localhost:5432/agentforge?stringtype=unspecified</flyway.url>
     </properties>
 
     <dependencies>
@@ -64,6 +68,18 @@
         </dependency>
 
         <!-- MyBatis-Plus 3.5.5 (支持 Spring Boot 3 & JsqlParser 租户拦截) -->
+        <!-- Flyway 数据库版本化迁移管理 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -251,6 +267,17 @@
                 <executions>
                     <execution><id>check</id><phase>verify</phase><goals><goal>check</goal></goals></execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway.version}</version>
+                <configuration>
+                    <url>${flyway.url}</url>
+                    <user>${flyway.user}</user>
+                    <password>${flyway.password}</password>
+                    <locations><location>classpath:db/migration</location></locations>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.cyclonedx</groupId>

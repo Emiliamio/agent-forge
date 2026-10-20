@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   servlet:
     context-path: /api
     encoding:
@@ -11,6 +11,15 @@ spring:
     name: agent-forge-backend
   profiles:
     active: dev
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
+    baseline-description: "legacy schema adopted as baseline"
+    validate-on-migrate: true
+    out-of-order: false
+    init-sqls: SET TIME ZONE 'UTC'
   # 开启 Java 21 虚拟线程支持 (高并发极速吞吐)
   threads:
     virtual:

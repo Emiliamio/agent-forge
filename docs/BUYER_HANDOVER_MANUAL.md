@@ -66,7 +66,7 @@ docker-compose -f docker-compose-prod.yml up -d
 ## ❓ 3. 常见交付与运维疑难排查 10 问 (FAQ)
 
 #### Q1: 数据库是否需要手动建表和导入 SQL？
-* **答**：**完全不需要！** 系统内置了 `Zero-DBA` 自动初始化引擎，首次启动会自动检测并静默执行 `schema.sql` 和 `seed-data.sql`，开箱即用。
+* **答**：**完全不需要！** 首次启动由 Flyway 自动执行 `db/migration` 下的版本化迁移，种子数据由 `DataSeeder` 在空库时注入；也可手动 `cd backend && mvn flyway:migrate` 预迁移。
 
 #### Q2: 某一个大模型 API Key 突然欠费了，系统会不会报错卡死？
 * **答**：**绝对不会！** 系统内置了 `ApiKeyPoolManager` 智能负载池与 `ResilientLlmFailoverService` 级联熔断器，遇到 401/429 异常会自动切换下一个健康 Key，或者自动平滑降级到本地 Ollama 离线显卡模型。

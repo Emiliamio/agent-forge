@@ -13,8 +13,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
-      - ./backend/src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./backend/src/main/resources/sql/seed-data.sql:/docker-entrypoint-initdb.d/02-seed.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d agent_forge"]
       interval: 5s

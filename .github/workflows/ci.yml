@@ -55,10 +55,10 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
           export PGPASSWORD=password123
           psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE agentforge_it;"
-          psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 \
-               -f backend/src/main/resources/sql/schema.sql
-          psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 \
-               -f backend/src/main/resources/sql/seed-data.sql
+          cd backend
+          mvn -q -B flyway:migrate \
+            -Dflyway.url=jdbc:postgresql://localhost:5432/agentforge_it -Dflyway.user=postgres -Dflyway.password=password123
+          psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 -f src/main/resources/sql/seed-data.sql
 
       - name: Run tests with live channel + JaCoCo gate + SpotBugs
         working-directory: backend

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS api_key (
     rate_limit_rpm      INT NOT NULL DEFAULT 60, -- 每分钟请求数限制
     rate_limit_tpm      INT NOT NULL DEFAULT 100000, -- 每分钟 Token 数限制
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 启用, 0: 禁用
-    expired_at          TIMESTAMP,
+    expired_at          TIMESTAMP WITH TIME ZONE,
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -165,9 +165,6 @@ CREATE TRIGGER trg_chunk_tsv_update
 BEFORE INSERT OR UPDATE ON document_chunk
 FOR EACH ROW EXECUTE FUNCTION update_chunk_tsv();
 
--- 7.6 历史存量数据 tsv 倒排索引增量回填 (对尚未生成 CJK Bigram 向量的历史切片进行重算)
-UPDATE document_chunk SET content = content WHERE tsv_content IS NULL;
-
 -- 8. 智能体应用表 (agent_app)
 CREATE TABLE IF NOT EXISTS agent_app (
     id                  BIGSERIAL PRIMARY KEY,
@@ -181,13 +178,9 @@ CREATE TABLE IF NOT EXISTS agent_app (
     tools_config        JSONB DEFAULT '[]'::jsonb, -- 启用的内置与外部 OpenAPI 工具列表
     dataset_ids         JSONB DEFAULT '[]'::jsonb, -- 关联知识库 ID 数组
     status              SMALLINT NOT NULL DEFAULT 1, -- 1: 启用, 0: 禁用
-    public_enabled      SMALLINT NOT NULL DEFAULT 0, -- 1: 允许公开免密挂件访问, 0: 禁止 (默认关闭保障安全)
-    public_token        VARCHAR(64), -- 可选的挂件签名密钥/安全分享 Token
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_enabled SMALLINT NOT NULL DEFAULT 0;
-ALTER TABLE agent_app ADD COLUMN IF NOT EXISTS public_token VARCHAR(64);
 CREATE INDEX IF NOT EXISTS idx_agent_app_tenant ON agent_app(tenant_id);
 
 -- 9. 工作流 DAG 定义表 (workflow_definition)
