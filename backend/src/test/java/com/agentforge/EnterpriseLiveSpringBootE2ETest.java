@@ -38,59 +38,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * 2. 真实数据库登录换取 Token -> 业务授权访问 -> 伪造租户头 403 熔断
  * 3. DocumentChunkMapper 真实 pgvector 与 jsonb 写入及 <=> 检索闭环 (完全不撞车 JSqlParser)
  */
-@Testcontainers(disabledWithoutDocker = true)
-@org.junit.jupiter.api.condition.EnabledIf("isDockerAvailable")
+@org.junit.jupiter.api.condition.EnabledIf("com.agentforge.support.LiveTestSupport#usable")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DisplayName("企业级全上下文 SpringBootTest + Testcontainers 真实闭环集成测试")
 public class EnterpriseLiveSpringBootE2ETest {
 
-    private static final DockerImageName PGVECTOR_IMAGE = DockerImageName.parse("pgvector/pgvector:pg16")
-            .asCompatibleSubstituteFor("postgres");
-
-    static final PostgreSQLContainer<?> postgres;
-    static final GenericContainer<?> redis;
-
-    static {
-        PostgreSQLContainer<?> pg = null;
-        GenericContainer<?> rd = null;
-        try {
-            pg = new PostgreSQLContainer<>(PGVECTOR_IMAGE)
-                    .withDatabaseName("agentforge")
-                    .withUsername("postgres")
-                    .withPassword("password123");
-            pg.start();
-
-            rd = new GenericContainer<>(DockerImageName.parse("redis:7-alpine"))
-                    .withCommand("redis-server", "--requirepass", "redis123")
-                    .withExposedPorts(6379);
-            rd.start();
-        } catch (Throwable ignored) {
-        }
-        postgres = pg;
-        redis = rd;
-    }
-
-    public static boolean isDockerAvailable() {
-        return postgres != null && postgres.isRunning() && redis != null && redis.isRunning();
-    }
-
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        if (postgres != null && postgres.isRunning()) {
-            registry.add("spring.datasource.url", () -> postgres.getJdbcUrl() + "&stringtype=unspecified");
-            registry.add("spring.datasource.username", postgres::getUsername);
-            registry.add("spring.datasource.password", postgres::getPassword);
-        }
-        if (redis != null && redis.isRunning()) {
-            registry.add("spring.data.redis.host", redis::getHost);
-            registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-            registry.add("spring.data.redis.password", () -> "redis123");
-            registry.add("spring.redis.host", redis::getHost);
-            registry.add("spring.redis.port", redis::getFirstMappedPort);
-            registry.add("spring.redis.password", () -> "redis123");
-            registry.add("spring.data.redis.timeout", () -> "3000ms");
-        }
+        com.agentforge.support.LiveTestSupport.register(registry);
     }
 
     @Autowired

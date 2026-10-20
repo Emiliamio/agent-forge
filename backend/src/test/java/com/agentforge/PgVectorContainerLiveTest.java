@@ -1,11 +1,14 @@
 package com.agentforge;
 
+import com.agentforge.support.LiveTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,28 +21,32 @@ import static org.junit.jupiter.api.Assertions.*;
  * 基于 Testcontainers 与真实 pgvector/pgvector:pg16 容器的向量与 SQL 扩展校验测试
  * 当本地或 CI 环境已拉起 Docker 时自动触发验证；无 Docker 环境时自动跳过
  */
-@Testcontainers(disabledWithoutDocker = true)
+@EnabledIf("com.agentforge.support.LiveTestSupport#usable")
+@SpringBootTest
 @DisplayName("Testcontainers 真实 pgvector 容器集成验证 (Docker 自动化)")
 public class PgVectorContainerLiveTest {
 
-    private static final DockerImageName PGVECTOR_IMAGE = DockerImageName.parse("pgvector/pgvector:pg16")
-            .asCompatibleSubstituteFor("postgres");
+    @DynamicPropertySource
+    static void props(DynamicPropertyRegistry r) {
+        LiveTestSupport.register(r);
+    }
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(PGVECTOR_IMAGE)
-            .withDatabaseName("agentforge_test")
-            .withUsername("test_user")
-            .withPassword("test_password_2026");
+    @Autowired
+    private Environment env;
 
     @Test
     @DisplayName("测试真实 PostgreSQL 容器中加载 pgvector 扩展及向量余弦距离计算")
     void testPgVectorExtensionAndDistanceCalculation() throws Exception {
-        assertTrue(postgres.isRunning(), "PostgreSQL 容器必须正常运行");
+        assertTrue(LiveTestSupport.usable(), "PostgreSQL 容器必须正常运行");
+
+        String jdbcUrl = env.getProperty("spring.datasource.url");
+        String username = env.getProperty("spring.datasource.username", "postgres");
+        String password = env.getProperty("spring.datasource.password", "password123");
 
         try (Connection conn = DriverManager.getConnection(
-                postgres.getJdbcUrl(),
-                postgres.getUsername(),
-                postgres.getPassword()
+                jdbcUrl,
+                username,
+                password
         ); Statement stmt = conn.createStatement()) {
 
             // 1. 验证激活 vector 扩展
@@ -75,12 +82,19 @@ public class PgVectorContainerLiveTest {
     @Test
     @DisplayName("测试真实 PostgreSQL 容器中验证 vector(3) 与 jsonb 混合写入和 <=> 运算符无报错")
     void testPgVectorAndJsonbTypeHandling() throws Exception {
-        assertTrue(postgres.isRunning(), "PostgreSQL 容器必须正常运行");
+        assertTrue(LiveTestSupport.usable(), "PostgreSQL 容器必须正常运行");
+
+        String jdbcUrl = env.getProperty("spring.datasource.url");
+        if (jdbcUrl != null && !jdbcUrl.contains("stringtype=unspecified")) {
+            jdbcUrl += (jdbcUrl.contains("?") ? "&" : "?") + "stringtype=unspecified";
+        }
+        String username = env.getProperty("spring.datasource.username", "postgres");
+        String password = env.getProperty("spring.datasource.password", "password123");
 
         try (Connection conn = DriverManager.getConnection(
-                postgres.getJdbcUrl() + "&stringtype=unspecified",
-                postgres.getUsername(),
-                postgres.getPassword()
+                jdbcUrl,
+                username,
+                password
         ); Statement stmt = conn.createStatement()) {
 
             stmt.execute("CREATE EXTENSION IF NOT EXISTS vector;");
