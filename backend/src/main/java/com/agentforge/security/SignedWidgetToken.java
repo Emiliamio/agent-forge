@@ -15,6 +15,7 @@ import java.util.Base64;
 /**
  * 挂件签名令牌工具类
  * 格式：v1.<exp>.<nonce>.<hmacBase64Url>
+ * 签名载荷：agentId|tenantId|exp|nonce
  */
 @Slf4j
 public final class SignedWidgetToken {
@@ -30,20 +31,20 @@ public final class SignedWidgetToken {
         return token != null && token.startsWith(PREFIX);
     }
 
-    public static String sign(String secretKey, long exp, String nonce) {
+    public static String sign(String secretKey, long agentId, long tenantId, long exp, String nonce) {
         if (secretKey == null || secretKey.trim().isEmpty()) {
             throw new IllegalArgumentException("Secret key must not be empty");
         }
         if (nonce == null || nonce.trim().isEmpty()) {
             throw new IllegalArgumentException("Nonce must not be empty");
         }
-        String payload = "v1." + exp + "." + nonce;
-        byte[] hmacBytes = calculateHmac(secretKey, payload);
+        String payloadToSign = agentId + "|" + tenantId + "|" + exp + "|" + nonce;
+        byte[] hmacBytes = calculateHmac(secretKey, payloadToSign);
         String hmacBase64Url = Base64.getUrlEncoder().withoutPadding().encodeToString(hmacBytes);
-        return payload + "." + hmacBase64Url;
+        return PREFIX + exp + "." + nonce + "." + hmacBase64Url;
     }
 
-    public static void verify(String token, String secretKey, ReplayGuard replayGuard) {
+    public static void verify(String token, String secretKey, long agentId, long tenantId, ReplayGuard replayGuard) {
         if (!isSignedToken(token)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 格式无效");
         }
@@ -77,12 +78,8 @@ public final class SignedWidgetToken {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证随机数无效");
         }
 
-        if (replayGuard != null) {
-            replayGuard.checkAndRecord(nonce, exp);
-        }
-
-        String payload = "v1." + expStr + "." + nonce;
-        byte[] expectedHmac = calculateHmac(secretKey, payload);
+        String payloadToSign = agentId + "|" + tenantId + "|" + expStr + "|" + nonce;
+        byte[] expectedHmac = calculateHmac(secretKey, payloadToSign);
         String expectedSig = Base64.getUrlEncoder().withoutPadding().encodeToString(expectedHmac);
 
         boolean signatureMatches = MessageDigest.isEqual(
@@ -93,6 +90,10 @@ public final class SignedWidgetToken {
         if (!signatureMatches) {
             log.warn("🛑 [WIDGET_TOKEN_SIGNATURE_INVALID] 签名校验失败");
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证签名校验失败");
+        }
+
+        if (replayGuard != null) {
+            replayGuard.checkAndRecord(nonce, exp);
         }
     }
 

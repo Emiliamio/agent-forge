@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 public class SignedWidgetTokenTest {
 
     private static final String SECRET_KEY = "test-secret-key-123456";
+    private static final long DEFAULT_AGENT_ID = 1L;
+    private static final long DEFAULT_TENANT_ID = 1L;
 
     @Mock
     private ObjectProvider<StringRedisTemplate> redisTemplateProvider;
@@ -47,10 +49,10 @@ public class SignedWidgetTokenTest {
     void testNormalSignedTokenPasses() {
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
         String nonce = "a1b2c3d4e5f6";
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
         assertTrue(SignedWidgetToken.isSignedToken(token));
-        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, replayGuard));
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
     }
 
     @Test
@@ -58,10 +60,10 @@ public class SignedWidgetTokenTest {
     void testExpiredTokenRejected() {
         long exp = (System.currentTimeMillis() / 1000L) - 35L;
         String nonce = "expired123456";
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(token, SECRET_KEY, replayGuard));
+                SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("过期"));
     }
@@ -69,12 +71,11 @@ public class SignedWidgetTokenTest {
     @Test
     @DisplayName("3. 允许 30 秒时钟漂移宽限期")
     void testClockSkewGracePeriod() {
-        // 过期 15 秒（未超过 30 秒宽限期）
         long exp = (System.currentTimeMillis() / 1000L) - 15L;
         String nonce = "grace12345678";
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
-        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, replayGuard));
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
     }
 
     @Test
@@ -82,11 +83,11 @@ public class SignedWidgetTokenTest {
     void testTamperedSignatureRejected() {
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
         String nonce = "tamper123456";
-        String validToken = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String validToken = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
         String tamperedToken = validToken + "X";
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(tamperedToken, SECRET_KEY, replayGuard));
+                SignedWidgetToken.verify(tamperedToken, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("签名校验失败"));
     }
@@ -96,14 +97,13 @@ public class SignedWidgetTokenTest {
     void testTamperedPayloadRejected() {
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
         String nonce = "payload123456";
-        String validToken = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String validToken = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
         String[] parts = validToken.split("\\.");
-        // 将 exp 改为更长时间
         String tamperedToken = parts[0] + "." + (exp + 1000L) + "." + parts[2] + "." + parts[3];
 
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(tamperedToken, SECRET_KEY, replayGuard));
+                SignedWidgetToken.verify(tamperedToken, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("签名校验失败"));
     }
@@ -113,14 +113,14 @@ public class SignedWidgetTokenTest {
     void testReplayAttackRejectedInMemory() {
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
         String nonce = "replay-nonce-001";
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, nonce);
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
 
         // 第一次调用通过
-        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, replayGuard));
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
 
         // 第二次调用触发重放拦截
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(token, SECRET_KEY, replayGuard));
+                SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("重放拦截"));
     }
@@ -131,14 +131,14 @@ public class SignedWidgetTokenTest {
         when(redisTemplateProvider.getIfAvailable()).thenReturn(redisTemplate);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.setIfAbsent(eq("widget:nonce:redis-nonce-001"), eq("1"), any(Duration.class)))
-                .thenReturn(false); // 已存在
+                .thenReturn(false);
 
         ReplayGuard redisReplayGuard = new ReplayGuard(redisTemplateProvider);
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, "redis-nonce-001");
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, "redis-nonce-001");
 
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(token, SECRET_KEY, redisReplayGuard));
+                SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, redisReplayGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("重放拦截"));
     }
@@ -151,13 +151,11 @@ public class SignedWidgetTokenTest {
 
         ReplayGuard fallbackGuard = new ReplayGuard(redisTemplateProvider);
         long exp = (System.currentTimeMillis() / 1000L) + 3600L;
-        String token = SignedWidgetToken.sign(SECRET_KEY, exp, "redis-down-nonce");
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, "redis-down-nonce");
 
-        // 第一次降级到内存通过
-        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, fallbackGuard));
-        // 第二次被本地内存重放拦截
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, fallbackGuard));
         BusinessException ex = assertThrows(BusinessException.class, () ->
-                SignedWidgetToken.verify(token, SECRET_KEY, fallbackGuard));
+                SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, fallbackGuard));
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("重放拦截"));
     }
@@ -168,9 +166,49 @@ public class SignedWidgetTokenTest {
         assertFalse(SignedWidgetToken.isSignedToken("plaintext-secret-token"));
         assertFalse(SignedWidgetToken.isSignedToken(null));
 
-        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.abc", SECRET_KEY, replayGuard));
-        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.notanumber.nonce.sig", SECRET_KEY, replayGuard));
-        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.12345..sig", SECRET_KEY, replayGuard));
-        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("not-v1", SECRET_KEY, replayGuard));
+        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.abc", SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.notanumber.nonce.sig", SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("v1.12345..sig", SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+        assertThrows(BusinessException.class, () -> SignedWidgetToken.verify("not-v1", SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+    }
+
+    @Test
+    @DisplayName("10. 伪造请求不得烧掉 nonce：篡改签名失败后，同一 nonce 的真实令牌仍必须通过")
+    void forgeryMustNotBurnNonce() {
+        String nonce = "0123456789abcdef";
+        long exp = System.currentTimeMillis() / 1000 + 300;
+        String valid = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, nonce);
+        String forged = valid.substring(0, valid.length() - 2) + "ZZ";
+
+        ReplayGuard guard = new ReplayGuard(null);
+        assertThrows(BusinessException.class,
+                () -> SignedWidgetToken.verify(forged, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, guard));
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(valid, SECRET_KEY, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, guard));
+    }
+
+    @Test
+    @DisplayName("11. 跨 Agent 伪造令牌坚决拒绝：Agent 1 签发的令牌校验 Agent 2 必须返回 401")
+    void crossAgentTokenRejected() {
+        long exp = (System.currentTimeMillis() / 1000L) + 3600L;
+        String nonce = "cross-agent-nonce-1";
+        String token = SignedWidgetToken.sign(SECRET_KEY, 1L, DEFAULT_TENANT_ID, exp, nonce);
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                SignedWidgetToken.verify(token, SECRET_KEY, 2L, DEFAULT_TENANT_ID, replayGuard));
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("签名校验失败"));
+    }
+
+    @Test
+    @DisplayName("12. 跨 Tenant 伪造令牌坚决拒绝：Tenant 1 签发的令牌校验 Tenant 2 必须返回 401")
+    void crossTenantTokenRejected() {
+        long exp = (System.currentTimeMillis() / 1000L) + 3600L;
+        String nonce = "cross-tenant-nonce-1";
+        String token = SignedWidgetToken.sign(SECRET_KEY, DEFAULT_AGENT_ID, 1L, exp, nonce);
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                SignedWidgetToken.verify(token, SECRET_KEY, DEFAULT_AGENT_ID, 2L, replayGuard));
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("签名校验失败"));
     }
 }

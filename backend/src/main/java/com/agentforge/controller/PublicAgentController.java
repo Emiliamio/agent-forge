@@ -99,7 +99,7 @@ public class PublicAgentController {
             }
 
             if (SignedWidgetToken.isSignedToken(incomingToken)) {
-                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), replayGuard);
+                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), app.getId(), app.getTenantId(), replayGuard);
             } else {
                 log.warn("Legacy plaintext public token used for agent {}, please upgrade to signed tokens", id);
                 boolean tokenMatches = MessageDigest.isEqual(
