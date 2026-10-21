@@ -48,7 +48,24 @@ public class GlobalExceptionHandler {
         }
         org.springframework.http.ResponseEntity.BodyBuilder responseBuilder = org.springframework.http.ResponseEntity.status(httpStatus);
         if (httpStatus == HttpStatus.TOO_MANY_REQUESTS) {
-            responseBuilder.header("Retry-After", "60");
+            int retryAfter = (e.getRetryAfterSeconds() != null && e.getRetryAfterSeconds() > 0)
+                    ? e.getRetryAfterSeconds()
+                    : 60;
+            responseBuilder.header("Retry-After", String.valueOf(retryAfter));
+            if (e.getRateLimitLimit() != null) {
+                responseBuilder.header("X-RateLimit-Limit", String.valueOf(e.getRateLimitLimit()));
+            }
+            if (e.getRateLimitRemaining() != null) {
+                responseBuilder.header("X-RateLimit-Remaining", String.valueOf(e.getRateLimitRemaining()));
+            } else {
+                responseBuilder.header("X-RateLimit-Remaining", "0");
+            }
+            if (e.getRateLimitReset() != null) {
+                responseBuilder.header("X-RateLimit-Reset", String.valueOf(e.getRateLimitReset()));
+            } else {
+                long resetEpoch = (System.currentTimeMillis() / 1000L) + retryAfter;
+                responseBuilder.header("X-RateLimit-Reset", String.valueOf(resetEpoch));
+            }
         }
         return responseBuilder.body(Result.fail(e.getCode(), e.getMessage()));
     }

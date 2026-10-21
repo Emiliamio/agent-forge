@@ -345,7 +345,9 @@ public class AuthzMatrixTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(header().string("Retry-After", "60"))
+                .andExpect(header().exists("Retry-After"))
+                .andExpect(header().exists("X-RateLimit-Limit"))
+                .andExpect(header().string("X-RateLimit-Remaining", "0"))
                 .andReturn();
 
         assertSecurityResponse(res4, 429, 1008);

@@ -46,6 +46,8 @@ public class PublicAgentSecurityTest {
     private ClientIpResolver clientIpResolver;
     @Mock
     private com.agentforge.security.ReplayGuard replayGuard;
+    @Mock
+    private com.agentforge.security.LuaRateLimiter luaRateLimiter;
 
     @InjectMocks
     private PublicAgentController publicAgentController;
