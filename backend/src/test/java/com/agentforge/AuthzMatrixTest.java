@@ -348,6 +348,10 @@ public class AuthzMatrixTest {
                 .andExpect(header().exists("Retry-After"))
                 .andExpect(header().exists("X-RateLimit-Limit"))
                 .andExpect(header().string("X-RateLimit-Remaining", "0"))
+                .andDo(result -> {
+                    int seconds = Integer.parseInt(result.getResponse().getHeader("Retry-After"));
+                    assertTrue(seconds >= 1 && seconds <= 60, "Retry-After 必须是 1..60 秒，实际=" + seconds);
+                })
                 .andReturn();
 
         assertSecurityResponse(res4, 429, 1008);
