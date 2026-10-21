@@ -1,0 +1,49 @@
+server:
+  error:
+    include-stacktrace: never
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?currentSchema=public&reWriteBatchedInserts=true&stringtype=unspecified
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      connection-test-query: SELECT 1
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 4
+          max-wait: 3000ms
+
+sa-token:
+  jwt-secret-key: ${JWT_SECRET}
+
+agentforge:
+  version: 1.0.0
+  seed:
+    enabled: false
+  widget:
+    rate-limit-rpm: 30
+    rate-limit-agent-rpm: 300
+    rate-limit-token-rpm: 60
+
+logging:
+  level:
+    root: INFO
+    com.agentforge: INFO
+    com.baomidou.mybatisplus: WARN
+    org.springframework.web: WARN

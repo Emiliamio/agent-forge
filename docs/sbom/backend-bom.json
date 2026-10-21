@@ -1440,6 +1440,76 @@
       "version": "2.15.4"
     },
     {
+      "bom-ref": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.15.4?type=jar",
+      "description": "Support for reading and writing TOML-encoded data via Jackson abstractions.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/FasterXML/jackson-dataformats-text"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/FasterXML/jackson-dataformats-text/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/FasterXML/jackson-dataformats-text/jackson-dataformat-toml"
+        }
+      ],
+      "group": "com.fasterxml.jackson.dataformat",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "0f8ef9bd0d98b6b989bb514aad312817"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "04dde0126d9484603cd1b98e9654827697e16fce"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "43ec0610a55c22c9373a68fbc80b14fbb61d2f55c58bebd0e775e0b16bf28ae3"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "4833caaca74f09840cdb60598cad869cf243d48684ef83e443f137a0ceeabece1ec0e8f01f3e1a00953dc39e17a9f1bd50a6eebbc43e380a8479c172e8bad1a2"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "2bbaae13699d5cb05bd961c15d0c74434ceb0ce453a8bd56b476014e119abb486fb5213af20c4a3986dd04d17f669a48"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "51c4fb5ed01714486105b1b2b9d61e53b63f5e4954b073184c3d9209f63b6c8cad31a7d49c238eafbd187fc0a0da2ef4"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "98eec2e560cf98be3cf3fc07e09bc0d939d87b72378c361549ef2962b9a1370e"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "41ca391f53cf3c3b92c793760aacddfa649ceca0c8b879eace783c5aca3a9022aabb3c663787bbd28b6c007c3b81d1d607f294211363b43907eb0bdc731f1540"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "jackson-dataformat-toml",
+      "publisher": "FasterXML",
+      "purl": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.15.4?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "2.15.4"
+    },
+    {
       "bom-ref": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml@2.15.4?type=jar",
       "description": "Support for reading and writing YAML-encoded data via Jackson abstractions.",
       "externalReferences": [
@@ -6944,6 +7014,128 @@
       "version": "0.21.0"
     },
     {
+      "bom-ref": "pkg:maven/org.flywaydb/flyway-core@10.10.0?type=jar",
+      "description": "Flyway: Database Migrations Made Easy.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://flywaydb.org/flyway-core"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/flyway/flyway/flyway-core"
+        }
+      ],
+      "group": "org.flywaydb",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "c31003dacfe66439c92a78f5019775d4"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "8761d308b9fc9697a95ae362bcbbb5abe8f6e08f"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "9ca803176bf3c9450b58af79c07ffdc7922fa029b97e4f51675b6a9766d4e1d6"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "fc0935e23db312192b554b8b71abec3d709743e206dafbd6de86f16bcf104c3f4b28768db1472f518d2f44020ca3c70e36b36487eb8a8c1a2418b633668833fb"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "75d4d5c7ac0f623ca1ff5d9d8c09a268d0b5201a11f009e166fb25e5a80d3dc39f87981f294d7701fd2521b1279fe457"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "68da199e4eb63b2fbcd9cf717b9a958e198cab69c2a90d223bb23687cebdfe0c750bff98e79477dd28a7d2934006018a"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "3369d079d9d02e227190dde870b679f1a0ba3e20e6da415d1f9c20a593107f33"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "cf88764785a7410b629ee0fea14eca79be06523ba0bd2e890e55235fc8718531896d19a5ad135b55017e59559a54ade95434ffcc3e180bb0261134b705a88b3d"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "flyway-core",
+      "purl": "pkg:maven/org.flywaydb/flyway-core@10.10.0?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "10.10.0"
+    },
+    {
+      "bom-ref": "pkg:maven/org.flywaydb/flyway-database-postgresql@10.10.0?type=jar",
+      "description": "Flyway: Database Migrations Made Easy.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://flywaydb.org/flyway-database-postgresql"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/flyway/flyway/flyway-database-postgresql"
+        }
+      ],
+      "group": "org.flywaydb",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "970ae1d0fe46d602be519b2ae1aa78b7"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "18de19775a0ed33119d1a0c60278e35ecd168543"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "fc3727f4e2c701f02f09ab6d5bd58c020fb09ef104877ac89592efa748951468"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "ca20cc0858dc08b77b1f7d76453e060e1413ea2ad064ea0aa34fd1b7bf3add4899150ac5ca4bb71b25f78d948adcca0601405defa8e40430457a298c08953bfb"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "1a608cb743c14912f772380ec3c775d0e0837b5ac2b41485401e97a0dc1d9771fd765213f1274c4410d285def1fedece"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "cefee529824b28b7db3f40ee9afd3de3ca5e3a77bd2ffaf5d4747a54b20e0155bd3f88ec8567d20c111e0b5756aedd00"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "88e8be2f55d73b72debd559066523fe3782f18012edd9f3cf599b45bb57b2dbb"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "4c4830eb3c4e43db9c9ba19cf34012b70a116939679b3421081ac8e2dcbffaf3ca8e0322ef4566d376adfc5044f7f77ebe75af1a7d8f961a1bc6e03ac1ae9cf1"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "flyway-database-postgresql",
+      "purl": "pkg:maven/org.flywaydb/flyway-database-postgresql@10.10.0?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "10.10.0"
+    },
+    {
       "bom-ref": "pkg:maven/org.hdrhistogram/HdrHistogram@2.1.12?type=jar",
       "description": "HdrHistogram supports the recording and analyzing sampled data value counts across a configurable integer value range with configurable value precision within the range. Value precision is expressed as the number of significant digits in the value recording, and provides control over value quantization behavior across the value range and the subsequent value resolution at any given level.",
       "externalReferences": [
@@ -11468,6 +11660,8 @@
         "pkg:maven/org.springframework.boot/spring-boot-starter-aop@3.2.3?type=jar",
         "pkg:maven/org.postgresql/postgresql@42.6.1?type=jar",
         "pkg:maven/com.pgvector/pgvector@0.1.6?type=jar",
+        "pkg:maven/org.flywaydb/flyway-core@10.10.0?type=jar",
+        "pkg:maven/org.flywaydb/flyway-database-postgresql@10.10.0?type=jar",
         "pkg:maven/com.baomidou/mybatis-plus-spring-boot3-starter@3.5.5?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-data-redis@3.2.3?type=jar",
         "pkg:maven/org.redisson/redisson-spring-boot-starter@3.27.2?type=jar",
@@ -11484,7 +11678,7 @@
         "pkg:maven/cn.hutool/hutool-all@5.8.25?type=jar",
         "pkg:maven/org.projectlombok/lombok@1.18.30?type=jar"
       ],
-      "ref": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0-SNAPSHOT?type=jar"
+      "ref": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0?type=jar"
     },
     {
       "dependsOn": [],
@@ -11562,6 +11756,13 @@
         "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.4?type=jar"
       ],
       "ref": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.4?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.4?type=jar",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.4?type=jar"
+      ],
+      "ref": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.15.4?type=jar"
     },
     {
       "dependsOn": [
@@ -12119,6 +12320,19 @@
       "ref": "pkg:maven/org.commonmark/commonmark@0.21.0?type=jar"
     },
     {
+      "dependsOn": [
+        "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.15.4?type=jar",
+        "pkg:maven/com.google.code.gson/gson@2.10.1?type=jar"
+      ],
+      "ref": "pkg:maven/org.flywaydb/flyway-core@10.10.0?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/org.flywaydb/flyway-core@10.10.0?type=jar"
+      ],
+      "ref": "pkg:maven/org.flywaydb/flyway-database-postgresql@10.10.0?type=jar"
+    },
+    {
       "dependsOn": [],
       "ref": "pkg:maven/org.hdrhistogram/HdrHistogram@2.1.12?type=jar"
     },
@@ -12604,7 +12818,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0-SNAPSHOT?type=jar",
+      "bom-ref": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0?type=jar",
       "description": "AgentForge: 企业级多租户 AI 智能体编排与混合检索 RAG 平台",
       "externalReferences": [
         {
@@ -12625,9 +12839,9 @@
         }
       ],
       "name": "agent-forge-backend",
-      "purl": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0-SNAPSHOT?type=jar",
+      "purl": "pkg:maven/com.agentforge/agent-forge-backend@1.0.0?type=jar",
       "type": "library",
-      "version": "1.0.0-SNAPSHOT"
+      "version": "1.0.0"
     },
     "lifecycles": [
       {

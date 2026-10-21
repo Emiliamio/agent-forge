@@ -3,16 +3,31 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
-## 🚀 [v1.3.0] - 2026-10-20
+## [1.0.0] - 2026-10-21
 
 ### Added
-- 租户账单用量查询接口：`GET /billing/tenant/{tenantId}/usage` 支持查询租户实时 Token 消耗与账单统计（带跨租户 403 权限隔离拦截）
-
-### Security
-- 系统诊断接口：`/system/diagnostics` 权限收紧为仅允许 ADMIN 或 OWNER 角色访问（普通租户/VIEWER 访问返回 403 为安全加固设计行为）
+- **一键全栈编排与极速自检**：提供 `docker compose --profile full up -d --build --wait` 一键交付栈，新增前后端 `.dockerignore` 镜像构建瘦身与 12 步自动化冒烟脚本 `scripts/smoke.sh`。
+- **备份恢复双向闭环与演练**：新增 `scripts/backup.sh` 与支持无损活体校验的 `scripts/restore.sh --verify`，配置 GitHub Actions 定时演练工作流 `.github/workflows/drill.yml`。
+- **v1 签名挂件令牌与防重放**：引入 `v1.<exp>.<nonce>.<hmacBase64Url>` 签名规范与辅助工具 `scripts/sign_widget_token.py`，实现支持 30s 时钟漂移宽限与 Redis/LRU 双通道防重放守护器 `ReplayGuard`。
+- **原子多维限流与真 Retry-After**：实现基于 Redis 原子 Lua 脚本的 `LuaRateLimiter`，统一串联 IP (30 RPM)、Agent (300 RPM) 与 Token (60 RPM) 三维防御，支持动态计算 `Retry-After`、`X-RateLimit-Limit`、`X-RateLimit-Remaining` 与 `X-RateLimit-Reset` 响应头，提供并发压测探针 `scripts/limit_probe.py`。
+- **第三方公开权威语料评测**：基于公有领域《民法典》总则 45 法条切片构建真实中立评测基准 `docs/benchmark_external_corpus.md`、`scripts/benchmark_external.py` 与诚实无偏评测报告 `docs/BENCHMARK-EXTERNAL.md`。
+- **生产环境强化配置**：提供 `backend/src/main/resources/application-prod.yml`，严格禁用默认测试种子、隐藏敏感堆栈、强制要求环境变量注入核心密钥。
 
 ### Changed
-- 限流响应：HTTP 状态码统一为 429 并携带 Retry-After，业务码保持 1008（v1.0 前的既有契约不变）
+- **版本号统一步进至 1.0.0**：`backend/pom.xml`、`frontend/package.json`、生产 Profile 统一收敛至正式商用版本 `1.0.0`。
+- **数据库架构由 Flyway 全面接管**：移除硬编码 Java DDL 逻辑，数据库表结构与索引演进严格收敛至 Flyway `V1__baseline.sql` ~ `V5__time_column_alignment.sql` 迁移脚本。
+- **检索参数配置化解耦**：稠密与稀疏权重、TopK 与候选切片召回深度全面收敛至 `agentforge.rag.*` 属性树。
+
+### Fixed
+- **数据结构时区漂移修复**：彻底修复 `api_key.expired_at` 历史遗留的 `TIMESTAMP WITH TIME ZONE` 类型不一致问题。
+- **降级检索向量污染隔离**：修复无外部 Embedding API Key 降级模式下伪稠密向量对 RRF 重排的排序干扰。
+- **评测防篡改门禁校验强化**：完善 `check_benchmark_doc.py` 对评测报告 Markdown 正文表格与机器基线的一致性全量校验。
+
+### Security
+- **挂件会话防重放防窃听**：淘汰纯明文 token 暴露缺陷，杜绝前端抓包永久利用风险，计划于 v1.2.0 完全废弃存量明文 token。
+- **限流锁永久泄漏修复**：通过原子 Lua 脚本合并 INCR 与 EXPIRE 操作，消除进程 Crash 导致的无 TTL 永久锁隐患。
+- **Security-by-Default 严格访问控制**：智能体挂件权限物理默认关闭（`public_enabled = 0`），未显式开启一律 403 阻断；核心系统诊断接口收紧为 ADMIN/OWNER 角色专享。
+- **反代信任链安全剥离**：`ClientIpResolver` 从右向左安全剥离受信任代理，彻底封死 X-Forwarded-For 伪造绕过防御。
 
 ---
 

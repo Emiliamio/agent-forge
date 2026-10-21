@@ -120,9 +120,9 @@ public class GlobalExceptionHandler {
     /**
      * 404 资源未找到
      */
-    @ExceptionHandler(NoHandlerFoundException.class)
+    @ExceptionHandler({NoHandlerFoundException.class, org.springframework.web.servlet.resource.NoResourceFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Result<Void> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
+    public Result<Void> handleNoHandlerFoundException(Exception e, HttpServletRequest request) {
         return Result.fail(ErrorCode.NOT_FOUND.getCode(), "请求资源不存在: " + request.getRequestURI());
     }
 

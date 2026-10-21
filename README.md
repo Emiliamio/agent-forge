@@ -70,18 +70,21 @@
 
 ---
 
-## 🚀 极速一键启动与全栈部署
+## 🚀 极速一键启动与全栈部署（5 分钟极速上手）
 
-### 方式 1：Docker Compose 一键全栈启动（推荐）
+只需标准三步，一条命令拉起全栈并完成全维自检：
+
 ```bash
-# 1. 一键拉起全栈容器并等待健康检查就绪 (PostgreSQL 16 pgvector + Redis 7 + 后端 Spring Boot + 前端 Nginx)
+# 步骤 1：克隆仓库并进入工程根目录
+git clone https://github.com/Emiliamio/agent-forge.git && cd agent-forge
+
+# 步骤 2：一条命令拉起全栈容器并等待健康检查就绪 (PostgreSQL 16 pgvector + Redis 7 + 后端 Spring Boot + 前端 Nginx)
 docker compose --profile full up -d --build --wait
 
-# 2. 运行全维端到端自动化冒烟巡检 (12 项核心断言)
+# 步骤 3：执行 12 步自动化冒烟巡检套件 (12 项全绿)
 bash scripts/smoke.sh
 ```
-* **前端工作台**：`http://localhost:3000`
-* **后端 API**：`http://localhost:8080/api`
+* **访问入口**：冒烟测试 12 项全绿后，浏览器直接打开 `http://localhost:8080` 即可访问全栈工作台（Nginx 反向代理集成）或 `http://localhost:3000`
 * **默认管理员**：`admin` / `admin123456`（默认租户：`tenant_default`）
 
 > **依赖启动说明**：若仅需拉起底层存储与缓存中间件并在宿主机进行源码调试，使用 `docker compose up -d` 即可单独启动 PostgreSQL 与 Redis，该方式完全保持向下兼容。

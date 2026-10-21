@@ -227,3 +227,23 @@ jobs:
           name: benchmark-run
           path: /tmp/latest.json
           if-no-files-found: warn
+
+  docker-e2e:
+    name: Docker · full-stack build & smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and boot full stack via docker compose
+        run: |
+          docker compose --profile full up -d --build --wait
+
+      - name: Run automated smoke suite
+        run: |
+          bash scripts/smoke.sh
+
+      - name: Teardown containers
+        if: always()
+        run: |
+          docker compose --profile full down -v
+
