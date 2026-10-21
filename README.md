@@ -84,7 +84,9 @@ docker compose --profile full up -d --build --wait
 # 步骤 3：执行 12 步自动化冒烟巡检套件 (12 项全绿)
 bash scripts/smoke.sh
 ```
-* **访问入口**：冒烟测试 12 项全绿后，浏览器直接打开 `http://localhost:8080` 即可访问全栈工作台（Nginx 反向代理集成）或 `http://localhost:3000`
+* **访问入口**：前端工作台 `http://localhost:3000`（Nginx 托管 + 反代 `/api` 到后端）；
+  后端 API `http://localhost:8080/api/*`，接口文档 `http://localhost:8080/api/swagger-ui.html`。
+  （`http://localhost:8080/` 根路径返回 404 属预期。）
 * **默认管理员**：`admin` / `admin123456`（默认租户：`tenant_default`）
 
 > **依赖启动说明**：若仅需拉起底层存储与缓存中间件并在宿主机进行源码调试，使用 `docker compose up -d` 即可单独启动 PostgreSQL 与 Redis，该方式完全保持向下兼容。
@@ -169,7 +171,10 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 - **同机与演示环境设计取舍**：由于回环地址 `127.0.0.1` / `::1` 默认在受信任列表中（以原生支持部署在同机上的 Nginx/网关反代架构），因此**同机发起的测试脚本或本机直连进程**若主动伪造 `X-Forwarded-For` 仍会被视作同机上游反代转发处理。防伪造机制已 100% 封死所有局域网（LAN）与公网外部直连伪造；若生产环境反代与应用跨机部署且无同机反代需求，可将 `trusted-proxies` 中回环地址移除或仅配置网关真实物理 IP，彻底收口。
 
 ### 3. 公开挂件 Security-by-Default 规范与存量激活
-- **单 IP 速率防护**：公开挂件默认配置 `agentforge.widget.rate-limit-rpm: 30`（30 次/分钟），超频自动触发 HTTP 429 熔断与 `Retry-After: 60` 响应头防护。
+- **原子多维速率防护**：公开挂件内置基于 Redis Lua 脚本的原子多维度组合限流，超频自动触发 HTTP 429 熔断与 `Retry-After: <剩余秒数>`（动态，1~60s）响应头防护：
+  - `agentforge.widget.rate-limit-rpm: 30`：单 IP / 分钟（默认 30）
+  - `agentforge.widget.rate-limit-agent-rpm: 300`：单智能体实例 / 分钟（默认 300）
+  - `agentforge.widget.rate-limit-token-rpm: 60`：单令牌凭据 / 分钟（默认 60）
 - **默认安全阻断 (Security-by-Default)**：无论是新建智能体还是存量老库平滑升级，`public_enabled` 物理默认值均为 `0`（关闭）。未显式开启或 `public_enabled != 1` 时，外部匿名请求一律触发 403 Forbidden 阻断。
 - **存量系统激活公开挂件**：老库升级后若需要对外部访客开放免登录聊天挂件（如 ID 为 1 的默认智能体），请管理员在数据库中显式开启：
   ```sql
@@ -178,12 +183,12 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
   ```
 - **恒定时间凭据比对**：挂件安全密钥（`public_token`）采用 `MessageDigest.isEqual` 进行常量时间比对，杜绝基于响应延迟的计时侧信道攻击。
 - **令牌签名与防重放 (v1 Signed Token)**：
-  - 支持带有效期与防重放 Nonce 的签名格式：`v1.<exp>.<nonce>.<hmacBase64Url>`
-  - 服务端使用 `HMAC-SHA256(secretKey, "v1." + exp + "." + nonce)` 验证签名（允许 30s 时钟漂移）
+  - 支持带有效期、防重放 Nonce 且绑定 Agent 与 Tenant 的签名格式：`v1.<exp>.<nonce>.<hmacBase64Url>`
+  - 服务端使用 `HMAC-SHA256(secretKey, agentId + "|" + tenantId + "|" + exp + "|" + nonce)` 验证签名（允许 30s 时钟漂移）
   - 内置 `ReplayGuard` 基于 Redis（不可用时自动降级内存 LRU）拦截 Nonce 重放攻击
   - 辅助生成脚本（支持 `--verify` 自检）：
     ```bash
-    python scripts/sign_widget_token.py --secret "<public_token>" --ttl-seconds 3600
+    python scripts/sign_widget_token.py --agent-id 1 --tenant-id 1 --secret "<public_token>" --ttl-seconds 3600
     ```
   - 请求时通过请求头携带：`X-AgentForge-Public-Token: <token>` 或 `X-Public-Token: <token>`
   - 存量明文 token 保持向后兼容（计划于 v1.2.0 废弃）
