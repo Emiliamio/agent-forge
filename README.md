@@ -70,15 +70,21 @@
 
 ---
 
-## 🚀 极速 3 分钟一键部署
+## 🚀 极速一键启动与全栈部署
 
-### 方式 1：Docker Compose 生产一键启动（推荐）
+### 方式 1：Docker Compose 一键全栈启动（推荐）
 ```bash
-# 启动全栈生产容器 (Postgres 16 pgvector + Redis 7 + 后端 Java 21 + 前端 Nginx)
-docker-compose -f docker-compose-prod.yml up -d
+# 1. 一键拉起全栈容器并等待健康检查就绪 (PostgreSQL 16 pgvector + Redis 7 + 后端 Spring Boot + 前端 Nginx)
+docker compose --profile full up -d --build --wait
+
+# 2. 运行全维端到端自动化冒烟巡检 (12 项核心断言)
+bash scripts/smoke.sh
 ```
-* 前端工作台：`http://localhost`
-* 默认管理员：`admin` / `admin123456`（默认租户 ID: `1`）
+* **前端工作台**：`http://localhost:3000`
+* **后端 API**：`http://localhost:8080/api`
+* **默认管理员**：`admin` / `admin123456`（默认租户：`tenant_default`）
+
+> **依赖启动说明**：若仅需拉起底层存储与缓存中间件并在宿主机进行源码调试，使用 `docker compose up -d` 即可单独启动 PostgreSQL 与 Redis，该方式完全保持向下兼容。
 
 ### 方式 2：本地源码运行与调试
 ```bash

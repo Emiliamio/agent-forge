@@ -11,7 +11,7 @@ WORKDIR /app
 ENV TZ=Asia/Shanghai
 ENV JAVA_OPTS="-XX:+UseZGC -XX:+ZGenerational -Xms512m -Xmx2048m"
 
-RUN apk add --no-cache tzdata && \
+RUN apk add --no-cache tzdata curl && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
