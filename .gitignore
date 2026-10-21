@@ -42,3 +42,8 @@ replay_pid*
 # Python cache
 __pycache__/
 *.pyc
+
+# Database backups
+backups/
+*.dump
+
