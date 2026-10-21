@@ -7,6 +7,8 @@ import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.AgentAppMapper;
 import com.agentforge.security.ClientIpResolver;
+import com.agentforge.security.ReplayGuard;
+import com.agentforge.security.SignedWidgetToken;
 import com.agentforge.service.agent.ReActAgentService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +41,7 @@ public class PublicAgentController {
     private final AgentAppMapper agentAppMapper;
     private final ReActAgentService reActAgentService;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
+    private final ReplayGuard replayGuard;
 
     @org.springframework.beans.factory.annotation.Value("${agentforge.widget.rate-limit-rpm:30}")
     private int rateLimitRpm = 30;
@@ -69,7 +72,7 @@ public class PublicAgentController {
             throw new BusinessException(ErrorCode.FORBIDDEN, "目标智能体未开启公开挂件访问权限");
         }
 
-        // 4. 安全 Token 校验 (常量时间比对防时序侧信道攻击，禁止从 Query String 传输防日志泄露)
+        // 4. 安全 Token 校验 (支持 v1 签名令牌与明文兼容，防时序侧信道攻击)
         if (StrUtil.isNotBlank(app.getPublicToken())) {
             String incomingToken = null;
             if (StrUtil.isNotBlank(headerToken)) {
@@ -82,17 +85,23 @@ public class PublicAgentController {
                 incomingToken = request.getToken().trim();
             }
 
-            boolean tokenMatches = false;
-            if (StrUtil.isNotBlank(incomingToken)) {
-                tokenMatches = MessageDigest.isEqual(
+            if (StrUtil.isBlank(incomingToken)) {
+                log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证缺失：appId={}", id);
+                throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
+            }
+
+            if (SignedWidgetToken.isSignedToken(incomingToken)) {
+                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), replayGuard);
+            } else {
+                log.warn("Legacy plaintext public token used for agent {}, please upgrade to signed tokens", id);
+                boolean tokenMatches = MessageDigest.isEqual(
                         app.getPublicToken().getBytes(StandardCharsets.UTF_8),
                         incomingToken.getBytes(StandardCharsets.UTF_8)
                 );
-            }
-
-            if (!tokenMatches) {
-                log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证校验失败：appId={}", id);
-                throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
+                if (!tokenMatches) {
+                    log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证校验失败：appId={}", id);
+                    throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
+                }
             }
         }
 

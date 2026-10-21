@@ -7,6 +7,19 @@
 | 1.x（当前主线） | ✅ 支持 |
 | < 1.0 预览版 | ❌ 不再支持 |
 
+## 挂件令牌安全规范与废弃计划
+
+### v1 签名令牌规范
+公开免密挂件 (`POST /api/public/agents/{id}/chat`) 采用防重放与带过期时间的签名令牌：
+- **结构**：`v1.<exp>.<nonce>.<hmacBase64Url>`
+- **签名算法**：`HMAC-SHA256(secretKey, "v1." + exp + "." + nonce)` 采用 RFC 4648 Base64Url 无填充编码
+- **防重放**：`ReplayGuard` 基于 Redis 分布式 Nonce 记录（TTL 为过期时间 + 300 秒），Redis 不可用时无缝降级为本地内存 LRU 缓存，保障零阻断高可用
+- **时钟宽限**：允许 30 秒时钟漂移宽限期
+
+### 废弃计划 (Deprecation Policy)
+- **v1.0.0+**：正式引入 v1 签名令牌，存量明文 token 保留向后兼容支持（服务端记录 WARN 告警提示升级并防时序攻击）；
+- **v1.2.0**：计划全面废弃明文 token 支持，未签名的明文 token 将直接返回 HTTP 401 Unauthorized。
+
 ## 报告漏洞
 
 请发送邮件至 **mio2110767128@163.com**，主题以 `[SECURITY]` 开头，内容包含：

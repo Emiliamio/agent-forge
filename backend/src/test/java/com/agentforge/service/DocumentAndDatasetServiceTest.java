@@ -15,8 +15,11 @@ import com.agentforge.service.rag.impl.DocumentServiceImpl;
 import com.agentforge.service.rag.parser.DocumentParser;
 import com.agentforge.service.rag.parser.DocumentParserFactory;
 import com.agentforge.service.rag.parser.ParsedDocument;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,6 +56,13 @@ public class DocumentAndDatasetServiceTest {
     @BeforeEach
     void setUp() {
         TenantContextHolder.setTenantId(1L);
+        MybatisConfiguration config = new MybatisConfiguration();
+        MapperBuilderAssistant assistant = new MapperBuilderAssistant(config, "");
+        assistant.setCurrentNamespace("com.agentforge.mapper.DatasetMapper");
+        TableInfoHelper.initTableInfo(assistant, Dataset.class);
+        MapperBuilderAssistant docAssistant = new MapperBuilderAssistant(config, "");
+        docAssistant.setCurrentNamespace("com.agentforge.mapper.DocumentMapper");
+        TableInfoHelper.initTableInfo(docAssistant, Document.class);
     }
 
     @AfterEach

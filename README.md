@@ -174,6 +174,16 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
   UPDATE agent_app SET public_enabled = 1 WHERE id = 1;
   ```
 - **恒定时间凭据比对**：挂件安全密钥（`public_token`）采用 `MessageDigest.isEqual` 进行常量时间比对，杜绝基于响应延迟的计时侧信道攻击。
+- **令牌签名与防重放 (v1 Signed Token)**：
+  - 支持带有效期与防重放 Nonce 的签名格式：`v1.<exp>.<nonce>.<hmacBase64Url>`
+  - 服务端使用 `HMAC-SHA256(secretKey, "v1." + exp + "." + nonce)` 验证签名（允许 30s 时钟漂移）
+  - 内置 `ReplayGuard` 基于 Redis（不可用时自动降级内存 LRU）拦截 Nonce 重放攻击
+  - 辅助生成脚本（支持 `--verify` 自检）：
+    ```bash
+    python scripts/sign_widget_token.py --secret "<public_token>" --ttl-seconds 3600
+    ```
+  - 请求时通过请求头携带：`X-AgentForge-Public-Token: <token>` 或 `X-Public-Token: <token>`
+  - 存量明文 token 保持向后兼容（计划于 v1.2.0 废弃）
 - **凭据传输收敛**：安全 Token 仅允许通过 Header (`X-Public-Token` 或 `Authorization`) 或请求体传递，严禁在 URL Query String 中暴露，防止网关日志与浏览器历史泄密。
 
 ### 4. 关键受保护端点与访问控制权限声明
