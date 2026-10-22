@@ -273,14 +273,6 @@ def evaluate(deterministic: bool = False):
         latency_note = "单次快照，不参与门禁"
         total_time_str = "—"
         total_time_note = "单次快照，不参与门禁"
-        if os.path.exists("docs/BENCHMARK-EXTERNAL.md"):
-            try:
-                with open("docs/BENCHMARK-EXTERNAL.md", "r", encoding="utf-8") as f:
-                    m = re.search(r"\|\s*\*\*Git Commit SHA\*\*\s*\|\s*`([^`]+)`", f.read())
-                    if m and m.group(1).strip():
-                        git_sha = m.group(1).strip()
-            except Exception:
-                pass
     else:
         now_utc = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         avg_latency_str = f"{avg_latency:.2f} ms"
@@ -295,7 +287,7 @@ def evaluate(deterministic: bool = False):
 > 《中华人民共和国民法典》第一编总则（45 个真实法定切片、5,680 字符）进行无预置调优的开箱全盲评测。
 > **本报告所有数据均为机器实测真实记录，坚决不进行人工拔高、篡改或美化。**
 > （不设 CI 门禁，原因：需运行态后端；复现命令 `python scripts/benchmark_external.py --deterministic`）
-> 注：`Git Commit SHA` 记录的是首次生成时的代码基线，重跑不会刷新该字段；如需记录新基线，删除本文件后重新生成。
+> 注：本报告在发版时重新生成，`Git Commit SHA` 恒等于生成时的 HEAD；日常提交不要求刷新该文件。
 
 ---
 
@@ -308,7 +300,7 @@ def evaluate(deterministic: bool = False):
 | **切片规模** | 45 个独立法条切片 (共 5,680 字符) | 逐条独立切片，无人工词表干预 |
 | **测试用例集** | 16 组代表性法律事实检索 (含单跳/跨度/反向口语化) | 覆盖核心民事主体、监护及宣告失踪场景 |
 | **操作系统** | `{platform.system()} {platform.release()}` | 评测宿主机环境 |
-| **Git Commit SHA** | `{git_sha}` | 生成该报告时的代码基线（不随渲染更新，`--deterministic` 会沿用已有值） |
+| **Git Commit SHA** | `{git_sha}` | 生成时的代码基线（= 生成时 HEAD） |
 | **评测生成时间** | `{now_utc}` | UTC 标准时间戳 |
 
 ---
