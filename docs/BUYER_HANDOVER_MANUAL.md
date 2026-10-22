@@ -1,6 +1,6 @@
 # 📖 AgentForge 商业交付与极速实施手册（买家版）
 
-**版本**：v1.1.0 Commercial Enterprise Release  
+**版本**：v1.1.1 Commercial Enterprise Release  
 **适用对象**：系统管理员、运维工程师、软件集成商交付团队
 
 ---

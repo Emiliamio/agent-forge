@@ -3,6 +3,19 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.1.1] - 2026-10-22
+
+### Security
+- **生产编排强制环境变量口令门禁**：`docker-compose-prod.yml` 彻底移除弱默认密码，强制使用 `${POSTGRES_PASSWORD:?...}`、`${REDIS_PASSWORD:?...}` 与 `${JWT_SECRET:?...}`；新增生产环境密钥生成工具 `scripts/gen-env.sh`（自动生成 32 字节高强度随机十六进制密钥并设置 600 权限）与 `.env.example` 占位模板。
+- **生产应用 JWT 密钥显式注入**：`backend/src/main/resources/application-prod.yml` 显式设置 `sa-token.jwt-secret-key: ${JWT_SECRET}`，杜绝内置默认密钥。
+
+### Fixed
+- **数据库备份生命周期自动保留策略**：`scripts/backup.sh` 引入 `BACKUP_RETAIN_DAYS`（默认 14 天），备份归档完成后使用 `find -mtime` 自动清理超期 `.dump` 与 `.meta.json` 快照，避免长期运行导致宿主机磁盘耗尽。
+- **技术宣称校验门禁零污染执行**：`scripts/benchmark_external.py` 支持 `--out` 指定输出路径；`scripts/verify-claims.sh` 在临时文件中渲染外部评测报告并自动对比四大核心指标（Recall@1、Recall@5、MRR、NDCG@5），脚本末尾增加严格的工作区干净检查门禁，彻底消除 CI 与本地自验对 `docs/BENCHMARK-EXTERNAL.md` 的污染。
+
+### Added
+- **待验声明跟踪机制**：在交付手册与发布日志中明确记录 Claim 10（冷启动 ≤60s）依赖官方公开镜像仓库发版闭环；在无公网镜像推送环境下诚实记录 `[BLOCKED]` 状态，杜绝虚假打点。
+
 ## [v1.1.0] - 2026-10-22
 
 ### Added

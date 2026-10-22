@@ -98,8 +98,8 @@
   # 2. 目标机器离线载入并启动
   docker load -i dist/postgres-pgvector-pg16.tar
   docker load -i dist/redis-7-alpine.tar
-  docker load -i dist/agentforge-backend-1.1.0.tar
-  docker load -i dist/agentforge-frontend-1.1.0.tar
+  docker load -i dist/agentforge-backend-1.1.1.tar
+  docker load -i dist/agentforge-frontend-1.1.1.tar
   docker compose --profile full up -d --wait
   ```
 

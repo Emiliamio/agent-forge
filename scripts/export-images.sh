@@ -10,7 +10,7 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DIST_DIR="${ROOT_DIR}/dist"
 
 REGISTRY="${AGENTFORGE_REGISTRY:-ghcr.io/emiliamio}"
-TAG="${AGENTFORGE_TAG:-1.1.0}"
+TAG="${AGENTFORGE_TAG:-1.1.1}"
 
 BACKEND_IMAGE="${REGISTRY}/agentforge-backend:${TAG}"
 FRONTEND_IMAGE="${REGISTRY}/agentforge-frontend:${TAG}"
