@@ -196,7 +196,7 @@ def load_corpus(path="docs/benchmark_external_corpus.md"):
     return chunks
 
 
-def evaluate(deterministic: bool = False):
+def evaluate(deterministic: bool = False, out_path: str = "docs/BENCHMARK-EXTERNAL.md"):
     start_all = time.perf_counter()
     corpus = load_corpus()
     retriever = BM25Retriever(corpus)
@@ -371,18 +371,19 @@ def evaluate(deterministic: bool = False):
    使用 AgentForge 内置的 `ParentChildChunkerEngine`，以“款”为小切片检索、以“条/章”为大父块送入上下文，完全保留法条上下文全貌。
 """
 
-    with open("docs/BENCHMARK-EXTERNAL.md", "w", encoding="utf-8") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         f.write(doc)
 
     print(f"[OK] External benchmark completed: Recall@1={avg_r1*100:.2f}%, Recall@5={avg_r5*100:.2f}%, MRR={avg_mrr:.4f}, NDCG@5={avg_ndcg:.4f}")
-    print("[OK] Generated docs/BENCHMARK-EXTERNAL.md")
+    print(f"[OK] Generated {out_path}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="AgentForge External Benchmark Generator")
     parser.add_argument("--deterministic", action="store_true", help="Generate deterministic benchmark output")
+    parser.add_argument("--out", type=str, default="docs/BENCHMARK-EXTERNAL.md", help="Output path for benchmark report")
     args = parser.parse_args()
-    evaluate(deterministic=args.deterministic)
+    evaluate(deterministic=args.deterministic, out_path=args.out)
 
 
 if __name__ == "__main__":

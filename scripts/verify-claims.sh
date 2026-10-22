@@ -62,21 +62,39 @@ fi
 
 # --- Claim 3: 第三方民法典权威语料检索 Recall@5 = 93.75% ---
 echo "Verifying Claim 3: 外部语料 Recall@5 = 93.75%..."
-EXT_OUTPUT=$(python scripts/benchmark_external.py --deterministic 2>&1 || true)
-if python -c '
-import re, subprocess, sys
-with open("docs/BENCHMARK-EXTERNAL.md", "r", encoding="utf-8") as f:
-    content = f.read()
-assert "**93.75%**" in content, "Missing Recall@5 93.75% in docs/BENCHMARK-EXTERNAL.md"
-m = re.search(r"\|\s*\*\*Git Commit SHA\*\*\s*\|\s*`([^`]+)`", content)
-assert m, "Git Commit SHA row not found"
-doc_sha = m.group(1).strip()
-head_sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
-assert len(doc_sha) >= 7, f"Invalid SHA: {doc_sha}"
-'; then
+TMP_EXT=$(mktemp 2>/dev/null || echo "/tmp/ext_benchmark.md")
+python scripts/benchmark_external.py --deterministic --out "$TMP_EXT" >/dev/null 2>&1
+if python -c "
+import re, sys
+
+def extract(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        c = f.read()
+    r1 = re.search(r'\|\s*\*\*Recall@1\*\*\s*\|\s*\*\*([\d\.]+)%?\*\*', c)
+    r5 = re.search(r'\|\s*\*\*Recall@5\*\*\s*\|\s*\*\*([\d\.]+)%?\*\*', c)
+    mrr = re.search(r'\|\s*\*\*MRR[^|]*\*\*\s*\|\s*\*\*([\d\.]+)\*\*', c)
+    ndcg = re.search(r'\|\s*\*\*NDCG@5\*\*\s*\|\s*\*\*([\d\.]+)\*\*', c)
+    if not (r1 and r5 and mrr and ndcg):
+        raise ValueError(f'Missing metrics in {path}')
+    return {
+        'Recall@1': round(float(r1.group(1)), 4),
+        'Recall@5': round(float(r5.group(1)), 4),
+        'MRR': round(float(mrr.group(1)), 4),
+        'NDCG@5': round(float(ndcg.group(1)), 4)
+    }
+
+ext_metrics = extract(sys.argv[1])
+doc_metrics = extract('docs/BENCHMARK-EXTERNAL.md')
+
+for k in ['Recall@1', 'Recall@5', 'MRR', 'NDCG@5']:
+    assert ext_metrics[k] == doc_metrics[k], f'Metric mismatch for {k}: generated={ext_metrics[k]} vs doc={doc_metrics[k]}'
+assert ext_metrics['Recall@5'] == 93.75, f'Recall@5 is {ext_metrics[\"Recall@5\"]}, expected 93.75'
+" "$TMP_EXT"; then
+  rm -f "$TMP_EXT"
   record_pass "03" "第三方民法典权威语料检索 Recall@5 = 93.75%"
 else
-  record_fail "03" "第三方民法典权威语料检索 Recall@5 = 93.75%" "external benchmark doc verification failed"
+  rm -f "$TMP_EXT"
+  record_fail "03" "第三方民法典权威语料检索 Recall@5 = 93.75%" "external benchmark metrics do not match docs/BENCHMARK-EXTERNAL.md"
 fi
 
 # --- Claim 4: 端到端冒烟 12 项全绿 ---
@@ -165,4 +183,11 @@ fi
 echo "========================================================"
 echo " All $TOTAL_CLAIMS claims successfully verified! (PASS $PASS_COUNT/$TOTAL_CLAIMS)"
 echo "========================================================"
+
+if [ -n "$(git status --porcelain -- docs/ scripts/ backend/ frontend/)" ]; then
+  echo "[FAIL] claims gate 污染了工作区，请检查是否往仓库路径写文件"
+  exit 1
+fi
+echo "[OK] working tree clean after claims gate"
+
 exit 0
