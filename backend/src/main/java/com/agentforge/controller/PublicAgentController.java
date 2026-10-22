@@ -52,6 +52,20 @@ public class PublicAgentController {
     @org.springframework.beans.factory.annotation.Value("${agentforge.widget.rate-limit-token-rpm:60}")
     private int tokenRateLimitRpm = 60;
 
+    @org.springframework.beans.factory.annotation.Value("${agentforge.widget.legacy-token-enabled:true}")
+    private boolean legacyTokenEnabled = true;
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        if (legacyTokenEnabled) {
+            log.warn("Sunset 2027-01-01: Legacy plaintext public widget tokens are currently enabled. Please upgrade client integrations to signed widget tokens (v1 format).");
+        }
+    }
+
+    public void setLegacyTokenEnabled(boolean legacyTokenEnabled) {
+        this.legacyTokenEnabled = legacyTokenEnabled;
+    }
+
     @Operation(summary = "挂件免登录对话 (支持跨租户定位、安全开关与常量时间凭据校验)")
     @PostMapping("/{id}/chat")
     public Result<ReActAgentService.AgentExecutionResult> widgetChat(
@@ -91,21 +105,35 @@ public class PublicAgentController {
             throw new BusinessException(ErrorCode.FORBIDDEN, "目标智能体未开启公开挂件访问权限");
         }
 
-        // 5. 安全 Token 校验 (支持 v1 签名令牌与明文兼容，防时序侧信道攻击)
-        if (StrUtil.isNotBlank(app.getPublicToken())) {
+        // 5. 安全 Token 校验 (支持 v1 签名令牌与明文兼容，支持双阶段密钥轮换，防时序侧信道攻击)
+        boolean hasTokenConfigured = StrUtil.isNotBlank(app.getPublicToken()) || StrUtil.isNotBlank(app.getPublicTokenPrev());
+        if (hasTokenConfigured) {
             if (StrUtil.isBlank(incomingToken)) {
                 log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证缺失：appId={}", id);
                 throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
             }
 
             if (SignedWidgetToken.isSignedToken(incomingToken)) {
-                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), app.getId(), app.getTenantId(), replayGuard);
+                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), app.getPublicTokenPrev(), app.getId(), app.getTenantId(), replayGuard);
             } else {
+                if (!legacyTokenEnabled) {
+                    log.warn("🛑 [PUBLIC_WIDGET_LEGACY_DISABLED] 明文挂件令牌已被安全策略禁用：appId={}", id);
+                    throw new BusinessException(ErrorCode.UNAUTHORIZED, "明文令牌已停用，请升级 v1 签名令牌");
+                }
                 log.warn("Legacy plaintext public token used for agent {}, please upgrade to signed tokens", id);
-                boolean tokenMatches = MessageDigest.isEqual(
-                        app.getPublicToken().getBytes(StandardCharsets.UTF_8),
-                        incomingToken.getBytes(StandardCharsets.UTF_8)
-                );
+                boolean tokenMatches = false;
+                if (StrUtil.isNotBlank(app.getPublicToken())) {
+                    tokenMatches = MessageDigest.isEqual(
+                            app.getPublicToken().getBytes(StandardCharsets.UTF_8),
+                            incomingToken.getBytes(StandardCharsets.UTF_8)
+                    );
+                }
+                if (!tokenMatches && StrUtil.isNotBlank(app.getPublicTokenPrev())) {
+                    tokenMatches = MessageDigest.isEqual(
+                            app.getPublicTokenPrev().getBytes(StandardCharsets.UTF_8),
+                            incomingToken.getBytes(StandardCharsets.UTF_8)
+                    );
+                }
                 if (!tokenMatches) {
                     log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证校验失败：appId={}", id);
                     throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");

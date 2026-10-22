@@ -211,4 +211,27 @@ public class SignedWidgetTokenTest {
         assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
         assertTrue(ex.getMessage().contains("签名校验失败"));
     }
+
+    @Test
+    @DisplayName("13. 双阶段密钥轮换验证：支持 primarySecret 与 prevSecret 同时常量时间验签，清空 prev 后旧密钥坚决拒绝")
+    void secretRotationSupport() {
+        String newSecret = "new-secret-key-2026-very-secure";
+        String oldSecret = "old-secret-key-2025-deprecated";
+        long exp = (System.currentTimeMillis() / 1000L) + 3600L;
+
+        String oldToken = SignedWidgetToken.sign(oldSecret, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, "rot-nonce-old");
+        String newToken = SignedWidgetToken.sign(newSecret, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, exp, "rot-nonce-new");
+
+        // 1. 新密钥有效
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(newToken, newSecret, oldSecret, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+
+        // 2. 轮换窗口内，旧密钥令牌在 prevSecret 下正常放行
+        assertDoesNotThrow(() -> SignedWidgetToken.verify(oldToken, newSecret, oldSecret, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+
+        // 3. 轮换窗口关闭后 (prevSecret 为 null)，旧密钥令牌坚决抛出 401
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                SignedWidgetToken.verify(oldToken, newSecret, null, DEFAULT_AGENT_ID, DEFAULT_TENANT_ID, replayGuard));
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("签名校验失败"));
+    }
 }

@@ -69,6 +69,7 @@ springdoc:
 # AgentForge 平台核心参数
 agentforge:
   widget:
+    legacy-token-enabled: true      # 1.0.x 兼容期默认开；计划 1.2.0 起默认关
     rate-limit-rpm: 30          # 单 IP / 分钟
     rate-limit-agent-rpm: 300   # 单智能体 / 分钟
     rate-limit-token-rpm: 60    # 单令牌 / 分钟

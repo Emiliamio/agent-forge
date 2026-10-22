@@ -45,10 +45,16 @@ public final class SignedWidgetToken {
     }
 
     public static void verify(String token, String secretKey, long agentId, long tenantId, ReplayGuard replayGuard) {
+        verify(token, secretKey, null, agentId, tenantId, replayGuard);
+    }
+
+    public static void verify(String token, String secretKey, String prevSecretKey, long agentId, long tenantId, ReplayGuard replayGuard) {
         if (!isSignedToken(token)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 格式无效");
         }
-        if (secretKey == null || secretKey.trim().isEmpty()) {
+        boolean hasPrimary = secretKey != null && !secretKey.trim().isEmpty();
+        boolean hasPrev = prevSecretKey != null && !prevSecretKey.trim().isEmpty();
+        if (!hasPrimary && !hasPrev) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "智能体服务端密钥未配置");
         }
 
@@ -79,13 +85,27 @@ public final class SignedWidgetToken {
         }
 
         String payloadToSign = agentId + "|" + tenantId + "|" + expStr + "|" + nonce;
-        byte[] expectedHmac = calculateHmac(secretKey, payloadToSign);
-        String expectedSig = Base64.getUrlEncoder().withoutPadding().encodeToString(expectedHmac);
+        boolean signatureMatches = false;
 
-        boolean signatureMatches = MessageDigest.isEqual(
-                expectedSig.getBytes(StandardCharsets.UTF_8),
-                providedSig.getBytes(StandardCharsets.UTF_8)
-        );
+        // 1. 先用当前主密钥 public_token 常量时间校验
+        if (hasPrimary) {
+            byte[] expectedHmac = calculateHmac(secretKey, payloadToSign);
+            String expectedSig = Base64.getUrlEncoder().withoutPadding().encodeToString(expectedHmac);
+            signatureMatches = MessageDigest.isEqual(
+                    expectedSig.getBytes(StandardCharsets.UTF_8),
+                    providedSig.getBytes(StandardCharsets.UTF_8)
+            );
+        }
+
+        // 2. 若失败且存在前驱旧密钥 public_token_prev，平滑降级再次进行常量时间校验 (双阶段密钥轮换过渡窗口)
+        if (!signatureMatches && hasPrev) {
+            byte[] expectedPrevHmac = calculateHmac(prevSecretKey, payloadToSign);
+            String expectedPrevSig = Base64.getUrlEncoder().withoutPadding().encodeToString(expectedPrevHmac);
+            signatureMatches = MessageDigest.isEqual(
+                    expectedPrevSig.getBytes(StandardCharsets.UTF_8),
+                    providedSig.getBytes(StandardCharsets.UTF_8)
+            );
+        }
 
         if (!signatureMatches) {
             log.warn("🛑 [WIDGET_TOKEN_SIGNATURE_INVALID] 签名校验失败");

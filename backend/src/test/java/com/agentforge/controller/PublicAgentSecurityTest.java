@@ -191,4 +191,116 @@ public class PublicAgentSecurityTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.PARAM_ERROR.getCode()));
     }
+
+    @Test
+    @DisplayName("安全开关控制：当 legacy-token-enabled 为 false 时明文拒绝 401，而签名令牌依然 200")
+    void testLegacyTokenSwitchDisabledRejectsPlaintextAllowsSigned() {
+        publicAgentController.setLegacyTokenEnabled(false);
+
+        AgentApp app = new AgentApp();
+        app.setId(1L);
+        app.setTenantId(1L);
+        app.setStatus(1);
+        app.setPublicEnabled(1);
+        app.setPublicToken("secret-rotation-key-2026");
+
+        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
+
+        PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
+        req.setMessage("测试明文被拒");
+
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+
+        // 1. 明文令牌在开关关闭时坚决抛出 401
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                publicAgentController.widgetChat(1L, req, "secret-rotation-key-2026", null, null, servletRequest)
+        );
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+        assertTrue(ex.getMessage().contains("明文令牌已停用"));
+
+        // 2. 相同场景下 v1 签名令牌依然正常放行 (HTTP 200)
+        long exp = (System.currentTimeMillis() / 1000L) + 300L;
+        String signedToken = com.agentforge.security.SignedWidgetToken.sign("secret-rotation-key-2026", 1L, 1L, exp, "nonce-switch-test-1");
+
+        when(reActAgentService.runAgent(eq(1L), anyString(), anyInt()))
+                .thenReturn(ReActAgentService.AgentExecutionResult.builder().finalAnswer("放行回答").build());
+
+        Result<ReActAgentService.AgentExecutionResult> res = publicAgentController.widgetChat(
+                1L, req, signedToken, null, null, servletRequest
+        );
+        assertNotNull(res);
+        assertEquals(200, res.getCode());
+    }
+
+    @Test
+    @DisplayName("安全开关控制：当 legacy-token-enabled 为 true 时明文令牌正常兼容放行")
+    void testLegacyTokenSwitchEnabledAllowsPlaintext() {
+        publicAgentController.setLegacyTokenEnabled(true);
+
+        AgentApp app = new AgentApp();
+        app.setId(1L);
+        app.setTenantId(1L);
+        app.setStatus(1);
+        app.setPublicEnabled(1);
+        app.setPublicToken("secret-rotation-key-2026");
+
+        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
+        when(reActAgentService.runAgent(eq(1L), anyString(), anyInt()))
+                .thenReturn(ReActAgentService.AgentExecutionResult.builder().finalAnswer("明文放行回答").build());
+
+        PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
+        req.setMessage("测试明文兼容");
+
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+
+        Result<ReActAgentService.AgentExecutionResult> res = publicAgentController.widgetChat(
+                1L, req, "secret-rotation-key-2026", null, null, servletRequest
+        );
+        assertNotNull(res);
+        assertEquals(200, res.getCode());
+    }
+
+    @Test
+    @DisplayName("密钥轮换：轮换前签发令牌在轮换后 (prev 生效期内) 仍为 200，清空 prev 后该令牌立即 401")
+    void testSecretRotationTwoPhaseVerification() {
+        publicAgentController.setLegacyTokenEnabled(true);
+
+        AgentApp app = new AgentApp();
+        app.setId(1L);
+        app.setTenantId(1L);
+        app.setStatus(1);
+        app.setPublicEnabled(1);
+        app.setPublicToken("new-secret-2026");
+        app.setPublicTokenPrev("old-secret-2025");
+
+        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
+        when(reActAgentService.runAgent(eq(1L), anyString(), anyInt()))
+                .thenReturn(ReActAgentService.AgentExecutionResult.builder().finalAnswer("旧密钥依然有效").build());
+
+        // 使用 old-secret-2025 签发令牌
+        long exp = (System.currentTimeMillis() / 1000L) + 300L;
+        String oldSignedToken = com.agentforge.security.SignedWidgetToken.sign("old-secret-2025", 1L, 1L, exp, "nonce-rot-1");
+
+        PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
+        req.setMessage("测试轮换过渡期");
+
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+
+        // 1. 在 prev 生效期内，old 令牌依然能成功通过验签并执行 (HTTP 200)
+        Result<ReActAgentService.AgentExecutionResult> res = publicAgentController.widgetChat(
+                1L, req, oldSignedToken, null, null, servletRequest
+        );
+        assertNotNull(res);
+        assertEquals(200, res.getCode());
+
+        // 2. 清空 prev (第二阶段收敛)，同一令牌必须坚决被拒 (HTTP 401)
+        app.setPublicTokenPrev(null);
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                publicAgentController.widgetChat(1L, req, oldSignedToken, null, null, servletRequest)
+        );
+        assertEquals(ErrorCode.UNAUTHORIZED.getCode(), ex.getCode());
+    }
 }

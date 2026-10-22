@@ -21,7 +21,28 @@
 
 ### 废弃计划 (Deprecation Policy)
 - **v1.0.0+**：正式引入 v1 签名令牌，存量明文 token 保留向后兼容支持（服务端记录 WARN 告警提示升级并防时序攻击）；
+- **v1.1.0+**：引入 `agentforge.widget.legacy-token-enabled` 安全硬开关（支持一键全局强制下线明文令牌）；
 - **v1.2.0**：计划全面废弃明文 token 支持，未签名的明文 token 将直接返回 HTTP 401 Unauthorized。
+
+### 挂件密钥平滑轮换操作手册 (Secret Rotation Runbook)
+
+针对生产环境可能发生的安全泄露或定期密钥安全轮换需求，AgentForge 通过数据库字段 `public_token_prev`（由 Flyway V6 引入）支持**双阶段平滑轮换**，保障轮换过程中现有客户端无感知、零停机：
+
+1. **生成新密钥与轮换 SQL**：
+   运行轮换辅助脚本：
+   ```bash
+   python scripts/rotate_widget_secret.py --agent-id <AGENT_ID> --tenant-id <TENANT_ID>
+   ```
+2. **第一阶段：启动轮换过渡窗口（建议窗口时间 ≤ 24 小时）**：
+   在数据库中执行脚本输出的更新语句，将原密钥转移至 `public_token_prev`，并写入新密钥至 `public_token`。
+   在轮换过渡窗口内，**使用新旧密钥签发的令牌均可正常访问（HTTP 200）**。
+3. **第二阶段：收敛并关闭过渡窗口**：
+   在客户端完成新令牌或新挂件代码部署后（或 24 小时窗口期满后），执行收敛 SQL 清空 `public_token_prev`：
+   ```sql
+   UPDATE agent_app SET public_token_prev = NULL WHERE id = <AGENT_ID> AND tenant_id = <TENANT_ID>;
+   ```
+   旧密钥彻底失效，任何残留旧令牌将被安全拦截（HTTP 401）。
+4. **应急回滚**：若轮换过程中发现客户端异常，可执行回滚 SQL 恢复旧密钥。
 
 ## 报告漏洞
 

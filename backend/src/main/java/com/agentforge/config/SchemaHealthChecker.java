@@ -53,6 +53,15 @@ public class SchemaHealthChecker implements ApplicationRunner {
             throw new IllegalStateException("Schema health check failed: missing required column 'document_chunk.tsv_content'. Please run 'mvn flyway:migrate'");
         }
 
+        // 4. 校验 agent_app.public_token_prev 存在 (Flyway V6 密钥轮换前驱列)
+        Integer publicTokenPrevCol = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'agent_app' AND column_name = 'public_token_prev'",
+                Integer.class
+        );
+        if (publicTokenPrevCol == null || publicTokenPrevCol == 0) {
+            throw new IllegalStateException("Schema health check failed: missing required column 'agent_app.public_token_prev'. Please run 'mvn flyway:migrate'");
+        }
+
         log.info("✅ [SchemaHealthChecker] 数据库表结构与核心业务字段健康状态巡检全部通过！");
     }
 }
