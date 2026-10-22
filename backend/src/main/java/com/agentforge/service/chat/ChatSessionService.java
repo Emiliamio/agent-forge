@@ -18,6 +18,11 @@ public interface ChatSessionService {
     ChatSession createOrGetSession(Long appId, Long userId, String title);
 
     /**
+     * 获取指定用户的历史会话列表
+     */
+    List<ChatSession> listUserSessions(Long tenantId, Long userId);
+
+    /**
      * 获取指定会话的历史消息列表
      */
     List<ChatMessage> listMessages(Long sessionId);

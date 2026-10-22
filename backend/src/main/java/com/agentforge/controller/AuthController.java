@@ -2,7 +2,6 @@ package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.secure.BCrypt;
-import cn.dev33.satoken.stp.SaLoginConfig;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.dto.LoginRequest;
@@ -10,33 +9,29 @@ import com.agentforge.entity.SysTenant;
 import com.agentforge.entity.SysUser;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.mapper.SysTenantMapper;
-import com.agentforge.mapper.SysUserMapper;
+import com.agentforge.service.auth.AuthQueryService;
 import com.agentforge.vo.LoginVO;
 import com.agentforge.vo.Result;
 import com.agentforge.vo.UserInfoVO;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import jakarta.servlet.http.HttpServletRequest;
-
+import java.time.Duration;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.time.Duration;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 身份认证与用户权限接口
@@ -48,8 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final SysTenantMapper tenantMapper;
-    private final SysUserMapper userMapper;
+    private final AuthQueryService authQueryService;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
     private final HttpServletRequest servletRequest;
     private final com.agentforge.security.ClientIpResolver clientIpResolver;
@@ -124,21 +118,13 @@ public class AuthController {
         checkLoginRateLimit(rateLimitKey);
 
         // 1. 查询租户
-        SysTenant tenant = tenantMapper.selectOne(
-                new LambdaQueryWrapper<SysTenant>()
-                        .eq(SysTenant::getCode, tenantCode)
-                        .eq(SysTenant::getStatus, 1)
-        );
+        SysTenant tenant = authQueryService.findTenantByCode(tenantCode);
         if (tenant == null) {
             throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
         }
 
         // 2. 查询用户 (必须在该租户下)
-        SysUser user = userMapper.selectOne(
-                new LambdaQueryWrapper<SysUser>()
-                        .eq(SysUser::getTenantId, tenant.getId())
-                        .eq(SysUser::getUsername, request.getUsername())
-        );
+        SysUser user = authQueryService.findUserByTenantAndUsername(tenant.getId(), request.getUsername());
         if (user == null) {
             throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
         }
@@ -183,12 +169,12 @@ public class AuthController {
     @GetMapping("/user-info")
     public Result<UserInfoVO> getUserInfo() {
         long userId = StpUtil.getLoginIdAsLong();
-        SysUser user = userMapper.selectById(userId);
+        SysUser user = authQueryService.findUserById(userId);
         if (user == null) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
 
-        SysTenant tenant = tenantMapper.selectById(user.getTenantId());
+        SysTenant tenant = authQueryService.findTenantById(user.getTenantId());
 
         UserInfoVO vo = UserInfoVO.builder()
                 .id(user.getId())

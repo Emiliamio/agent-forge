@@ -15,8 +15,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameMatching;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -25,43 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ArchitectureTest {
 
     /**
-     * Rule 1: 控制器只能访问 Service，严禁直接访问 Mapper。
-     * 架构白名单说明:
-     * - PublicAgentController 访问 AgentAppMapper: 免登公开挂件直接校验智能体公开状态，避免全量 Service 代理以保障极端时延性能；
-     * - 存量 CRUD 控制器（AgentAppController, AuthController, BillingController, ChatSessionController, WorkflowController）:
-     *   历史遗留单表 CRUD 直接访问对应 Mapper，待后续版本统一抽取 Service 门面。
+     * Rule 1: 控制器只能访问 Service，严禁直接访问 Mapper（零白名单、零例外）。
      */
     @ArchTest
     static final ArchRule controllers_should_not_access_mappers =
             noClasses().that().resideInAPackage("..controller..")
-                    .and().doNotHaveSimpleName("PublicAgentController")
-                    .and().doNotHaveSimpleName("AgentAppController")
-                    .and().doNotHaveSimpleName("AuthController")
-                    .and().doNotHaveSimpleName("BillingController")
-                    .and().doNotHaveSimpleName("ChatSessionController")
-                    .and().doNotHaveSimpleName("WorkflowController")
                     .should().dependOnClassesThat().resideInAPackage("..mapper..")
-                    .as("控制器原则上只能访问 Service，严禁直接访问 Mapper（白名单：PublicAgentController 访问 AgentAppMapper；存量 CRUD 控制器已登记）");
-
-    /**
-     * Rule 1 补丁约束: PublicAgentController 仅允许且仅能访问 AgentAppMapper，严禁横向穿透访问其他 Mapper
-     */
-    @ArchTest
-    static final ArchRule public_agent_controller_mapper_restriction =
-            noClasses().that().haveSimpleName("PublicAgentController")
-                    .should().dependOnClassesThat(
-                            resideInMapperPackageAndNotAgentAppMapper()
-                    )
-                    .as("PublicAgentController 仅白名单放行 AgentAppMapper，严禁穿透访问其他业务持久层 Mapper");
-
-    private static com.tngtech.archunit.base.DescribedPredicate<com.tngtech.archunit.core.domain.JavaClass> resideInMapperPackageAndNotAgentAppMapper() {
-        return new com.tngtech.archunit.base.DescribedPredicate<>("reside in ..mapper.. but not AgentAppMapper") {
-            @Override
-            public boolean test(com.tngtech.archunit.core.domain.JavaClass javaClass) {
-                return javaClass.getPackageName().contains(".mapper") && !"AgentAppMapper".equals(javaClass.getSimpleName());
-            }
-        };
-    }
+                    .as("控制器只能访问 Service，严禁直接访问 Mapper（零白名单零例外）");
 
     /**
      * Rule 2: Service 层严禁反向依赖 Controller 层

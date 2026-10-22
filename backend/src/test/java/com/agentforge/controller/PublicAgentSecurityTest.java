@@ -3,8 +3,8 @@ package com.agentforge.controller;
 import com.agentforge.entity.AgentApp;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.mapper.AgentAppMapper;
 import com.agentforge.security.ClientIpResolver;
+import com.agentforge.service.agent.AgentAppService;
 import com.agentforge.service.agent.ReActAgentService;
 import com.agentforge.vo.Result;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 public class PublicAgentSecurityTest {
 
     @Mock
-    private AgentAppMapper agentAppMapper;
+    private AgentAppService agentAppService;
 
     @Mock
     private ReActAgentService reActAgentService;
@@ -61,7 +61,7 @@ public class PublicAgentSecurityTest {
         app.setStatus(1);
         app.setPublicEnabled(0); // 默认关闭
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
 
         PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
@@ -93,7 +93,7 @@ public class PublicAgentSecurityTest {
         app.setPublicEnabled(1); // 开启
         app.setPublicToken("secret-token-2026");
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
 
         PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
@@ -130,7 +130,7 @@ public class PublicAgentSecurityTest {
         app.setPublicEnabled(1);
         app.setPublicToken("my-secure-token");
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
 
         ReActAgentService.AgentExecutionResult mockResult = ReActAgentService.AgentExecutionResult.builder()
@@ -164,7 +164,7 @@ public class PublicAgentSecurityTest {
     @Test
     @DisplayName("智能体不存在或停用时抛出 404/AGENT_APP_NOT_FOUND")
     void testAgentNotFoundThrowsException() {
-        when(agentAppMapper.selectByIdWithoutTenant(999L)).thenReturn(null);
+        when(agentAppService.findPublicApp(999L)).thenReturn(null);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
 
         PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
@@ -204,7 +204,7 @@ public class PublicAgentSecurityTest {
         app.setPublicEnabled(1);
         app.setPublicToken("secret-rotation-key-2026");
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
 
         PublicAgentController.WidgetChatRequest req = new PublicAgentController.WidgetChatRequest();
@@ -245,7 +245,7 @@ public class PublicAgentSecurityTest {
         app.setPublicEnabled(1);
         app.setPublicToken("secret-rotation-key-2026");
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
         when(reActAgentService.runAgent(eq(1L), anyString(), anyInt()))
                 .thenReturn(ReActAgentService.AgentExecutionResult.builder().finalAnswer("明文放行回答").build());
@@ -275,7 +275,7 @@ public class PublicAgentSecurityTest {
         app.setPublicToken("new-secret-2026");
         app.setPublicTokenPrev("old-secret-2025");
 
-        when(agentAppMapper.selectByIdWithoutTenant(1L)).thenReturn(app);
+        when(agentAppService.findPublicApp(1L)).thenReturn(app);
         when(clientIpResolver.resolveClientIp(any())).thenReturn("127.0.0.1");
         when(reActAgentService.runAgent(eq(1L), anyString(), anyInt()))
                 .thenReturn(ReActAgentService.AgentExecutionResult.builder().finalAnswer("旧密钥依然有效").build());

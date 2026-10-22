@@ -12,8 +12,7 @@ import com.agentforge.entity.SysTenant;
 import com.agentforge.entity.SysUser;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.mapper.SysTenantMapper;
-import com.agentforge.mapper.SysUserMapper;
+import com.agentforge.service.auth.AuthQueryService;
 import com.agentforge.security.TenantInterceptor;
 import com.agentforge.vo.LoginVO;
 import com.agentforge.vo.Result;
@@ -37,10 +36,7 @@ import static org.mockito.Mockito.when;
 public class AuthAndTenantSecurityMvcTest {
 
     @Mock
-    private SysTenantMapper tenantMapper;
-
-    @Mock
-    private SysUserMapper userMapper;
+    private AuthQueryService authQueryService;
 
     @InjectMocks
     private AuthController authController;
@@ -96,8 +92,8 @@ public class AuthAndTenantSecurityMvcTest {
                 .build();
         user.setId(1L);
 
-        when(tenantMapper.selectOne(any())).thenReturn(tenant);
-        when(userMapper.selectOne(any())).thenReturn(user);
+        when(authQueryService.findTenantByCode(any())).thenReturn(tenant);
+        when(authQueryService.findUserByTenantAndUsername(any(), any())).thenReturn(user);
 
         LoginRequest request = new LoginRequest();
         request.setTenantCode("tenant_default");
@@ -129,8 +125,8 @@ public class AuthAndTenantSecurityMvcTest {
                 .build();
         user.setId(1L);
 
-        when(tenantMapper.selectOne(any())).thenReturn(tenant);
-        when(userMapper.selectOne(any())).thenReturn(user);
+        when(authQueryService.findTenantByCode(any())).thenReturn(tenant);
+        when(authQueryService.findUserByTenantAndUsername(any(), any())).thenReturn(user);
 
         LoginRequest request = new LoginRequest();
         request.setTenantCode("tenant_default");

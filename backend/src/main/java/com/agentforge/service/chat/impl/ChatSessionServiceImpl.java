@@ -57,6 +57,16 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     }
 
     @Override
+    public List<ChatSession> listUserSessions(Long tenantId, Long userId) {
+        return sessionMapper.selectList(
+                new LambdaQueryWrapper<ChatSession>()
+                        .eq(ChatSession::getTenantId, tenantId)
+                        .eq(ChatSession::getUserId, userId)
+                        .orderByDesc(ChatSession::getUpdatedAt)
+        );
+    }
+
+    @Override
     public List<ChatMessage> listMessages(Long sessionId) {
         Long tenantId = TenantContextHolder.getTenantId();
         return messageMapper.selectList(

@@ -2,15 +2,12 @@ package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.agentforge.context.TenantContextHolder;
-import com.agentforge.entity.SysTenant;
 import com.agentforge.entity.TokenUsageLog;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.mapper.SysTenantMapper;
-import com.agentforge.mapper.TokenUsageLogMapper;
+import com.agentforge.service.billing.BillingService;
 import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,32 +34,13 @@ import java.util.Map;
 @SaCheckLogin
 public class BillingController {
 
-    private final SysTenantMapper tenantMapper;
-    private final TokenUsageLogMapper tokenUsageLogMapper;
+    private final BillingService billingService;
 
     @Operation(summary = "获取当前租户 Token 消耗与计费统计看板")
     @GetMapping("/stats")
     public Result<Map<String, Object>> getBillingStats() {
         Long tenantId = TenantContextHolder.getTenantId();
-        SysTenant tenant = tenantMapper.selectById(tenantId);
-        if (tenant == null) {
-            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
-        }
-
-        Long totalCalls = tokenUsageLogMapper.selectCount(new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId));
-        Long cachedCalls = tokenUsageLogMapper.selectCount(new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId).eq(TokenUsageLog::getIsCached, true));
-
-        double cacheHitRate = totalCalls > 0 ? (double) cachedCalls / totalCalls : 0.0;
-
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("tenantName", tenant.getName());
-        stats.put("walletBalance", tenant.getWalletBalance());
-        stats.put("totalCalls", totalCalls);
-        stats.put("cachedCalls", cachedCalls);
-        stats.put("cacheHitRate", String.format("%.1f%%", cacheHitRate * 100));
-        stats.put("estimatedCostSaved", String.format("¥ %.2f", cachedCalls * 0.005));
-
-        return Result.success(stats);
+        return Result.success(billingService.getBillingStats(tenantId));
     }
 
     @Operation(summary = "按租户 ID 查询用量详情 (跨租户越权防护)")
@@ -83,10 +60,7 @@ public class BillingController {
             @RequestParam(defaultValue = "10") long pageSize
     ) {
         Long tenantId = TenantContextHolder.getTenantId();
-        Page<TokenUsageLog> page = tokenUsageLogMapper.selectPage(
-                new Page<>(pageNum, pageSize),
-                new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId).orderByDesc(TokenUsageLog::getId)
-        );
+        Page<TokenUsageLog> page = billingService.listUsageLogs(tenantId, pageNum, pageSize);
         return Result.success(PageResult.of(page.getCurrent(), page.getSize(), page.getTotal(), page.getRecords()));
     }
 
@@ -94,19 +68,8 @@ public class BillingController {
     @PostMapping("/recharge")
     public Result<BigDecimal> recharge(@RequestBody RechargeRequest request) {
         Long tenantId = TenantContextHolder.getTenantId();
-        SysTenant tenant = tenantMapper.selectById(tenantId);
-        if (tenant == null) {
-            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
-        }
-
-        if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "充值金额必须大于 0");
-        }
-
-        tenant.setWalletBalance(tenant.getWalletBalance().add(request.getAmount()));
-        tenantMapper.updateById(tenant);
-
-        return Result.success("充值成功", tenant.getWalletBalance());
+        BigDecimal balance = billingService.recharge(tenantId, request.getAmount());
+        return Result.success("充值成功", balance);
     }
 
     @Data

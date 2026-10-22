@@ -8,6 +8,8 @@ import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.SysTenantMapper;
 import com.agentforge.mapper.TokenUsageLogMapper;
 import com.agentforge.service.billing.BillingService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 商业化 Token 计量与计费中心实现
@@ -89,5 +93,54 @@ public class BillingServiceImpl implements BillingService {
                 .build();
 
         tokenUsageLogMapper.insert(usageLog);
+    }
+
+    @Override
+    public Map<String, Object> getBillingStats(Long tenantId) {
+        SysTenant tenant = tenantMapper.selectById(tenantId);
+        if (tenant == null) {
+            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
+        }
+
+        Long totalCalls = tokenUsageLogMapper.selectCount(new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId));
+        Long cachedCalls = tokenUsageLogMapper.selectCount(new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId).eq(TokenUsageLog::getIsCached, true));
+
+        double cacheHitRate = totalCalls > 0 ? (double) cachedCalls / totalCalls : 0.0;
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("tenantName", tenant.getName());
+        stats.put("walletBalance", tenant.getWalletBalance());
+        stats.put("totalCalls", totalCalls);
+        stats.put("cachedCalls", cachedCalls);
+        stats.put("cacheHitRate", String.format("%.1f%%", cacheHitRate * 100));
+        stats.put("estimatedCostSaved", String.format("¥ %.2f", cachedCalls * 0.005));
+
+        return stats;
+    }
+
+    @Override
+    public Page<TokenUsageLog> listUsageLogs(Long tenantId, long pageNum, long pageSize) {
+        return tokenUsageLogMapper.selectPage(
+                new Page<>(pageNum, pageSize),
+                new LambdaQueryWrapper<TokenUsageLog>().eq(TokenUsageLog::getTenantId, tenantId).orderByDesc(TokenUsageLog::getId)
+        );
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BigDecimal recharge(Long tenantId, BigDecimal amount) {
+        SysTenant tenant = tenantMapper.selectById(tenantId);
+        if (tenant == null) {
+            throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
+        }
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "充值金额必须大于 0");
+        }
+
+        tenant.setWalletBalance(tenant.getWalletBalance().add(amount));
+        tenantMapper.updateById(tenant);
+
+        return tenant.getWalletBalance();
     }
 }

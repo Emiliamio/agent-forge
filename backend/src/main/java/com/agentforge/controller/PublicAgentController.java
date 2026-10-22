@@ -6,11 +6,11 @@ import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.AgentApp;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.mapper.AgentAppMapper;
 import com.agentforge.security.ClientIpResolver;
 import com.agentforge.security.LuaRateLimiter;
 import com.agentforge.security.ReplayGuard;
 import com.agentforge.security.SignedWidgetToken;
+import com.agentforge.service.agent.AgentAppService;
 import com.agentforge.service.agent.ReActAgentService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +37,7 @@ import java.security.MessageDigest;
 @RequiredArgsConstructor
 public class PublicAgentController {
 
-    private final AgentAppMapper agentAppMapper;
+    private final AgentAppService agentAppService;
     private final ReActAgentService reActAgentService;
     private final ReplayGuard replayGuard;
     private final LuaRateLimiter luaRateLimiter;
@@ -94,7 +94,7 @@ public class PublicAgentController {
         checkMultiDimensionRateLimit(ip, id, incomingToken);
 
         // 3. 跨租户物理检索智能体元数据 (忽略拦截器对未登录默认租户 1 的硬过滤，精准定位目标租户)
-        AgentApp app = agentAppMapper.selectByIdWithoutTenant(id);
+        AgentApp app = agentAppService.findPublicApp(id);
         if (app == null || app.getStatus() == null || app.getStatus() != 1) {
             throw new BusinessException(ErrorCode.AGENT_APP_NOT_FOUND, "目标智能体不存在或已被停用");
         }

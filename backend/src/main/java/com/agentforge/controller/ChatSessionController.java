@@ -5,10 +5,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.ChatMessage;
 import com.agentforge.entity.ChatSession;
-import com.agentforge.mapper.ChatSessionMapper;
 import com.agentforge.service.chat.ChatSessionService;
 import com.agentforge.vo.Result;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
@@ -33,7 +31,6 @@ import java.util.List;
 public class ChatSessionController {
 
     private final ChatSessionService chatSessionService;
-    private final ChatSessionMapper sessionMapper;
 
     @Operation(summary = "创建或初始化新会话")
     @PostMapping("/sessions")
@@ -48,13 +45,7 @@ public class ChatSessionController {
     public Result<List<ChatSession>> listSessions() {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = StpUtil.getLoginIdAsLong();
-
-        List<ChatSession> list = sessionMapper.selectList(
-                new LambdaQueryWrapper<ChatSession>()
-                        .eq(ChatSession::getTenantId, tenantId)
-                        .eq(ChatSession::getUserId, userId)
-                        .orderByDesc(ChatSession::getUpdatedAt)
-        );
+        List<ChatSession> list = chatSessionService.listUserSessions(tenantId, userId);
         return Result.success(list);
     }
 
