@@ -3,6 +3,31 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.1.0] - 2026-10-22
+
+### Added
+- **可复现宣传指标矩阵与 CI 门禁 (`docs/CLAIMS.md`)**：建立包含 9 项关键技术宣称的机器可验证矩阵，配套全自动自验脚本 `scripts/verify-claims.sh` 与 GitHub Actions CI `claims-verify` 门禁。
+- **两阶段挂件密钥安全轮换与 Flyway V6 迁移**：数据库新增 `public_token_prev` 字段，支持平滑密钥轮换与回滚，配套两阶段轮换 CLI 工具 `scripts/rotate_widget_secret.py` 及安全执行手册。
+- **挂件安全威胁建模规范 (`docs/THREAT_MODEL-widget.md`)**：建立遵循 STRIDE 模型的挂件安全防护威胁分析矩阵，全面覆盖 6 类威胁缓解策略与残余风险应对。
+- **预构建镜像发布与离线打包支持**：CI 自动构建并发布前后端镜像至 GHCR；`docker-compose.yml` 引入预构建镜像及本地构建回退；新增 `scripts/export-images.sh` 导出全栈离线镜像包（含 SHA256SUMS 与 README-offline.txt）。
+- **主库破坏性灾难恢复演练 (`scripts/restore-to-primary.sh`)**：支持主动断开长连接、物理销毁并从最新备份归档恢复主库并执行全套冒烟回归，集成入 `.github/workflows/drill.yml`。
+
+### Changed
+- **控制器与持久层依赖彻底解耦（零例外分层契约）**：
+  - 抽取并拓展 5 大 Service 门面（`AgentAppService`、`AuthQueryService`、`BillingService`、`ChatSessionService`、`WorkflowService`）；
+  - 全面移除 6 大 Controller（`AgentAppController`、`AuthController`、`BillingController`、`ChatSessionController`、`PublicAgentController`、`WorkflowController`）对 Mapper 的所有直接依赖；
+  - 收紧 `ArchitectureTest` 规则至零白名单、零豁免；归档并偿还 ADR 0004，发布 ADR 0005。
+- **外部语料评测 Commit SHA 自动对齐**：`scripts/benchmark_external.py` 生成的评测报告中 Git Commit SHA 动态绑定生成时的当前 HEAD。
+- **快速拉起路径优化**：README 明确区分官方预构建镜像极速拉起（≤60s）与源码编译路径（3~5分钟）。
+
+### Security
+- **明文挂件令牌安全软下线开关**：引入 `agentforge.widget.legacy-token-enabled` 配置项（默认开启明文兼容并输出 2027-01-01 Sunset 警示日志；生产可随时关闭强制收敛至 v1 签名令牌）。
+- **Redis 故障时安全策略显式化**：引入 `agentforge.security.fail-open-when-redis-down` 配置（开发默认 true 优雅降级；生产默认 false 拒绝放行并返回 503 与 Retry-After: 5）。
+- **Nginx 工业级安全响应头与挂件跨域白名单**：前端 Nginx 默认注入 `X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy: no-referrer`、`Permissions-Policy` 等安全头，针对 `/agentforge-widget.js` 严格保留单文件跨域白名单（`Access-Control-Allow-Origin: *`）。
+
+### Fixed
+- **生产环境 Compose 端口与健康校验对齐**：`docker-compose-prod.yml` 增加 `${FRONTEND_PORT:-3000}:80` 端口映射，镜像名与主编排统一。
+
 ## [v1.0.0] - 2026-10-22
 
 ### Added

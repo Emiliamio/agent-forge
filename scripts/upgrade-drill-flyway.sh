@@ -8,10 +8,10 @@ $PG -c "CREATE DATABASE $DB;" >/dev/null
 docker cp scripts/fixtures/legacy-schema-v1.sql agentforge-postgres:/tmp/legacy.sql
 $PG -d $DB -v ON_ERROR_STOP=1 -f /tmp/legacy.sql >/dev/null
 cd backend
-JAR=$(ls target/agent-forge-backend*.jar 2>/dev/null | grep -v findsecbugs | head -n1 || true)
+JAR=$(ls -t target/agent-forge-backend*.jar 2>/dev/null | grep -v '\.original' | grep -v findsecbugs | head -n1 || true)
 if [ -z "${JAR}" ]; then
   if command -v mvn.cmd >/dev/null 2>&1; then mvn.cmd -q -DskipTests package; else mvn -q -DskipTests package; fi
-  JAR=$(ls target/agent-forge-backend*.jar 2>/dev/null | grep -v findsecbugs | head -n1)
+  JAR=$(ls -t target/agent-forge-backend*.jar 2>/dev/null | grep -v '\.original' | grep -v findsecbugs | head -n1)
 fi
 [ -n "${JAR}" ] || { echo "[FAIL] 未找到 backend jar"; exit 1; }
 nohup java -Dserver.port=18080 -DDB_NAME=$DB -jar "$JAR" > /tmp/drill-spring-boot.log 2>&1 &

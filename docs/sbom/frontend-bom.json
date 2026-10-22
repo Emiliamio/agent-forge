@@ -17831,7 +17831,7 @@
         "jsdom@24.1.3",
         "@vue/test-utils@2.5.1"
       ],
-      "ref": "agent-forge-studio@1.0.0"
+      "ref": "agent-forge-studio@1.1.0"
     },
     {
       "dependsOn": [
@@ -19542,7 +19542,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "agent-forge-studio@1.0.0",
+      "bom-ref": "agent-forge-studio@1.1.0",
       "externalReferences": [],
       "name": "frontend",
       "properties": [
@@ -19555,10 +19555,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/agent-forge-studio@1.0.0",
+      "purl": "pkg:npm/agent-forge-studio@1.1.0",
       "scope": "required",
       "type": "library",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     "lifecycles": [
       {
