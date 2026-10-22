@@ -45,8 +45,16 @@ public class GlobalExceptionHandler {
             httpStatus = HttpStatus.BAD_REQUEST;
         } else if (e.getCode() == ErrorCode.RATE_LIMIT_EXCEEDED.getCode()) {
             httpStatus = HttpStatus.TOO_MANY_REQUESTS;
+        } else if (e.getCode() == ErrorCode.SERVICE_UNAVAILABLE.getCode()) {
+            httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
         }
         org.springframework.http.ResponseEntity.BodyBuilder responseBuilder = org.springframework.http.ResponseEntity.status(httpStatus);
+        if (httpStatus == HttpStatus.SERVICE_UNAVAILABLE) {
+            int retryAfter = (e.getRetryAfterSeconds() != null && e.getRetryAfterSeconds() > 0)
+                    ? e.getRetryAfterSeconds()
+                    : 5;
+            responseBuilder.header("Retry-After", String.valueOf(retryAfter));
+        }
         if (httpStatus == HttpStatus.TOO_MANY_REQUESTS) {
             int retryAfter = (e.getRetryAfterSeconds() != null && e.getRetryAfterSeconds() > 0)
                     ? e.getRetryAfterSeconds()

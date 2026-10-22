@@ -16,6 +16,7 @@ public enum ErrorCode {
     NOT_FOUND(404, "请求资源未找到"),
     METHOD_NOT_ALLOWED(405, "请求方法不支持"),
     SYSTEM_ERROR(500, "系统开小差了，请稍后重试"),
+    SERVICE_UNAVAILABLE(503, "服务暂时不可用，请稍后重试"),
 
     // 多租户与权限相关 (1001 - 1099)
     TENANT_NOT_FOUND(1001, "租户不存在或已被禁用"),

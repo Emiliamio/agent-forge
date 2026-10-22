@@ -22,6 +22,13 @@ public class ReplayGuard {
     private static final int MAX_LRU_CAPACITY = 10000;
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
 
+    @org.springframework.beans.factory.annotation.Value("${agentforge.security.fail-open-when-redis-down:true}")
+    private boolean failOpenWhenRedisDown = true;
+
+    public void setFailOpenWhenRedisDown(boolean failOpenWhenRedisDown) {
+        this.failOpenWhenRedisDown = failOpenWhenRedisDown;
+    }
+
     private final Map<String, Long> memoryLru = new LinkedHashMap<>(1024, 0.75f, true) {
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, Long> eldest) {
@@ -63,7 +70,14 @@ public class ReplayGuard {
             } catch (BusinessException be) {
                 throw be;
             } catch (Exception e) {
-                log.warn("ReplayGuard Redis 异常降级至本地内存 LRU: {}", e.getMessage());
+                log.warn("ReplayGuard Redis 异常: {}", e.getMessage());
+                if (!failOpenWhenRedisDown) {
+                    throw new BusinessException(ErrorCode.SERVICE_UNAVAILABLE, "限流/防重放组件不可用，已按 fail-closed 拒绝", 5);
+                }
+            }
+        } else {
+            if (!failOpenWhenRedisDown) {
+                throw new BusinessException(ErrorCode.SERVICE_UNAVAILABLE, "限流/防重放组件不可用，已按 fail-closed 拒绝", 5);
             }
         }
 

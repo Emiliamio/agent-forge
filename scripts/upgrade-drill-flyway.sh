@@ -45,4 +45,6 @@ COLS=$($PG -d $DB -tAc "select count(*) from information_schema.columns where ta
 [ "$COLS" = "1" ] || { echo "[FAIL] public_enabled 未迁移"; exit 1; }
 TZOK=$($PG -d $DB -tAc "select count(*) from information_schema.columns where table_name='api_key' and column_name='expired_at' and data_type='timestamp with time zone';")
 [ "$TZOK" = "0" ] || { echo "[FAIL] api_key.expired_at 仍为 timestamptz（V5 未生效）"; exit 1; }
+V6OK=$($PG -d $DB -tAc "select count(*) from information_schema.columns where table_name='agent_app' and column_name='public_token_prev';")
+[ "$V6OK" = "1" ] || { echo "[FAIL] agent_app.public_token_prev 未迁移（V6 未生效）"; exit 1; }
 echo "[OK] upgrade drill passed"

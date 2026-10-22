@@ -74,6 +74,7 @@ agentforge:
     rate-limit-agent-rpm: 300   # 单智能体 / 分钟
     rate-limit-token-rpm: 60    # 单令牌 / 分钟
   security:
+    fail-open-when-redis-down: true    # dev 默认放行；prod 见 application-prod.yml
     trusted-proxies:
       - 127.0.0.1
       - 0:0:0:0:0:0:0:1

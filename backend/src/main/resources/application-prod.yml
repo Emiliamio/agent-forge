@@ -36,6 +36,8 @@ agentforge:
   version: 1.0.0
   seed:
     enabled: false
+  security:
+    fail-open-when-redis-down: false
   widget:
     rate-limit-rpm: 30
     rate-limit-agent-rpm: 300

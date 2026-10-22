@@ -24,6 +24,17 @@
 - **v1.1.0+**：引入 `agentforge.widget.legacy-token-enabled` 安全硬开关（支持一键全局强制下线明文令牌）；
 - **v1.2.0**：计划全面废弃明文 token 支持，未签名的明文 token 将直接返回 HTTP 401 Unauthorized。
 
+### 防重放与限流高可用策略 (Fail-Open vs Fail-Closed)
+
+挂件限流与 Nonce 防重放依赖分布式 Redis。系统通过配置 `agentforge.security.fail-open-when-redis-down` 显式声明 Redis 故障时的行为基线：
+- **开发与单机测试环境 (dev)**：配置为 `true`（Fail-Open 默认降级），Redis 宕机或未部署时平滑降级为本地内存 LRU 缓存与滑动计数器，保障单机体验与开发零阻断；
+- **生产与高可用集群环境 (prod)**：在 `application-prod.yml` 中显式设为 `false`（Fail-Closed 默认拒绝），当 Redis 不可用时，坚决拦截挂件请求并返回 **HTTP 503 Service Unavailable + `Retry-After: 5`**，杜绝在多实例集群下因内存降级导致分布式限流与防重放机制被击穿绕过。
+
+### Nginx 安全响应头与挂件跨域公开例外
+
+- **全局安全加固**：前端 Nginx 默认注入 5 大严苛安全响应头：`X-Content-Type-Options: nosniff`、`X-Frame-Options: DENY`、`Referrer-Policy: no-referrer`、`Permissions-Policy` 以及针对 Vue/Vite 工业级 SPA 调优的 `Content-Security-Policy`；
+- **挂件 SDK 公开跨域例外**：针对 `location = /agentforge-widget.js` 单独配置 `Access-Control-Allow-Origin: *` 是**经过审慎安全评估的有意例外**，因该脚本作为开放 SDK，必须允许任意第三方业务系统与外部买家站点无障碍跨域嵌入加载。
+
 ### 挂件密钥平滑轮换操作手册 (Secret Rotation Runbook)
 
 针对生产环境可能发生的安全泄露或定期密钥安全轮换需求，AgentForge 通过数据库字段 `public_token_prev`（由 Flyway V6 引入）支持**双阶段平滑轮换**，保障轮换过程中现有客户端无感知、零停机：

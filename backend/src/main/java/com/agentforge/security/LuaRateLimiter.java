@@ -38,6 +38,13 @@ public class LuaRateLimiter {
     private final ObjectProvider<StringRedisTemplate> redisTemplateProvider;
     private final RedisScript<List> rateLimitScript;
 
+    @org.springframework.beans.factory.annotation.Value("${agentforge.security.fail-open-when-redis-down:true}")
+    private boolean failOpenWhenRedisDown = true;
+
+    public void setFailOpenWhenRedisDown(boolean failOpenWhenRedisDown) {
+        this.failOpenWhenRedisDown = failOpenWhenRedisDown;
+    }
+
     private final Map<String, MemoryRateBucket> memoryLru = new LinkedHashMap<>(1024, 0.75f, true) {
         @Override
         protected boolean removeEldestEntry(Map.Entry<String, MemoryRateBucket> eldest) {
@@ -83,7 +90,22 @@ public class LuaRateLimiter {
                     return new RateLimitResult(current, limit, ttl, allowed);
                 }
             } catch (Exception e) {
-                log.warn("LuaRateLimiter Redis 执行异常，平滑降级至本地内存滑动限流: key={}, error={}", key, e.getMessage());
+                log.warn("LuaRateLimiter Redis 执行异常: key={}, error={}", key, e.getMessage());
+                if (!failOpenWhenRedisDown) {
+                    throw new com.agentforge.exception.BusinessException(
+                            com.agentforge.exception.ErrorCode.SERVICE_UNAVAILABLE,
+                            "限流/防重放组件不可用，已按 fail-closed 拒绝",
+                            5
+                    );
+                }
+            }
+        } else {
+            if (!failOpenWhenRedisDown) {
+                throw new com.agentforge.exception.BusinessException(
+                        com.agentforge.exception.ErrorCode.SERVICE_UNAVAILABLE,
+                        "限流/防重放组件不可用，已按 fail-closed 拒绝",
+                        5
+                );
             }
         }
 
