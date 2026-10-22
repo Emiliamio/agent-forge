@@ -72,16 +72,33 @@
 
 ## 🚀 极速一键启动与全栈部署（5 分钟极速上手）
 
-只需标准三步，一条命令拉起全栈并完成全维自检：
+只需标准流程，一条命令拉起全栈并完成全维自检：
 
+#### 🚀 启动路径选择
+- **快路径（拉取预构建镜像，推荐，≤60 秒）**：
+  ```bash
+  docker compose --profile full pull
+  docker compose --profile full up -d --wait
+  ```
+- **源码构建路径（本地从 Dockerfile 全量重新编译，约 3~5 分钟）**：
+  ```bash
+  docker compose --profile full up -d --build --wait
+  ```
+- **离线/内网部署路径（免公网环境）**：
+  ```bash
+  # 1. 导出镜像包 (产出 dist/*.tar 与 SHA256SUMS)
+  bash scripts/export-images.sh
+  # 2. 目标机器离线载入并启动
+  docker load -i dist/postgres-pgvector-pg16.tar
+  docker load -i dist/redis-7-alpine.tar
+  docker load -i dist/agentforge-backend-1.1.0.tar
+  docker load -i dist/agentforge-frontend-1.1.0.tar
+  docker compose --profile full up -d --wait
+  ```
+
+#### 冒烟自检套件
 ```bash
-# 步骤 1：克隆仓库并进入工程根目录
-git clone https://github.com/Emiliamio/agent-forge.git && cd agent-forge
-
-# 步骤 2：一条命令拉起全栈容器并等待健康检查就绪 (PostgreSQL 16 pgvector + Redis 7 + 后端 Spring Boot + 前端 Nginx)
-docker compose --profile full up -d --build --wait
-
-# 步骤 3：执行 12 步自动化冒烟巡检套件 (12 项全绿)
+# 执行 12 步自动化冒烟巡检套件 (12 项全绿)
 bash scripts/smoke.sh
 ```
 * **访问入口**：前端工作台 `http://localhost:3000`（Nginx 托管 + 反代 `/api` 到后端）；

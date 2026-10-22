@@ -34,6 +34,7 @@ services:
 
   backend:
     profiles: ["full"]
+    image: ${AGENTFORGE_REGISTRY:-ghcr.io/emiliamio}/agentforge-backend:${AGENTFORGE_TAG:-1.1.0}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -68,6 +69,7 @@ services:
 
   frontend:
     profiles: ["full"]
+    image: ${AGENTFORGE_REGISTRY:-ghcr.io/emiliamio}/agentforge-frontend:${AGENTFORGE_TAG:-1.1.0}
     build:
       context: ./frontend
       dockerfile: Dockerfile
