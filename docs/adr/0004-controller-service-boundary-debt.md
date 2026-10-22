@@ -1,7 +1,7 @@
 # ADR 0004: 控制器-持久层边界白名单与技术债治理
 
 ## 状态
-已接受 (Accepted) - 2026-10-20
+已偿还（见 0005）- 2026-10-22
 
 ## 背景与现状
 为保障系统分层整洁，`ArchitectureTest` Rule 1 确立了「Controller 只能访问 Service，严禁穿透访问 Mapper」的架构铁律。当前架构测试针对历史存量放行了 6 个 Controller 直连 Mapper：
@@ -16,13 +16,13 @@
 ## 技术债清单与后续计划
 | Controller | 当前直连 Mapper | 建议抽取的 Service 门面 | 重构里程碑 |
 | :--- | :--- | :--- | :--- |
-| `AuthController` | `SysUserMapper` | `SysUserService` | C 批迭代 |
-| `AgentAppController` | `AgentAppMapper` | `AgentAppService` | C 批迭代 |
-| `BillingController` | `BillingRecordMapper` | `BillingService` | C 批迭代 |
-| `ChatSessionController` | `ChatSessionMapper`, `ChatMessageMapper` | `ChatSessionService` | C 批迭代 |
-| `WorkflowController` | `WorkflowMapper` | `WorkflowService` | C 批迭代 |
-| `PublicAgentController` | `AgentAppMapper` | `PublicAgentAppService` (纳管缓存) | C 批迭代 |
+| `AuthController` | `SysUserMapper` | `SysUserService` | C 批迭代 (已于 D 批通过 AuthQueryService 偿还) |
+| `AgentAppController` | `AgentAppMapper` | `AgentAppService` | C 批迭代 (已于 D 批偿还) |
+| `BillingController` | `BillingRecordMapper` | `BillingService` | C 批迭代 (已于 D 批偿还) |
+| `ChatSessionController` | `ChatSessionMapper`, `ChatMessageMapper` | `ChatSessionService` | C 批迭代 (已于 D 批偿还) |
+| `WorkflowController` | `WorkflowMapper` | `WorkflowService` | C 批迭代 (已于 D 批偿还) |
+| `PublicAgentController` | `AgentAppMapper` | `PublicAgentAppService` (纳管缓存) | C 批迭代 (已于 D 批通过 AgentAppService.findPublicApp 偿还) |
 
 ## 影响评估
 - **收益**：既有分层守护规则立即生效，杜绝架构腐化蔓延；公开挂件在保障隔离约束的同时维持低时延；
-- **代价**：存量代码存在轻量分层违背，需在后续版本完成 6 个控制器门面抽取。
+- **代价**：存量代码存在轻量分层违背，需在后续版本完成 6 个控制器门面抽取（已在 ADR 0005 彻底偿清）。
