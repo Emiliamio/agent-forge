@@ -3,31 +3,35 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
-## [1.0.0] - 2026-10-21
+## [v1.0.0] - 2026-10-22
 
 ### Added
-- **一键全栈编排与极速自检**：提供 `docker compose --profile full up -d --build --wait` 一键交付栈，新增前后端 `.dockerignore` 镜像构建瘦身与 12 步自动化冒烟脚本 `scripts/smoke.sh`。
-- **备份恢复双向闭环与演练**：新增 `scripts/backup.sh` 与支持无损活体校验的 `scripts/restore.sh --verify`，配置 GitHub Actions 定时演练工作流 `.github/workflows/drill.yml`。
-- **v1 签名挂件令牌与防重放**：引入 `v1.<exp>.<nonce>.<hmacBase64Url>` 签名规范与辅助工具 `scripts/sign_widget_token.py`，实现支持 30s 时钟漂移宽限与 Redis/LRU 双通道防重放守护器 `ReplayGuard`。
-- **原子多维限流与真 Retry-After**：实现基于 Redis 原子 Lua 脚本的 `LuaRateLimiter`，统一串联 IP (30 RPM)、Agent (300 RPM) 与 Token (60 RPM) 三维防御，支持动态计算 `Retry-After`、`X-RateLimit-Limit`、`X-RateLimit-Remaining` 与 `X-RateLimit-Reset` 响应头，提供并发压测探针 `scripts/limit_probe.py`。
-- **第三方公开权威语料评测**：基于公有领域《民法典》总则 45 法条切片构建真实中立评测基准 `docs/benchmark_external_corpus.md`、`scripts/benchmark_external.py` 与诚实无偏评测报告 `docs/BENCHMARK-EXTERNAL.md`。
-- **生产环境强化配置**：提供 `backend/src/main/resources/application-prod.yml`，严格禁用默认测试种子、隐藏敏感堆栈、强制要求环境变量注入核心密钥。
+- **Flyway 数据库版本化迁移矩阵**：移除全部 Java 运行时 DDL，数据库表结构与索引演进全面收敛至 Flyway `V1__baseline.sql` ~ `V5__time_column_alignment.sql` 迁移脚本。
+- **一键全栈交付编排与冒烟自检**：提供 `docker compose --profile full up -d --build --wait` 一键全栈交付，新增前后端 `.dockerignore` 镜像构建瘦身与 12 步自动化冒烟脚本 `scripts/smoke.sh`。
+- **备份恢复双向闭环与定时演练**：新增 `scripts/backup.sh` 与支持 7 项活体校验的 `scripts/restore.sh --verify`，配置 GitHub Actions 定时演练工作流 `.github/workflows/drill.yml`。
+- **v1 签名挂件令牌与防重放守护器**：引入 `v1.<exp>.<nonce>.<hmacBase64Url>` 签名规范与生成工具 `scripts/sign_widget_token.py`，实现支持 30s 时钟漂移宽限与 Redis/LRU 双通道防重放守护器 `ReplayGuard`。
+- **原子多维限流与动态 Retry-After**：实现基于 Redis 原子 Lua 脚本的 `LuaRateLimiter`，统一串联 IP (30 RPM)、Agent (300 RPM) 与 Token (60 RPM) 三维防御，支持动态计算 `Retry-After: 1..60s` 响应头，提供并发压测探针 `scripts/limit_probe.py`。
+- **第三方公开权威语料评测**：基于公有领域《民法典》总则 45 法条切片构建真实中立评测基准 `docs/benchmark_external_corpus.md`、`scripts/benchmark_external.py` 与客观评测报告 `docs/BENCHMARK-EXTERNAL.md`（Recall@1 81.25%、Recall@5 93.75%、MRR 0.8777、NDCG@5 0.8914）。
+- **生产环境强化配置与编排健壮性**：提供 `backend/src/main/resources/application-prod.yml` 与 `docker-compose-prod.yml`，严格禁用演示种子、隐藏敏感堆栈、前后端注入容器级 healthcheck 与编排依赖。
 
 ### Changed
-- **版本号统一步进至 1.0.0**：`backend/pom.xml`、`frontend/package.json`、生产 Profile 统一收敛至正式商用版本 `1.0.0`。
-- **数据库架构由 Flyway 全面接管**：移除硬编码 Java DDL 逻辑，数据库表结构与索引演进严格收敛至 Flyway `V1__baseline.sql` ~ `V5__time_column_alignment.sql` 迁移脚本。
-- **检索参数配置化解耦**：稠密与稀疏权重、TopK 与候选切片召回深度全面收敛至 `agentforge.rag.*` 属性树。
+- **检索参数配置化解耦**：稠密与稀疏权重、TopK 与候选切片召回深度全面收敛至 `agentforge.rag.*` 属性树，官方基准评测持续锁定为 Recall@5 100%、MRR 0.9722、NDCG@5 0.9795。
+- **DDL 彻底从运行时移除**：完全移除 Java 动态建表与初始化逻辑，表结构演进严格由 Flyway 托管。
+- **访问入口规范收敛**：访问入口收敛至前端工作台 `http://localhost:3000`（Nginx 托管 + 反代 `/api` 到后端），后端 API 独立托管于 `http://localhost:8080/api/*`，根路径清晰返回 404。
 
 ### Fixed
+- **验签顺序严谨性重构**：服务端严格先执行 HMAC-SHA256 常量时间签名校验，验签通过后才记录 Nonce，杜绝未签名伪造请求恶意烧掉合法请求的 Nonce 防重放窗口。
+- **演练脚本 jar 包通配解析**：`scripts/upgrade-drill-flyway.sh` 采用通配符解析版本号步进后的目标 jar 包（`agent-forge-backend-1.0.0.jar`），杜绝旧快照版本写死导致的执行失败。
+- **容器健康检查回环地址统一**：前后端容器 healthcheck 回环探测统一锁定 `127.0.0.1`，Nginx 开启 IPv6 双栈监听 (`[::]:80`)，彻底杜绝回环探测超时问题。
 - **数据结构时区漂移修复**：彻底修复 `api_key.expired_at` 历史遗留的 `TIMESTAMP WITH TIME ZONE` 类型不一致问题。
 - **降级检索向量污染隔离**：修复无外部 Embedding API Key 降级模式下伪稠密向量对 RRF 重排的排序干扰。
 - **评测防篡改门禁校验强化**：完善 `check_benchmark_doc.py` 对评测报告 Markdown 正文表格与机器基线的一致性全量校验。
 
 ### Security
-- **挂件会话防重放防窃听**：淘汰纯明文 token 暴露缺陷，杜绝前端抓包永久利用风险，计划于 v1.2.0 完全废弃存量明文 token。
-- **限流锁永久泄漏修复**：通过原子 Lua 脚本合并 INCR 与 EXPIRE 操作，消除进程 Crash 导致的无 TTL 永久锁隐患。
-- **Security-by-Default 严格访问控制**：智能体挂件权限物理默认关闭（`public_enabled = 0`），未显式开启一律 403 阻断；核心系统诊断接口收紧为 ADMIN/OWNER 角色专享。
-- **反代信任链安全剥离**：`ClientIpResolver` 从右向左安全剥离受信任代理，彻底封死 X-Forwarded-For 伪造绕过防御。
+- **签名令牌强绑定 Agent 与 Tenant**：签名内容严格绑定 `agentId + "|" + tenantId + "|" + exp + "|" + nonce`，过期防护与防重放双重守护，拦截跨 Agent/租户伪造。
+- **原子多维速率防护与防时序攻击**：挂件密钥比对采用 `MessageDigest.isEqual` 恒定时间防时序攻击；多维原子限流配合动态 `Retry-After: 1..60s` 响应头防御突发流量。
+- **16 场景全维越权矩阵测试覆盖**：`AuthzMatrixTest` 完整覆盖 401 匿名/伪造拦截、403 越权/禁用拦截、404 挂件不存在拦截、429 超频限流与动态 `Retry-After` 断言。
+- **CI 安全扫描与代码健康门禁**：集成 Gitleaks 密钥泄露扫描、OSV 依赖供应链漏洞审计、Trivy 容器漏洞扫描与 SpotBugs 静态安全分析。
 
 ---
 

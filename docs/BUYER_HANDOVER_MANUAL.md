@@ -18,6 +18,13 @@ docker-compose -f docker-compose-prod.yml up -d
 * **默认管理员账户**：`admin` / `admin123456`
 * **默认超级租户 ID**：`1`
 
+### 编排矩阵与环境区别
+
+| 文件 | 用途 | 数据库名 | 种子数据 |
+| :--- | :--- | :--- | :--- |
+| `docker-compose.yml`（`--profile full`） | 本地演示 / 冒烟验收 | `agentforge` | 开启（`DataSeeder`） |
+| `docker-compose-prod.yml` | 生产部署 | `agent_forge` | 关闭（`AGENTFORGE_SEED_ENABLED=false`） |
+
 ### 方式 B：本地源码运行与调试
 1. 启动底层存储：
    ```bash

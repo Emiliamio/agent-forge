@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -45,6 +43,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/api/system/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agent_forge?useSSL=false&serverTimezone=Asia/Shanghai
@@ -53,6 +57,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123456}
+      AGENTFORGE_SEED_ENABLED: "false"     # 生产不注入演示种子
     ports:
       - "8080:8080"
 
@@ -63,7 +68,13 @@ services:
     container_name: agentforge-frontend-prod
     restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     ports:
       - "80:80"
 
