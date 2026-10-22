@@ -56,9 +56,15 @@ docker-compose -f docker-compose-prod.yml up -d
 ### 2.2 数据库与向量索引一键热备份
 * **执行备份**：
   ```bash
-  chmod +x scripts/backup_database.sh && ./scripts/backup_database.sh
+  bash scripts/backup.sh
   ```
-  自动导出包含 pgvector 向量索引的完整 SQL 并保留最近 7 天历史快照。
+  自动导出包含 pgvector 向量索引的完整归档快照（`-Fc` 格式）并生成 SHA256 校验元数据。
+* **备份保留策略**：
+  默认保留最近 14 天备份（可通过环境变量 `BACKUP_RETAIN_DAYS` 自定义，如 `BACKUP_RETAIN_DAYS=30 bash scripts/backup.sh`），备份执行完毕后会自动清理超过保留期的历史 `.dump` 与 `.meta.json`。
+* **备份恢复验证**：
+  ```bash
+  bash scripts/restore.sh --verify backups/agentforge-YYYYMMDD_HHMMSS.dump
+  ```
 
 ### 2.3 自检 API
 * **自检接口**：`GET http://localhost:8080/api/system/health`

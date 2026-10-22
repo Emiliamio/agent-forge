@@ -79,3 +79,14 @@ with open('''$META_FILE''', 'w', encoding='utf-8') as f:
 "
 
 echo "[OK] backup $DUMP_FILE ($FILE_SIZE bytes, sha256=$SHA256)"
+
+# 5. 保留策略（默认保留 14 天）
+BACKUP_RETAIN_DAYS="${BACKUP_RETAIN_DAYS:-14}"
+CLEANED=0
+while IFS= read -r -d '' f; do
+  [ "$(basename "$f")" = "$(basename "$DUMP_FILE")" ] && continue
+  rm -f "$f" "${f%.dump}.meta.json"
+  CLEANED=$((CLEANED+1))
+done < <(find "$BACKUP_DIR" -maxdepth 1 -type f -name 'agentforge-*.dump' -mtime +"$BACKUP_RETAIN_DAYS" -print0)
+
+echo "[OK] retention: 清理 ${CLEANED} 个超过 ${BACKUP_RETAIN_DAYS} 天的备份"

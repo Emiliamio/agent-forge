@@ -101,6 +101,21 @@
 # 执行 12 步自动化冒烟巡检套件 (12 项全绿)
 bash scripts/smoke.sh
 ```
+
+#### 数据热备份与恢复（含自动保留策略）
+```bash
+# 1. 执行数据库一键热备份（默认保留 14 天备份，超期自动清理）
+bash scripts/backup.sh
+
+# 自定义保留周期示例（如保留 30 天）
+BACKUP_RETAIN_DAYS=30 bash scripts/backup.sh
+
+# 2. 演练恢复验证（零污染只读验证，在临时库中完整校验表行数与切片指纹）
+bash scripts/restore.sh --verify backups/agentforge-<TIMESTAMP>.dump
+
+# 3. 真实灾难恢复至主库（高危操作，需明确输入 YES 确认）
+bash scripts/restore.sh --to-primary backups/agentforge-<TIMESTAMP>.dump
+```
 * **访问入口**：前端工作台 `http://localhost:3000`（Nginx 托管 + 反代 `/api` 到后端）；
   后端 API `http://localhost:8080/api/*`，接口文档 `http://localhost:8080/api/swagger-ui.html`。
   （`http://localhost:8080/` 根路径返回 404 属预期。）
