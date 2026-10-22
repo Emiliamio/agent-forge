@@ -84,6 +84,13 @@
   ```bash
   docker compose --profile full up -d --build --wait
   ```
+- **生产环境独立部署路径（严格秘钥注入与生产配置）**：
+  ```bash
+  # 1. 自动生成生产强随机秘钥（POSTGRES_PASSWORD、REDIS_PASSWORD、JWT_SECRET 写入 .env）
+  bash scripts/gen-env.sh
+  # 2. 拉起生产编排（禁用演示种子、隐藏敏感堆栈、独立数据卷）
+  docker compose -f docker-compose-prod.yml up -d --wait
+  ```
 - **离线/内网部署路径（免公网环境）**：
   ```bash
   # 1. 导出镜像包 (产出 dist/*.tar 与 SHA256SUMS)

@@ -10,8 +10,11 @@
 ### 方式 A：Docker Compose 生产一键交付（推荐）
 在任意安装了 Docker 的 Linux / Windows 服务器上执行：
 ```bash
-# 1. 启动全栈生产容器 (PostgreSQL 16 pgvector + Redis 7 + 后端 Java 21 + 前端 Nginx)
-docker-compose -f docker-compose-prod.yml up -d
+# 1. 生成高强度生产环境密钥配置 (.env，含 POSTGRES_PASSWORD、REDIS_PASSWORD、JWT_SECRET)
+bash scripts/gen-env.sh
+
+# 2. 启动全栈生产容器 (PostgreSQL 16 pgvector + Redis 7 + 后端 Java 21 + 前端 Nginx)
+docker compose -f docker-compose-prod.yml up -d
 ```
 * **控制台 Web Studio 访问地址**：`http://服务器IP:80`
 * **全员 Copilot 极简门户访问地址**：`http://服务器IP:80/copilot`
