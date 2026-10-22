@@ -3,8 +3,12 @@ name: AgentForge CI
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
 
 permissions:
   contents: read
@@ -246,4 +250,41 @@ jobs:
         if: always()
         run: |
           docker compose --profile full down -v
+
+  claims-verify:
+    name: Claims · reproducible claims matrix gate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Boot full stack via docker compose
+        run: |
+          docker compose --profile full up -d --build --wait
+
+      - name: Prepare live test database
+        run: |
+          bash scripts/prepare-live-db.sh
+
+      - name: Execute claims verification matrix
+        run: |
+          bash scripts/verify-claims.sh
+
+      - name: Teardown containers
+        if: always()
+        run: |
+          docker compose --profile full down -v
+
 
