@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   drill:
-    name: Backup and restore round-trip verification
+    name: Backup, primary restore and prod compose drill
     runs-on: ubuntu-latest
 
     steps:
@@ -48,10 +48,31 @@ jobs:
         run: |
           bash scripts/backup.sh
 
-      - name: Run round-trip restore verification
+      - name: Run round-trip restore verification (temp db)
         run: |
           bash scripts/restore.sh --verify
 
+      - name: Start full stack for primary restore drill
+        run: |
+          docker compose --profile full up -d --wait
+
+      - name: Run destructive restore to primary drill
+        env:
+          ALLOW_DESTRUCTIVE_RESTORE: "yes"
+        run: |
+          bash scripts/restore-to-primary.sh
+
+      - name: Teardown dev stack
+        run: |
+          docker compose --profile full down -v
+
+      - name: Production compose boot and smoke test
+        run: |
+          docker compose -f docker-compose-prod.yml up -d --build --wait
+          curl -sf http://localhost:8080/api/system/health
+          curl -sf http://localhost:3000/
+          docker compose -f docker-compose-prod.yml down -v
+
       - name: Report success
         run: |
-          echo "[OK] Backup and restore scheduled drill passed with 100% round-trip fidelity"
+          echo "[OK] All backup, primary restore, and production compose drills passed successfully"

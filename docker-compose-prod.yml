@@ -33,6 +33,7 @@ services:
       retries: 5
 
   backend:
+    image: ${AGENTFORGE_REGISTRY:-ghcr.io/emiliamio}/agentforge-backend:${AGENTFORGE_TAG:-1.1.0}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -62,6 +63,7 @@ services:
       - "8080:8080"
 
   frontend:
+    image: ${AGENTFORGE_REGISTRY:-ghcr.io/emiliamio}/agentforge-frontend:${AGENTFORGE_TAG:-1.1.0}
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -76,7 +78,7 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-3000}:80"
 
 volumes:
   pgdata_prod:
