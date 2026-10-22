@@ -1,5 +1,7 @@
 # 安全策略
 
+> 🛡️ **挂件入口威胁模型**：关于公开免密挂件、Token 验签、防重放与跨租户调度的 STRIDE 威胁建模，详见 [THREAT_MODEL-widget.md](docs/THREAT_MODEL-widget.md)。
+
 ## 支持版本
 
 | 版本 | 安全更新 |
