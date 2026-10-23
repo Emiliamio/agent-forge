@@ -1,37 +1,24 @@
-# exp:2027-06-30  dev-only frontend build toolchain (vite/vitest/esbuild/tinypool/braces/postcss/source-map-js)
+# exp:2027-06-30  dev-only frontend build toolchain (vitest 3.2.6 / tinypool)
 #   not shipped in the runtime image; see docs/security/VEX.md section 3
 # exp:2027-06-30  fixes require Spring Boot 3.5.x / Spring Framework 7 / opennlp 2.x, or tomcat 10.1.58 (unpublished)
 #   patch-level fixes are enforced by scripts/check_osv.py; see docs/security/VEX.md section 2
-GHSA-vfj7-8cjw-p6xm
-GHSA-67mh-4wv8-2f99
-GHSA-rj75-hqrm-r3gf
-GHSA-68fv-2mgg-jv7q
 GHSA-5gmw-xhrv-c9v3
 GHSA-85c8-ppgw-ccpr
-GHSA-4w7w-66w2-5vf9
-GHSA-587h-7wmj-h5pm
-GHSA-698v-4r3x-3vcv
-GHSA-9jrq-w75r-8gcw
-GHSA-fx2h-pf6j-xcff
-GHSA-r825-w8mm-5pxw
-GHSA-rq7h-c2jc-7f22
-GHSA-v6wh-96g9-6wx3
-GHSA-5xrq-8626-4rwp
+GHSA-82fw-gwwq-j7x9
+GHSA-qxg6-89mg-rqv8
 CVE-2026-104848
 CVE-2026-104849
-CVE-2026-112942
+CVE-2026-84373
+CVE-2026-112949
 CVE-2026-22731
 CVE-2026-22733
 CVE-2026-40973
 CVE-2026-41695
 CVE-2026-41716
 CVE-2026-42440
-CVE-2026-47429
 CVE-2026-47884
 CVE-2026-47890
 CVE-2026-47892
-CVE-2026-53571
 CVE-2026-65182
 CVE-2026-65905
 CVE-2026-68525
-CVE-2026-93749

@@ -40,8 +40,13 @@
 | poi-ooxml | 5.2.5 | → **5.4.0** |
 | opennlp-tools | 1.9.4 | → **1.9.5** |
 | follow-redirects（前端） | 1.16.0 | → **1.16.1**（`overrides`） |
+| vite（前端） | 5.4.21 | → **6.4.4**（清空全部 Vite 5 历史漏洞） |
+| vitest（前端） | 1.6.1 | → **3.2.6**（清空 Vitest 1.x 历史漏洞） |
+| tailwindcss（前端） | 3.4.1 | → **4.3.3**（迁移至 Tailwind 4，移除 postcss/autoprefixer，消除 braces 传递漏洞） |
+| eslint-plugin-vue（前端） | 9.27.0 | → **10.11.1**（适配 ESLint 8.57 与 Vue3 规范） |
+| source-map-js（前端） | 1.2.1 | → **1.2.2**（`overrides` 消除 ReDoS 漏洞 GHSA-68fv-2mgg-jv7q） |
 
-效果：Maven 侧漏洞从 145 → 14 → **4 个包（8 条记录）**，且剩余项**全部**属于「需要跨重大架构线升级」或「修复版本未发布」。
+效果：Maven 侧漏洞从 145 → 14 → **4 个包（8 条记录）**，且剩余项**全部**属于「需要跨重大架构线升级」或「修复版本未发布」。前端侧消除 6 个包 / 14 条历史漏洞。
 
 ## 2. 不可在线内修复项（4 个包 / 8 条记录）
 
@@ -58,13 +63,35 @@ v1.3.0 B 批已成功落地 Spring Boot 3.5.16、MyBatis-Plus 3.5.17 与 Sa-Toke
 **暴露面说明**：这些均属框架/库自身缺陷，本项目通过既有缓解措施（挂件签名、限流、租户隔离、最小暴露面）
 降低可利用性；不等于"忽略"，`ignoreUntil = 2027-06-30`，到期门禁会重新报出。
 
-## 3. 前端构建期依赖（不进入运行时镜像）
+## 3. 前端构建期依赖 ✅ 已完成（v1.3.0 C 批）
 
-15 条，见 `osv-scanner.toml`：`vite@5.4.21`(8)、`vitest@1.6.1`(1)、`tinypool@0.8.4`(2)、`esbuild@0.21.5`(1)、
-`braces@3.0.3`(1)、`postcss-selector-parser@6.1.4`(1)、`source-map-js@1.2.1`(1)。
+### 3.1 真实升级版本
+- `vite`: `5.4.21` → **`6.4.4`**
+- `vitest`: `1.6.1` → **`3.2.6`**
+- `tailwindcss`: `3.4.1` → **`4.3.3`**（搭配 `@tailwindcss/vite: 4.3.3`，彻底移除 `postcss` 与 `autoprefixer`）
+- `eslint-plugin-vue`: `9.27.0` → **`10.11.1`**（搭配 `vue-eslint-parser: 10.4.1`，保持 ESLint 8.57 兼容）
+- `source-map-js`: `1.2.1` → **`1.2.2`**（通过 `overrides` 强制提升）
 
-`frontend/Dockerfile` 运行时阶段只 `COPY --from=build /app/dist`，镜像内不含 `node_modules`；
-这些包只在构建/测试期加载本仓库源码，不处理外部输入。修复需 vite 8 / vitest 5 / tailwind 4 全套迁移（v1.2 批次）。
+### 3.2 已消除的 14 条历史漏洞（全部状态：`RESOLVED`）
+- `vite` 历史漏洞（5 条）：`GHSA-9c4c-3c4v-459r`、`GHSA-849f-4gpm-44vp`、`GHSA-93m5-p257-2pv8`、`GHSA-649x-223v-cw84`、`GHSA-c425-m925-5w98` → **`RESOLVED`**（升至 vite 6.4.4 清除）
+- `vite@5.4.21` 衍生漏洞（8 条）：`GHSA-4w7w-66w2-5vf9`、`GHSA-587h-7wmj-h5pm`、`GHSA-698v-4r3x-3vcv`、`GHSA-9jrq-w75r-8gcw`、`GHSA-fx2h-pf6j-xcff`、`GHSA-r825-w8mm-5pxw`、`GHSA-rq7h-c2jc-7f22`、`GHSA-v6wh-96g9-6wx3` → **`RESOLVED`**
+- `vitest@1.6.1` 漏洞：`GHSA-5xrq-8626-4rwp` → **`RESOLVED`**（升至 vitest 3.2.6 清除）
+- `source-map-js` 漏洞：`GHSA-68fv-2mgg-jv7q` / `CVE-2026-93749` → **`RESOLVED`**（升至 1.2.2 清除）
+- `micromatch` / `braces` 漏洞：`GHSA-952p-652v-xg9x`、`GHSA-grv7-fg5c-x5vh` / `GHSA-vfj7-8cjw-p6xm` → **`RESOLVED`**（Tailwind 4 移除 postcss 后消除）
+- `cross-spawn` 漏洞：`GHSA-3xgq-45jj-v275` → **`RESOLVED`**
+- `nanoid` 漏洞：`GHSA-mwcw-c2x4-8c55` → **`RESOLVED`**
+- `esbuild` / `postcss-selector-parser` 漏洞：`GHSA-67mh-4wv8-2f99`、`GHSA-rj75-hqrm-r3gf` → **`RESOLVED`**
+
+### 3.3 vitest 3.2.6 残留说明（5 条）
+升级至 `vitest@3.2.6` 后，OSV 报出 5 条依赖项 advisory（4 个唯一 ID）：
+1. `@vitest/mocker@3.2.6`: `GHSA-82fw-gwwq-j7x9` (`CVE-2026-84373`)、`GHSA-qxg6-89mg-rqv8` (`CVE-2026-112949`)
+2. `tinypool@1.1.1`: `GHSA-5gmw-xhrv-c9v3` (`CVE-2026-104848`)、`GHSA-85c8-ppgw-ccpr` (`CVE-2026-104849`)
+3. `vitest@3.2.6`: `GHSA-82fw-gwwq-j7x9` (`CVE-2026-84373`)
+
+**不可在线内修复理由**：
+修复上述 5 条 advisory 需要升级到 `vitest@5`，而 `vitest@5` 硬性依赖 **Node ≥ 22.12**。由于当前 CI 及生产 Docker 构建均固定在 **Node 20 LTS**（`node:20` / `node:20-alpine`），超越了当前 Node 20 LTS 约束边界。
+且 `frontend/Dockerfile` 运行时阶段仅执行 `COPY --from=builder /app/dist /usr/share/nginx/html`，镜像内不包含任何 `node_modules`，上述工具仅在单测/构建时执行本仓库代码，零运行时暴露面。
+因此依规定在 `osv-scanner.toml` 与 `.trivyignore` 中记录豁免，`ignoreUntil = 2027-06-30`，待后续整体演进至 Node 22+ 时再平滑升级。
 
 ## 4. 复核方式
 
