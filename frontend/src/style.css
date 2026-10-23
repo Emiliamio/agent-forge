@@ -1,6 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-900: #312e81;
+
+  --color-dark-bg: #0f172a;
+  --color-dark-card: #1e293b;
+  --color-dark-border: #334155;
+  --color-dark-hover: #2d3748;
+}
 
 /* 现代滚动条样式 */
 ::-webkit-scrollbar {
