@@ -140,6 +140,7 @@ jobs:
           curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
             | sudo sh -s -- -b /usr/local/bin
           trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
+                    --ignorefile .trivyignore \
                     --skip-dirs node_modules --skip-dirs backend/target .
 
   sbom-drift:

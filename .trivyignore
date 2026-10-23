@@ -1,0 +1,17 @@
+# exp:2027-06-30  dev-only frontend build toolchain (vite/vitest/esbuild/tinypool/braces/), not shipped in runtime image
+# see docs/security/VEX.md and osv-scanner.toml
+GHSA-vfj7-8cjw-p6xm
+GHSA-67mh-4wv8-2f99
+GHSA-rj75-hqrm-r3gf
+GHSA-68fv-2mgg-jv7q
+GHSA-5gmw-xhrv-c9v3
+GHSA-85c8-ppgw-ccpr
+GHSA-4w7w-66w2-5vf9
+GHSA-587h-7wmj-h5pm
+GHSA-698v-4r3x-3vcv
+GHSA-9jrq-w75r-8gcw
+GHSA-fx2h-pf6j-xcff
+GHSA-r825-w8mm-5pxw
+GHSA-rq7h-c2jc-7f22
+GHSA-v6wh-96g9-6wx3
+GHSA-5xrq-8626-4rwp
