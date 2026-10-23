@@ -133,7 +133,7 @@ jobs:
           osv-scanner --version
 
       - name: Dependency vulnerability gate (OSV)
-        run: osv-scanner -r ./
+        run: osv-scanner scan --config=osv-scanner.toml -r ./
 
       - name: Filesystem CVE gate (trivy)
         run: |

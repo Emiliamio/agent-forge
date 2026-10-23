@@ -1,0 +1,82 @@
+# OSV-Scanner 忽略清单（VEX-lite）
+#
+# 仅收录「前端构建期依赖」中无法在不做工具链大版本迁移（vite 8 / vitest 5 / tailwind 4）
+# 的情况下修复的告警。判定依据见 docs/security/VEX.md：
+# 这些包只用于 vite/vitest/tailwind 的构建与测试，不进入运行时镜像
+# （frontend/Dockerfile 仅把 dist/ 拷入 nginx 静态站点）。
+# 每条都带 ignoreUntil，到期必须重新评估或完成工具链升级。
+
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-06-30
+reason = "braces@3.0.3 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-67mh-4wv8-2f99"
+ignoreUntil = 2027-06-30
+reason = "esbuild@0.21.5 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-rj75-hqrm-r3gf"
+ignoreUntil = 2027-06-30
+reason = "postcss-selector-parser@6.1.4 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-68fv-2mgg-jv7q"
+ignoreUntil = 2027-06-30
+reason = "source-map-js@1.2.1 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-5gmw-xhrv-c9v3"
+ignoreUntil = 2027-06-30
+reason = "tinypool@0.8.4 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-85c8-ppgw-ccpr"
+ignoreUntil = 2027-06-30
+reason = "tinypool@0.8.4 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-4w7w-66w2-5vf9"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-587h-7wmj-h5pm"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-698v-4r3x-3vcv"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-9jrq-w75r-8gcw"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-fx2h-pf6j-xcff"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-r825-w8mm-5pxw"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-rq7h-c2jc-7f22"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-v6wh-96g9-6wx3"
+ignoreUntil = 2027-06-30
+reason = "vite@5.4.21 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
+
+[[IgnoredVulns]]
+id = "GHSA-5xrq-8626-4rwp"
+ignoreUntil = 2027-06-30
+reason = "vitest@1.6.1 为前端构建/测试期依赖，不随镜像发布（见 docs/security/VEX.md）"
