@@ -6,7 +6,7 @@ import cn.dev33.satoken.annotation.SaMode;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.dto.RunWorkflowRequest;
 import com.agentforge.dto.WorkflowDefinitionRequest;
-import com.agentforge.service.workflow.WorkflowService;
+import com.agentforge.service.workflow.api.WorkflowService;
 import com.agentforge.vo.Result;
 import com.agentforge.vo.WorkflowDefinitionVo;
 import com.agentforge.vo.WorkflowExecutionVo;

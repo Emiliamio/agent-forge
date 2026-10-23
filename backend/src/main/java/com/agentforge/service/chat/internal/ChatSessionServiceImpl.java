@@ -1,4 +1,4 @@
-package com.agentforge.service.chat.impl;
+package com.agentforge.service.chat.internal;
 import com.agentforge.vo.AgentExecutionResult;
 
 import cn.hutool.core.util.StrUtil;
@@ -12,7 +12,7 @@ import com.agentforge.mapper.ChatFeedbackMapper;
 import com.agentforge.mapper.ChatMessageMapper;
 import com.agentforge.mapper.ChatSessionMapper;
 import com.agentforge.service.agent.ReActAgentService;
-import com.agentforge.service.chat.ChatSessionService;
+import com.agentforge.service.chat.api.ChatSessionService;
 import com.agentforge.service.security.api.PiiMaskingService;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow.model;
+package com.agentforge.service.workflow.internal;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONPath;

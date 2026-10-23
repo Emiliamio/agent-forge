@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow.node;
+package com.agentforge.service.workflow.internal;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

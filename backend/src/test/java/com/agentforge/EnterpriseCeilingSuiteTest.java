@@ -1,7 +1,7 @@
 package com.agentforge;
 
 import com.agentforge.service.security.api.PromptInjectionGuard;
-import com.agentforge.service.workflow.trace.AgentExecutionTracer;
+import com.agentforge.service.workflow.api.AgentExecutionTracer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

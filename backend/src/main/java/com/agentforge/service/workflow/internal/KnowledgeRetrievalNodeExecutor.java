@@ -1,9 +1,7 @@
-package com.agentforge.service.workflow.node;
+package com.agentforge.service.workflow.internal;
 
 import cn.hutool.core.map.MapUtil;
 import com.agentforge.service.rag.RagService;
-import com.agentforge.service.workflow.model.DagModel;
-import com.agentforge.service.workflow.model.WorkflowContext;
 import com.agentforge.vo.Citation;
 import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;

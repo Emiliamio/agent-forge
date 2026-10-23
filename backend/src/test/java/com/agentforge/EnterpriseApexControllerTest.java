@@ -8,7 +8,7 @@ import com.agentforge.service.rag.graph.GraphRagEngine;
 import com.agentforge.service.rag.quantization.ScalarQuantizationEngine;
 import com.agentforge.service.security.api.PromptInjectionGuard;
 import com.agentforge.service.security.api.TenantTokenQuotaLimiter;
-import com.agentforge.service.workflow.trace.TraceWaterfallGanttService;
+import com.agentforge.service.workflow.api.TraceWaterfallGanttService;
 import com.agentforge.vo.Result;
 import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Assertions;

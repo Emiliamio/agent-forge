@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow.impl;
+package com.agentforge.service.workflow.internal;
 
 import com.agentforge.entity.WorkflowDefinition;
 import com.agentforge.entity.WorkflowExecution;
@@ -6,10 +6,7 @@ import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.WorkflowDefinitionMapper;
 import com.agentforge.mapper.WorkflowExecutionMapper;
-import com.agentforge.service.workflow.WorkflowService;
-import com.agentforge.service.workflow.engine.WorkflowEngine;
-import com.agentforge.service.workflow.model.DagModel;
-import com.agentforge.service.workflow.model.WorkflowContext;
+import com.agentforge.service.workflow.api.WorkflowService;
 import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

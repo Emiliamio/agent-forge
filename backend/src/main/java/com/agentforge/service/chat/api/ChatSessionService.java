@@ -1,4 +1,4 @@
-package com.agentforge.service.chat;
+package com.agentforge.service.chat.api;
 
 import com.agentforge.entity.ChatFeedback;
 import com.agentforge.entity.ChatMessage;

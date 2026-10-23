@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow.trace;
+package com.agentforge.service.workflow.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

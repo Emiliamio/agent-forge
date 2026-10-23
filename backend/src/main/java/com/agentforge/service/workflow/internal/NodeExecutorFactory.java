@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow.node;
+package com.agentforge.service.workflow.internal;
 
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;

@@ -1,8 +1,7 @@
-package com.agentforge.service.workflow.engine;
+package com.agentforge.service.workflow.internal;
 
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.service.workflow.model.DagModel;
 import lombok.Getter;
 
 import java.util.ArrayDeque;

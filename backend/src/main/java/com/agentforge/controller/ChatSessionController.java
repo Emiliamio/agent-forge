@@ -6,7 +6,7 @@ import com.agentforge.context.TenantContextHolder;
 import com.agentforge.dto.CreateSessionRequest;
 import com.agentforge.dto.FeedbackRequest;
 import com.agentforge.dto.SendMessageRequest;
-import com.agentforge.service.chat.ChatSessionService;
+import com.agentforge.service.chat.api.ChatSessionService;
 import com.agentforge.vo.ChatMessageVo;
 import com.agentforge.vo.ChatSessionVo;
 import com.agentforge.vo.Result;

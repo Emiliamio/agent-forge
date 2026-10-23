@@ -3,7 +3,7 @@ package com.agentforge.service;
 import com.agentforge.dto.*;
 import com.agentforge.entity.*;
 import com.agentforge.service.converter.*;
-import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.service.market.api.TemplateMarketService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

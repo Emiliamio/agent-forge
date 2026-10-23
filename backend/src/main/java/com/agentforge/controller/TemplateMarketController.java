@@ -1,7 +1,7 @@
 package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.service.market.api.TemplateMarketService;
 import com.agentforge.vo.IndustryTemplateVo;
 import com.agentforge.vo.Result;
 import com.agentforge.vo.WorkflowDefinitionVo;

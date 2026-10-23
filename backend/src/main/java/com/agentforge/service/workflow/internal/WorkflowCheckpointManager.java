@@ -1,9 +1,7 @@
-package com.agentforge.service.workflow.engine;
+package com.agentforge.service.workflow.internal;
 
 import com.agentforge.entity.WorkflowExecution;
 import com.agentforge.mapper.WorkflowExecutionMapper;
-import com.agentforge.service.workflow.model.DagModel;
-import com.agentforge.service.workflow.model.WorkflowContext;
 import com.alibaba.fastjson2.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

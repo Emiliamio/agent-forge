@@ -1,7 +1,8 @@
 package com.agentforge;
 
 import com.agentforge.service.agent.llm.LlmClient;
-import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.service.market.api.TemplateMarketService;
+import com.agentforge.service.market.internal.TemplateMarketServiceImpl;
 import com.agentforge.service.rag.eval.RagasEvaluationEngine;
 import com.agentforge.service.rag.parser.PdfDocumentParser;
 import com.agentforge.service.rag.parser.sidecar.VisionSidecarParser;
@@ -48,7 +49,7 @@ public class RagasAndMarketplaceTest {
     @Test
     @DisplayName("测试 6 大高客单价垂直行业模板市场元数据与分类")
     void testTemplateMarketplace() {
-        TemplateMarketService marketService = new TemplateMarketService(null, null);
+        TemplateMarketService marketService = new TemplateMarketServiceImpl(null, null);
         List<TemplateMarketService.IndustryTemplate> templates = marketService.listTemplates();
 
         Assertions.assertEquals(6, templates.size());

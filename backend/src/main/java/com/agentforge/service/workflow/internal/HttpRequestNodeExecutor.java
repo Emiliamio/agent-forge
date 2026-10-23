@@ -1,11 +1,9 @@
-package com.agentforge.service.workflow.node;
+package com.agentforge.service.workflow.internal;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.Method;
-import com.agentforge.service.workflow.model.DagModel;
-import com.agentforge.service.workflow.model.WorkflowContext;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

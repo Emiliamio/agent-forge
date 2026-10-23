@@ -1,8 +1,8 @@
 package com.agentforge;
 
 import com.agentforge.service.rag.quantization.ScalarQuantizationEngine;
-import com.agentforge.service.workflow.trace.AgentExecutionTracer;
-import com.agentforge.service.workflow.trace.TraceWaterfallGanttService;
+import com.agentforge.service.workflow.api.AgentExecutionTracer;
+import com.agentforge.service.workflow.api.TraceWaterfallGanttService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

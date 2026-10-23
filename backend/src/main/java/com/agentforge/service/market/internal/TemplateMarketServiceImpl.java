@@ -1,50 +1,28 @@
-package com.agentforge.service.market;
+package com.agentforge.service.market.internal;
 
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.AgentApp;
 import com.agentforge.entity.WorkflowDefinition;
 import com.agentforge.mapper.AgentAppMapper;
 import com.agentforge.mapper.WorkflowDefinitionMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.agentforge.service.market.api.TemplateMarketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
- * 企业级 6 大高客单价垂直行业应用与工作流模板市场服务
+ * 企业级 6 大高客单价垂直行业应用与工作流模板市场服务实现
  */
 @Slf4j
-@Service
+@Service("templateMarketService")
 @RequiredArgsConstructor
-public class TemplateMarketService {
+public class TemplateMarketServiceImpl implements TemplateMarketService {
 
     private final WorkflowDefinitionMapper workflowMapper;
     private final AgentAppMapper appMapper;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class IndustryTemplate implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        private String templateId;
-        private String name;
-        private String category; // 金融财务, 招投标, IT运维, 法务合同, 政务政策, 智能客服
-        private String icon;
-        private String description;
-        private String valueProposition; // 商业交付价值说明 (如: 节省 80% 人工初审时间)
-        private String estimatedPrice;    // 市场常规交付参考客单价 (如: ¥50,000 ~ ¥100,000)
-        private String dagJson;
-        private String defaultPrompt;
-    }
 
     private static final List<IndustryTemplate> TEMPLATES = List.of(
             IndustryTemplate.builder()
@@ -123,6 +101,7 @@ public class TemplateMarketService {
     /**
      * 获取模板市场全量模板列表
      */
+    @Override
     public List<IndustryTemplate> listTemplates() {
         return TEMPLATES;
     }
@@ -130,6 +109,7 @@ public class TemplateMarketService {
     /**
      * 一键克隆模板到当前租户的工作流与智能体列表
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public WorkflowDefinition cloneTemplateToTenant(String templateId) {
         Long tenantId = TenantContextHolder.getTenantId();
@@ -168,12 +148,14 @@ public class TemplateMarketService {
         return workflow;
     }
 
+    @Override
     public java.util.List<com.agentforge.vo.IndustryTemplateVo> listTemplateVos() {
         return TEMPLATES.stream()
                 .map(com.agentforge.service.converter.IndustryTemplateConverter::toVo)
                 .toList();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public com.agentforge.vo.WorkflowDefinitionVo cloneTemplateToTenantVo(String templateId) {
         return com.agentforge.service.converter.WorkflowDefinitionConverter.toVo(cloneTemplateToTenant(templateId));

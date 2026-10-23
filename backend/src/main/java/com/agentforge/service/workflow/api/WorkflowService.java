@@ -1,4 +1,4 @@
-package com.agentforge.service.workflow;
+package com.agentforge.service.workflow.api;
 
 import com.agentforge.entity.WorkflowDefinition;
 import com.agentforge.entity.WorkflowExecution;

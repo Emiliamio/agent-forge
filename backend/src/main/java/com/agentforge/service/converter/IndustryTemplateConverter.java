@@ -1,6 +1,6 @@
 package com.agentforge.service.converter;
 
-import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.service.market.api.TemplateMarketService;
 import com.agentforge.vo.IndustryTemplateVo;
 
 public final class IndustryTemplateConverter {

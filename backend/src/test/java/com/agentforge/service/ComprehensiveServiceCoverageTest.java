@@ -9,7 +9,7 @@ import com.agentforge.service.agent.llm.LlmClient;
 import com.agentforge.service.platform.api.SsoAuthService;
 import com.agentforge.service.billing.api.SemanticCacheService;
 import com.agentforge.service.billing.internal.BillingServiceImpl;
-import com.agentforge.service.chat.impl.ChatSessionServiceImpl;
+import com.agentforge.service.chat.internal.ChatSessionServiceImpl;
 import com.agentforge.service.platform.internal.BotWebhookAdapter;
 import com.agentforge.service.rag.chunk.ChunkManagementService;
 import com.agentforge.service.rag.embedding.DefaultEmbeddingService;
@@ -21,9 +21,7 @@ import com.agentforge.service.rag.search.HybridSearchService;
 import com.agentforge.service.rag.version.DocumentVersionHotSwapService;
 import com.agentforge.service.security.api.PiiMaskingService;
 import com.agentforge.service.platform.api.SystemSelfCheckService;
-import com.agentforge.service.workflow.model.DagModel;
-import com.agentforge.service.workflow.model.WorkflowContext;
-import com.agentforge.service.workflow.node.*;
+import com.agentforge.service.workflow.internal.*;
 import com.agentforge.vo.ChunkSearchResult;
 import com.agentforge.vo.Citation;
 import com.agentforge.vo.LoginVO;
@@ -31,7 +29,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.agentforge.service.rag.citation.CitationHighlightEngine;
 import com.agentforge.service.rag.tokenizer.CjkTokenizer;
 import com.agentforge.service.rag.acl.AclPermissionContext;
-import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.service.market.api.TemplateMarketService;
+import com.agentforge.service.market.internal.TemplateMarketServiceImpl;
 import com.agentforge.service.platform.api.SystemSelfCheckService.CheckItem;
 import com.agentforge.service.platform.api.SystemSelfCheckService.DiagnosticReport;
 import com.agentforge.service.platform.api.SsoAuthService.OrgDeptSyncItem;
@@ -597,7 +596,7 @@ public class ComprehensiveServiceCoverageTest {
         assertNotEquals(acl, acl2);
 
         // TemplateMarketService
-        TemplateMarketService marketService = new TemplateMarketService(mock(WorkflowDefinitionMapper.class), mock(AgentAppMapper.class));
+        TemplateMarketService marketService = new TemplateMarketServiceImpl(mock(WorkflowDefinitionMapper.class), mock(AgentAppMapper.class));
         assertFalse(marketService.listTemplates().isEmpty());
         assertFalse(marketService.listTemplateVos().isEmpty());
         assertThrows(IllegalArgumentException.class, () -> marketService.cloneTemplateToTenant("non_exist"));
