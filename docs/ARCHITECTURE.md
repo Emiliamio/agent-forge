@@ -184,7 +184,12 @@ AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Arc
   ```
 - **机器验证命令**：
   ```bash
-  cd backend && mvn -B -Dtest=ArchitectureTest#r1_controller_must_not_depend_on_mapper,ArchitectureTest#r1_mapper_must_not_depend_on_service,ArchitectureTest#r1_entity_must_not_depend_on_service_or_mapper test
+  cd backend && mvn -B -Dtest=ArchitectureTest test
+  # 说明：ArchUnit 规则是 @ArchTest 静态字段，不是可单独过滤的测试方法，
+  #       `-Dtest=ArchitectureTest#某方法名` 会被 surefire 退化成"跑整个类"（看似通过、实则未选中），
+  #       因此统一跑整个套件；套件内 11 项全绿即为 R1 通过。
+  # 对应当前 3 条规则：
+  #   controllers_should_not_access_mappers / r1_mapper_must_not_depend_on_service / r1_entity_must_not_depend_on_service_or_mapper
   ```
 
 ### 2. 不变量 R2: 控制器入参出参严格 DTO/VO 化 (Controller DTO/VO Boundary)
@@ -200,8 +205,9 @@ AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Arc
   ```
 - **机器验证命令**：
   ```bash
-  cd backend && mvn -B -Dtest=ArchitectureTest#r2_controller_must_not_depend_on_entity,ArchitectureTest#r2_controller_must_not_depend_on_entity_fields test
-  # 源码级别零依赖验证
+  cd backend && mvn -B -Dtest=ArchitectureTest test
+  # 对应规则：r2_controllers_should_not_depend_on_entities
+  # 源码级别零依赖验证（辅助证据，规则本身基于字节码依赖，FQN 写法同样会被拦下）
   grep -rn "import com.agentforge.entity" backend/src/main/java/com/agentforge/controller/ | wc -l # 必须输出 0
   ```
 
@@ -217,7 +223,8 @@ AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Arc
   ```
 - **机器验证命令**：
   ```bash
-  cd backend && mvn -B -Dtest=ArchitectureTest#r3_transactional_only_in_service test
+  cd backend && mvn -B -Dtest=ArchitectureTest test
+  # 对应规则：r3_transactional_only_in_service
   ```
 
 ### 4. 不变量 R4: 包级架构切片绝对无环 (Cycle-Free Architecture Slices)
@@ -231,7 +238,12 @@ AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Arc
   ```
 - **机器验证命令**：
   ```bash
-  cd backend && mvn -B -Dtest=ArchitectureTest#r4_no_cycles,ArchitectureTest#r8_cross_feature_internal_boundary test
+  cd backend && mvn -B -Dtest=ArchitectureTest test
+  # 对应规则：r4_no_cycles（切片无环）
+  #          r8_cross_feature_internal_boundary（agent.internal 不依赖 rag.internal）
+  #          r8b_rag_internal_must_not_depend_on_agent_internal（反向，双向才构成隔离）
+  # 当前已落地的特性域：service/agent/{api,internal}、service/rag/{api,internal}；
+  # billing / security / platform 三个特性域尚未切分（v1.2 后续批次）。
   ```
 
 ### 5. 不变量 R5: OpenAPI 契约快照与防漂移机器回归 (OpenAPI Contract Snapshot)

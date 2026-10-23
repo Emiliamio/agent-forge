@@ -52,3 +52,18 @@
 - **工程鲁棒性**：任何违背分层契约的代码在本地 `mvn clean verify` 阶段就会立即抛出断言错误，阻断提交；
 - **安全与合规**：彻底杜绝 Mass Assignment 批量赋值攻击与敏感字段泄露，符合 OWASP Top 10 安全规范；
 - **CI 效能与确定性**：无公网依赖与 Flaky 测试，所有单元测试与契约测试稳定在毫秒级完成。
+
+## 实现现状与已知边界（2026-10-23 审计后补记）
+
+| 项 | 状态 | 说明 |
+|---|---|---|
+| R1 三条规则 | ✅ 全部落地 | `controllers_should_not_access_mappers`、`r1_mapper_must_not_depend_on_service`、`r1_entity_must_not_depend_on_service_or_mapper`；`ArchitectureTest` 共 **11 项**（10 条 ArchUnit 规则 + 1 个 DDL 扫描测试） |
+| R2 | ✅ | `r2_controllers_should_not_depend_on_entities`，基于字节码依赖，全限定名（FQN）写法同样会被拦下（审计已注入 FQN 探针验证） |
+| R3 | ✅ | `r3_transactional_only_in_service` |
+| R4 无环 | ✅ | `r4_no_cycles`（`slices().matching("com.agentforge.(*)..")`） |
+| R4 特性隔离 | ⚠️ 双向已补，范围有限 | 已落地特性域仅 `service/agent/{api,internal}`、`service/rag/{api,internal}`；`billing` / `security` / `platform` 尚未切分，规则 8b 为其预留 |
+| R5 | ✅ 且实测有效 | 审计时注入 `/health-probe` 端点 → 契约测试立即红（`Failures: 1`），回滚后转绿 |
+| R6 | ✅ | 3 端口 + 3 Fake（`test/java/com/agentforge/fake/`），由 `HexagonalPortsAndFakesTest` 注入使用 |
+
+**不要用 `-Dtest=ArchitectureTest#某方法名` 精确选择规则**：`@ArchTest` 是静态字段而非测试方法，
+surefire 无法按方法过滤，会退化成"跑整个类"——看起来通过，实际没有选中那条规则。统一用 `-Dtest=ArchitectureTest test`。

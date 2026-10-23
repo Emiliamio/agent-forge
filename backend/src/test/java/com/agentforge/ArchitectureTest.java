@@ -112,12 +112,39 @@ public class ArchitectureTest {
                     .because("架构切片之间不得存在循环依赖，保障系统模块单向演进与独立可维护性");
 
     /**
-     * Rule 8 (R4): 业务特性内部实现隔离 (跨特性模块只能面向 api 契约通信，严禁跨特性直接穿透依赖 internal 内部实现类)
+     * Rule 8 (R4): 业务特性内部实现隔离 (双向：agent.internal 与 rag.internal 互不穿透)
      */
     @ArchTest
     static final ArchRule r8_cross_feature_internal_boundary =
             noClasses().that().resideInAPackage("..agent.internal..")
-                    .should().dependOnClassesThat().resideInAnyPackage("..rag.internal..", "..billing.internal..")
-                    .as("Rule 8: 业务特性实现隔离（跨模块禁止依赖 internal 内部实现类）")
+                    .should().dependOnClassesThat().resideInAPackage("..rag.internal..")
+                    .as("Rule 8a: 业务特性实现隔离（agent.internal 禁止依赖 rag.internal）")
                     .because("业务特性模块之间必须保持单向接口依赖，跨模块只能依赖对外暴露的 api 契约，严禁穿透耦合 internal 内部实现");
+
+    @ArchTest
+    static final ArchRule r8b_rag_internal_must_not_depend_on_agent_internal =
+            noClasses().that().resideInAPackage("..rag.internal..")
+                    .should().dependOnClassesThat().resideInAPackage("..agent.internal..")
+                    .as("Rule 8b: 业务特性实现隔离（rag.internal 禁止依赖 agent.internal）")
+                    .because("双向约束才构成隔离：单向规则只能防止一个方向的穿透，反向耦合同样会破坏模块独立演进");
+
+    /**
+     * Rule 9 (R1-a): 持久层 Mapper 严禁反向依赖 Service 业务层
+     */
+    @ArchTest
+    static final ArchRule r1_mapper_must_not_depend_on_service =
+            noClasses().that().resideInAPackage("..mapper..")
+                    .should().dependOnClassesThat().resideInAPackage("..service..")
+                    .as("Rule 9 (R1-a): Mapper 持久层禁止依赖 Service 业务层")
+                    .because("分层必须单向：持久层若反向依赖业务层，会形成 mapper -> service -> mapper 的闭环，导致持久层无法独立测试与复用（反例：Mapper 里注入 Service 做业务校验）");
+
+    /**
+     * Rule 10 (R1-b): 领域实体 Entity 严禁依赖 Service / Mapper
+     */
+    @ArchTest
+    static final ArchRule r1_entity_must_not_depend_on_service_or_mapper =
+            noClasses().that().resideInAPackage("..entity..")
+                    .should().dependOnClassesThat().resideInAnyPackage("..service..", "..mapper..")
+                    .as("Rule 10 (R1-b): Entity 领域实体禁止依赖 Service / Mapper")
+                    .because("实体是贫血数据模型，必须保持与业务逻辑、持久层实现无关，否则无法跨场景复用且极易产生环形依赖（反例：Entity 里调用 Mapper 或 Service 做级联查询）");
 }
