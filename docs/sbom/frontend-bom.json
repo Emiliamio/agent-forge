@@ -543,12 +543,12 @@
       "version": "3.0.4"
     },
     {
-      "bom-ref": "@esbuild/win32-x64@0.21.5",
-      "description": "The Windows 64-bit binary for esbuild, a JavaScript bundler.",
+      "bom-ref": "@esbuild/linux-x64@0.21.5",
+      "description": "The Linux 64-bit binary for esbuild, a JavaScript bundler.",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.21.5.tgz"
+          "url": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.21.5.tgz"
         },
         {
           "type": "vcs",
@@ -566,7 +566,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "b5077fd5e7c9bb33c2eab085c04bcbb5c8bfc4d15c4d9927997b3df056037c6138c0ff4294557df27c8aaf324a54f3217439e3ccb85d532317e0fb1000f8f023"
+          "content": "d6b61d4e9cafd378b2705d7e061cebcd024274eb803ad6aa1d35896425af8a3283d8de57bb44ed542f3ffb57da5aa70ff6204258e9a39a1a07f78747f360713d"
         }
       ],
       "licenses": [
@@ -576,18 +576,18 @@
           }
         }
       ],
-      "name": "@esbuild/win32-x64",
+      "name": "@esbuild/linux-x64",
       "properties": [
         {
           "name": "cdx:npm:package:path",
-          "value": "node_modules/@esbuild/win32-x64"
+          "value": "node_modules/@esbuild/linux-x64"
         },
         {
           "name": "cdx:npm:package:development",
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40esbuild/win32-x64@0.21.5",
+      "purl": "pkg:npm/%40esbuild/linux-x64@0.21.5",
       "scope": "optional",
       "type": "library",
       "version": "0.21.5"
@@ -1399,12 +1399,12 @@
     },
     {
       "author": "Lukas Taegert-Atkinson",
-      "bom-ref": "@rollup/rollup-win32-x64-gnu@4.63.1",
+      "bom-ref": "@rollup/rollup-linux-x64-gnu@4.63.1",
       "description": "Native bindings for Rollup",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rollup/rollup-win32-x64-gnu/-/rollup-win32-x64-gnu-4.63.1.tgz"
+          "url": "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.63.1.tgz"
         },
         {
           "type": "vcs",
@@ -1422,7 +1422,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "460ae83df3262a50f5473483c6fc2070f8b2d873502a8615ece9b02170ec93bdee296e6de81fd5f0a232dbb48cbff14d5c5a3fa1206d59cf49d17eedf757b366"
+          "content": "81f2394f6e162cbb857d22b0ec6a3fcc35e30005747e7cb4b304da0eff968caeefa9cc387118457ddb3228bd67fae908fa8a01c67ddb5509f2ae7d3a5a9239d3"
         }
       ],
       "licenses": [
@@ -1432,30 +1432,30 @@
           }
         }
       ],
-      "name": "@rollup/rollup-win32-x64-gnu",
+      "name": "@rollup/rollup-linux-x64-gnu",
       "properties": [
         {
           "name": "cdx:npm:package:path",
-          "value": "node_modules/@rollup/rollup-win32-x64-gnu"
+          "value": "node_modules/@rollup/rollup-linux-x64-gnu"
         },
         {
           "name": "cdx:npm:package:development",
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40rollup/rollup-win32-x64-gnu@4.63.1",
+      "purl": "pkg:npm/%40rollup/rollup-linux-x64-gnu@4.63.1",
       "scope": "optional",
       "type": "library",
       "version": "4.63.1"
     },
     {
       "author": "Lukas Taegert-Atkinson",
-      "bom-ref": "@rollup/rollup-win32-x64-msvc@4.63.1",
+      "bom-ref": "@rollup/rollup-linux-x64-musl@4.63.1",
       "description": "Native bindings for Rollup",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.63.1.tgz"
+          "url": "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.63.1.tgz"
         },
         {
           "type": "vcs",
@@ -1473,7 +1473,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "6adf1055ea7a4b787963a8126dd194d3a6d163958991fe9651db8cf58b6f60c6d8841d4c3857d481cea47a18ad417cceb4c49a4fbd2aedff7274f869aaef36d7"
+          "content": "e21e97aad8660781eca638bce30be093e125a1d4ec1a3f9d6d9a872471ed2b18f8998ab400d48410f5fdcacde6a09b9eaac463c29689607efcef822dc278f6a3"
         }
       ],
       "licenses": [
@@ -1483,18 +1483,18 @@
           }
         }
       ],
-      "name": "@rollup/rollup-win32-x64-msvc",
+      "name": "@rollup/rollup-linux-x64-musl",
       "properties": [
         {
           "name": "cdx:npm:package:path",
-          "value": "node_modules/@rollup/rollup-win32-x64-msvc"
+          "value": "node_modules/@rollup/rollup-linux-x64-musl"
         },
         {
           "name": "cdx:npm:package:development",
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40rollup/rollup-win32-x64-msvc@4.63.1",
+      "purl": "pkg:npm/%40rollup/rollup-linux-x64-musl@4.63.1",
       "scope": "optional",
       "type": "library",
       "version": "4.63.1"
@@ -17530,7 +17530,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "@esbuild/win32-x64@0.21.5"
+      "ref": "@esbuild/linux-x64@0.21.5"
     },
     {
       "dependsOn": [
@@ -17629,11 +17629,11 @@
     },
     {
       "dependsOn": [],
-      "ref": "@rollup/rollup-win32-x64-gnu@4.63.1"
+      "ref": "@rollup/rollup-linux-x64-gnu@4.63.1"
     },
     {
       "dependsOn": [],
-      "ref": "@rollup/rollup-win32-x64-msvc@4.63.1"
+      "ref": "@rollup/rollup-linux-x64-musl@4.63.1"
     },
     {
       "dependsOn": [],
@@ -17831,7 +17831,7 @@
         "jsdom@24.1.3",
         "@vue/test-utils@2.5.1"
       ],
-      "ref": "agent-forge-studio@1.1.1"
+      "ref": "agent-forge-studio@1.1.2"
     },
     {
       "dependsOn": [
@@ -18187,7 +18187,7 @@
     },
     {
       "dependsOn": [
-        "@esbuild/win32-x64@0.21.5"
+        "@esbuild/linux-x64@0.21.5"
       ],
       "ref": "esbuild@0.21.5"
     },
@@ -19136,8 +19136,8 @@
     {
       "dependsOn": [
         "@types/estree@1.0.9",
-        "@rollup/rollup-win32-x64-gnu@4.63.1",
-        "@rollup/rollup-win32-x64-msvc@4.63.1"
+        "@rollup/rollup-linux-x64-gnu@4.63.1",
+        "@rollup/rollup-linux-x64-musl@4.63.1"
       ],
       "ref": "rollup@4.63.1"
     },
@@ -19542,9 +19542,9 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "agent-forge-studio@1.1.1",
+      "bom-ref": "agent-forge-studio@1.1.2",
       "externalReferences": [],
-      "name": "frontend",
+      "name": "work",
       "properties": [
         {
           "name": "cdx:npm:package:path",
@@ -19555,10 +19555,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/agent-forge-studio@1.1.1",
+      "purl": "pkg:npm/agent-forge-studio@1.1.2",
       "scope": "required",
       "type": "library",
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     "lifecycles": [
       {

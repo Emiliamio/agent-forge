@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -13,7 +13,7 @@
 
     <groupId>com.agentforge</groupId>
     <artifactId>agent-forge-backend</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>agent-forge-backend</name>
     <description>AgentForge: 企业级多租户 AI 智能体编排与混合检索 RAG 平台</description>
 

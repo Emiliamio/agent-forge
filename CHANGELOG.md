@@ -3,6 +3,13 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.1.2] - 2026-10-23
+
+### Fixed
+- **CI 安全工具安装权限**：`security-audit` 中 gitleaks 解包与 OSV-Scanner 安装改为 `sudo tar` / `sudo install`，修复 runner 用户对 `/usr/local/bin` 无写权限导致 7 秒即失败的问题。
+- **CI Redis 认证不匹配**：`backend-test` 与 `benchmark-drift` 不再使用无密码的 `services.redis`，改为 `docker run ... redis-server --requirepass redis123`，与 `LiveTestSupport` 的 `spring.data.redis.password=redis123` 对齐，修复 Redisson `Unable to connect to Redis server` 引发的全量 live 测试失败。
+- **SBOM 跨平台漂移**：`scripts/refresh-sbom.sh` 的前端 BOM 改为固定用 `node:20` 容器渲染（npm 会按平台裁剪 `@esbuild/*`、`@rollup/rollup-*` 等 optionalDependencies，Windows 与 Linux 生成结果必然不同），并补充 `mvn`/`mvn.cmd` 探测；重新生成 `docs/sbom/frontend-bom.json`（linux/amd64 口径），使 CI 的 `sbom-drift` 可稳定通过。
+
 ## [v1.1.1] - 2026-10-22
 
 ### Security
