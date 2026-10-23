@@ -13,7 +13,7 @@
 
     <groupId>com.agentforge</groupId>
     <artifactId>agent-forge-backend</artifactId>
-    <version>1.1.3</version>
+    <version>1.2.0</version>
     <name>agent-forge-backend</name>
     <description>AgentForge: 企业级多租户 AI 智能体编排与混合检索 RAG 平台</description>
 

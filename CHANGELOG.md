@@ -3,6 +3,20 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.2.0] - 2026-10-23
+
+### Added
+- **架构不变量 R1–R6 与机器门禁**：`ArchitectureTest` 扩到 **11 项**（10 条 ArchUnit 规则 + 1 个 DDL 扫描），覆盖严格单向分层（controller↛mapper、mapper↛service、entity↛service/mapper）、DTO/VO 边界、事务只允许在 service、包级切片无环（`slices().matching("com.agentforge.(*)..").should().beFreeOfCycles()`）、特性内部实现双向隔离（agent.internal ↔ rag.internal）；零白名单、零忽略注解。
+- **控制器全面 DTO/VO 化**：15 个控制器中 10 个不再 `import com.agentforge.entity`（`grep` 结果为 0），出入参改为 `dto`/`vo` + 手写转换器，**对外字段名零变更**。
+- **六边形端口与测试替身**：新增 `ChatModelPort` / `EmbeddingPort` / `DocumentStoragePort` 三个端口接口及对应 `Fake*` 实现，由 `HexagonalPortsAndFakesTest` 真实注入驱动。
+- **OpenAPI 契约快照门禁（R5）**：`docs/openapi.json`（OpenAPI 3.1.0 / 47 paths / 91 schemas）+ `OpenApiContractTest` 规范化比对；实测注入一个临时端点即刻红，回滚后转绿。springdoc `2.3.0 → 2.8.5`。
+- **架构决策记录**：`docs/ARCHITECTURE.md` 六大不变量章节（为什么 / 真实事故 / 反例 / 验证命令）+ `docs/adr/0006-architecture-invariants.md`（含实现现状与已知边界）。
+
+### Fixed
+- **测试顺序依赖（真实缺陷）**：`DocumentAndDatasetServiceTest` 在 `HexagonalPortsAndFakesTest` 之后运行时，因 MyBatis-Plus `TableInfoHelper` / `TenantContextHolder` 的全局静态状态被污染，`getById` 返回 null、断言退化为 `zero interactions`；surefire 改为 `reuseForks=false`（每个测试类独立 JVM）根除该类问题，全量 215 用例稳定绿（123s）。
+- **文档与实现对齐**：修正 `ARCHITECTURE.md` 中"按方法名精确选择 ArchUnit 规则"的伪命令（`@ArchTest` 是静态字段，surefire 无法按方法过滤，会退化成跑整类）；补齐文档宣称但缺失的 R1 两条规则。
+- **SBOM 与依赖同步**：springdoc 升版后重新生成 `docs/sbom/*.json`（后端 175 → 177 组件）。
+
 ## [v1.1.3] - 2026-10-23
 
 ### Security
