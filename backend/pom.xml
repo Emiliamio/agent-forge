@@ -237,6 +237,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- 每个测试类独立 JVM：避免 MyBatis-Plus 的 TableInfoHelper / TenantContextHolder 等
+                         全局静态状态在类之间互相污染（曾导致 DocumentAndDatasetServiceTest 在特定顺序下
+                         getById 返回 null、断言变成 'zero interactions'） -->
+                    <reuseForks>false</reuseForks>
+                    <forkCount>1</forkCount>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
