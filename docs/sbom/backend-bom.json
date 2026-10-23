@@ -10917,7 +10917,7 @@
         "pkg:maven/cn.hutool/hutool-all@5.8.25?type=jar",
         "pkg:maven/org.projectlombok/lombok@1.18.46?type=jar"
       ],
-      "ref": "pkg:maven/com.agentforge/agent-forge-backend@1.3.0?type=jar"
+      "ref": "pkg:maven/com.agentforge/agent-forge-backend@1.3.1?type=jar"
     },
     {
       "dependsOn": [],
@@ -11955,7 +11955,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "pkg:maven/com.agentforge/agent-forge-backend@1.3.0?type=jar",
+      "bom-ref": "pkg:maven/com.agentforge/agent-forge-backend@1.3.1?type=jar",
       "description": "AgentForge: 企业级多租户 AI 智能体编排与混合检索 RAG 平台",
       "externalReferences": [
         {
@@ -11976,9 +11976,9 @@
         }
       ],
       "name": "agent-forge-backend",
-      "purl": "pkg:maven/com.agentforge/agent-forge-backend@1.3.0?type=jar",
+      "purl": "pkg:maven/com.agentforge/agent-forge-backend@1.3.1?type=jar",
       "type": "library",
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     "lifecycles": [
       {

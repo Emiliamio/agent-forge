@@ -3,6 +3,14 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.3.1] - 2026-10-23
+
+### Fixed
+- **前端依赖漏洞清零（14 → 0）**：`vitest 3.2.6 → 4.1.12`（`@vitest/mocker` 随之 4.1.12，`tinypool` 依赖被移除，两条 9.5 分告警消失）；OSV 扫 `docs/sbom/frontend-bom.json` 输出 `No issues found`，trivy SBOM 扫描 `Clean`。
+- **纠正 C 批的错误结论**：初版 VEX 断言"残留 5 条必须升 vitest 5、而 vitest 5 需要 Node ≥22.12，故不可修"——实测 `vitest@4.1.12` 的 engines 为 `^20 || ^22 || >=24`，Node 20 基线即可运行，无需升 Node、无需改 CI、无需动 SBOM 渲染容器（正文见 `docs/security/VEX.md §3.4`）。
+- **安全清单收紧**：`osv-scanner.toml` 清空全部豁免条目；`.trivyignore` 从 20 条缩减到**后端 7 条**（Spring 7.0.9 / opennlp 2.5.9 / tomcat 10.1.58 未发布），前端条目全删。
+- **前端工具链落地版本**：`vite 6.4.4`、`@vitejs/plugin-vue 5.2.4`、`tailwindcss 4.3.3`（`@tailwindcss/vite`，移除 `postcss`/`autoprefixer`）、`eslint-plugin-vue 10.11.1`（保持 ESLint 8.57）。
+
 ## [v1.3.0] - 2026-10-23
 
 ### Changed

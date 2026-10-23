@@ -1,27 +1,12 @@
-# OSV-Scanner 忽略清单（VEX-lite）
+# AgentForge 依赖漏洞门禁 · 忽略清单（VEX-lite）
 #
-# 仅收录「前端构建期依赖」中无法在不做 Node 22+ 升级的前提下修复的告警。
-# 判定依据见 docs/security/VEX.md §3：
-# 这些包只用于 vitest 的单元测试运行，不进入运行时镜像
-# （frontend/Dockerfile 仅把 dist/ 拷入 nginx 静态站点）。
-# 每条都带 ignoreUntil，到期必须重新评估或完成升级。
-
-[[IgnoredVulns]]
-id = "GHSA-5gmw-xhrv-c9v3"
-ignoreUntil = 2027-06-30
-reason = "Fix requires vitest@5 which demands Node 22+ (outside Node 20 LTS boundary); documented in docs/security/VEX.md §3"
-
-[[IgnoredVulns]]
-id = "GHSA-85c8-ppgw-ccpr"
-ignoreUntil = 2027-06-30
-reason = "Fix requires vitest@5 which demands Node 22+ (outside Node 20 LTS boundary); documented in docs/security/VEX.md §3"
-
-[[IgnoredVulns]]
-id = "GHSA-82fw-gwwq-j7x9"
-ignoreUntil = 2027-06-30
-reason = "Fix requires vitest@5 which demands Node 22+ (outside Node 20 LTS boundary); documented in docs/security/VEX.md §3"
-
-[[IgnoredVulns]]
-id = "GHSA-qxg6-89mg-rqv8"
-ignoreUntil = 2027-06-30
-reason = "Fix requires vitest@5 which demands Node 22+ (outside Node 20 LTS boundary); documented in docs/security/VEX.md §3"
+# ⚠️ 本文件当前**没有任何豁免条目**：前端构建期依赖的 14 条 advisory 已随
+#    vite 6.4.4 / vitest 4.1.12 / tailwind 4.3.3 的升级全部清零（2026-10-23）。
+#
+# 后端剩余的 7 条（spring-webmvc/webflux → Spring 7.0.9、opennlp → 2.5.9、
+# tomcat → 10.1.58 尚未发布）**不在本文件登记**：它们由 scripts/check_osv.py
+# 按"修复版本是否在同一 minor 线且已发布"机器判定为「跨版本线/未发布」，
+# 归类结果与理由记录在 docs/security/VEX.md §2，避免用人工白名单掩盖。
+#
+# 新增豁免必须同时满足：① 此处登记 id + ignoreUntil + reason；
+# ② docs/security/VEX.md 写明暴露面判定；③ 报告里说明为何不能升级。

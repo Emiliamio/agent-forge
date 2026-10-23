@@ -1,20 +1,7 @@
-# exp:2027-06-30  dev-only frontend build toolchain (vitest 3.2.6 / tinypool)
-#   not shipped in the runtime image; see docs/security/VEX.md section 3
-# exp:2027-06-30  fixes require Spring Boot 3.5.x / Spring Framework 7 / opennlp 2.x, or tomcat 10.1.58 (unpublished)
-#   patch-level fixes are enforced by scripts/check_osv.py; see docs/security/VEX.md section 2
-GHSA-5gmw-xhrv-c9v3
-GHSA-85c8-ppgw-ccpr
-GHSA-82fw-gwwq-j7x9
-GHSA-qxg6-89mg-rqv8
-CVE-2026-104848
-CVE-2026-104849
-CVE-2026-84373
-CVE-2026-112949
-CVE-2026-22731
-CVE-2026-22733
-CVE-2026-40973
-CVE-2026-41695
-CVE-2026-41716
+# AgentForge · trivy 忽略清单
+# 仅保留后端 7 条「修复版本跨大版本线或尚未发布」的 CVE（依据 docs/security/VEX.md §2）
+# 前端构建期依赖的 advisory 已随 vite 6.4.4 / vitest 4.1.12 / tailwind 4.3.3 清零，不再需要豁免
+# exp:2027-06-30  Spring Framework 7.0.9（= Boot 4）/ opennlp 2.5.9 / tomcat 10.1.58（尚未发布）
 CVE-2026-42440
 CVE-2026-47884
 CVE-2026-47890

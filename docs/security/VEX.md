@@ -63,35 +63,51 @@ v1.3.0 B 批已成功落地 Spring Boot 3.5.16、MyBatis-Plus 3.5.17 与 Sa-Toke
 **暴露面说明**：这些均属框架/库自身缺陷，本项目通过既有缓解措施（挂件签名、限流、租户隔离、最小暴露面）
 降低可利用性；不等于"忽略"，`ignoreUntil = 2027-06-30`，到期门禁会重新报出。
 
-## 3. 前端构建期依赖 ✅ 已完成（v1.3.0 C 批）
+## 3. 前端构建期依赖 ✅ 已完成（v1.3.1）
 
-### 3.1 真实升级版本
-- `vite`: `5.4.21` → **`6.4.4`**
-- `vitest`: `1.6.1` → **`3.2.6`**
-- `tailwindcss`: `3.4.1` → **`4.3.3`**（搭配 `@tailwindcss/vite: 4.3.3`，彻底移除 `postcss` 与 `autoprefixer`）
-- `eslint-plugin-vue`: `9.27.0` → **`10.11.1`**（搭配 `vue-eslint-parser: 10.4.1`，保持 ESLint 8.57 兼容）
-- `source-map-js`: `1.2.1` → **`1.2.2`**（通过 `overrides` 强制提升）
+### 3.1 最终落位版本
 
-### 3.2 已消除的 14 条历史漏洞（全部状态：`RESOLVED`）
-- `vite` 历史漏洞（5 条）：`GHSA-9c4c-3c4v-459r`、`GHSA-849f-4gpm-44vp`、`GHSA-93m5-p257-2pv8`、`GHSA-649x-223v-cw84`、`GHSA-c425-m925-5w98` → **`RESOLVED`**（升至 vite 6.4.4 清除）
-- `vite@5.4.21` 衍生漏洞（8 条）：`GHSA-4w7w-66w2-5vf9`、`GHSA-587h-7wmj-h5pm`、`GHSA-698v-4r3x-3vcv`、`GHSA-9jrq-w75r-8gcw`、`GHSA-fx2h-pf6j-xcff`、`GHSA-r825-w8mm-5pxw`、`GHSA-rq7h-c2jc-7f22`、`GHSA-v6wh-96g9-6wx3` → **`RESOLVED`**
-- `vitest@1.6.1` 漏洞：`GHSA-5xrq-8626-4rwp` → **`RESOLVED`**（升至 vitest 3.2.6 清除）
-- `source-map-js` 漏洞：`GHSA-68fv-2mgg-jv7q` / `CVE-2026-93749` → **`RESOLVED`**（升至 1.2.2 清除）
-- `micromatch` / `braces` 漏洞：`GHSA-952p-652v-xg9x`、`GHSA-grv7-fg5c-x5vh` / `GHSA-vfj7-8cjw-p6xm` → **`RESOLVED`**（Tailwind 4 移除 postcss 后消除）
-- `cross-spawn` 漏洞：`GHSA-3xgq-45jj-v275` → **`RESOLVED`**
-- `nanoid` 漏洞：`GHSA-mwcw-c2x4-8c55` → **`RESOLVED`**
-- `esbuild` / `postcss-selector-parser` 漏洞：`GHSA-67mh-4wv8-2f99`、`GHSA-rj75-hqrm-r3gf` → **`RESOLVED`**
+| 包 | 原版本 | 现版本 | 说明 |
+|---|---|---|---|
+| `vite` | 5.4.21 | **6.4.4** | Node `^18 \|\| ^20 \|\| >=22`，守住 Node 20 基线 |
+| `vitest` | 1.6.1 | **4.1.12** | Node `^20 \|\| ^22 \|\| >=24`；连带移除 `tinypool` 依赖（原 9.5 分两条随之消失） |
+| `@vitest/mocker` | 3.2.6 | **4.1.12** | 随 vitest 4 |
+| `tailwindcss` | 3.4.1 | **4.3.3** | 搭配 `@tailwindcss/vite: 4.3.3`，彻底移除 `postcss` / `autoprefixer` |
+| `eslint-plugin-vue` | 9.27.0 | **10.11.1** | 保持 ESLint 8.57 兼容（peer `^8.57 \|\| ^9 \|\| ^10`），不必做 flat config 迁移 |
+| `source-map-js` | 1.2.1 | **1.2.2** | 随 vite 6；如仍偏低用 `overrides` 钉 |
 
-### 3.3 vitest 3.2.6 残留说明（5 条）
-升级至 `vitest@3.2.6` 后，OSV 报出 5 条依赖项 advisory（4 个唯一 ID）：
-1. `@vitest/mocker@3.2.6`: `GHSA-82fw-gwwq-j7x9` (`CVE-2026-84373`)、`GHSA-qxg6-89mg-rqv8` (`CVE-2026-112949`)
-2. `tinypool@1.1.1`: `GHSA-5gmw-xhrv-c9v3` (`CVE-2026-104848`)、`GHSA-85c8-ppgw-ccpr` (`CVE-2026-104849`)
-3. `vitest@3.2.6`: `GHSA-82fw-gwwq-j7x9` (`CVE-2026-84373`)
+### 3.2 已消除的 advisory（全部 `RESOLVED`，OSV 实测 `No issues found`）
 
-**不可在线内修复理由**：
-修复上述 5 条 advisory 需要升级到 `vitest@5`，而 `vitest@5` 硬性依赖 **Node ≥ 22.12**。由于当前 CI 及生产 Docker 构建均固定在 **Node 20 LTS**（`node:20` / `node:20-alpine`），超越了当前 Node 20 LTS 约束边界。
-且 `frontend/Dockerfile` 运行时阶段仅执行 `COPY --from=builder /app/dist /usr/share/nginx/html`，镜像内不包含任何 `node_modules`，上述工具仅在单测/构建时执行本仓库代码，零运行时暴露面。
-因此依规定在 `osv-scanner.toml` 与 `.trivyignore` 中记录豁免，`ignoreUntil = 2027-06-30`，待后续整体演进至 Node 22+ 时再平滑升级。
+`vite@5.4.21` 的 8 条（`GHSA-4w7w-66w2-5vf9`、`GHSA-587h-7wmj-h5pm`、`GHSA-698v-4r3x-3vcv`、
+`GHSA-9jrq-w75r-8gcw`、`GHSA-fx2h-pf6j-xcff`、`GHSA-r825-w8mm-5pxw`、`GHSA-rq7h-c2jc-7f22`、
+`GHSA-v6wh-96g9-6wx3`）、`vitest@1.6.1` 的 `GHSA-5xrq-8626-4rwp`、`esbuild@0.21.5` 的 `GHSA-67mh-4wv8-2f99`、
+`postcss-selector-parser@6.1.4` 的 `GHSA-rj75-hqrm-r3gf`、`source-map-js@1.2.1` 的 `GHSA-68fv-2mgg-jv7q`、
+`tinypool@0.8.4` 的 `GHSA-5gmw-xhrv-c9v3` / `GHSA-85c8-ppgw-ccpr`，以及 `vitest@3.2.6` 阶段残留的
+`GHSA-82fw-gwwq-j7x9` / `GHSA-qxg6-89mg-rqv8` —— 全部清零。
+
+### 3.3 门禁现状（收紧，不是放宽）
+
+- `osv-scanner.toml`：**已无任何豁免条目**（仅保留说明性注释），前端 0 条 advisory；
+- `.trivyignore`：**只剩后端 7 个 CVE id**（Spring 7.0.9 / opennlp 2.5.9 / tomcat 10.1.58 未发布），前端条目全删；
+- 复核命令与期望输出：
+
+```bash
+docker run --rm -w /repo -v "$PWD:/repo" ghcr.io/google/osv-scanner:v1.9.2 \
+  scan --format table --sbom docs/sbom/frontend-bom.json
+# 期望：No issues found
+
+docker run --rm -v "$PWD:/repo" aquasec/trivy:latest sbom --severity HIGH,CRITICAL \
+  --ignore-unfixed --ignorefile .trivyignore --scanners vuln --exit-code 1 docs/sbom/frontend-bom.json
+# 期望：exit 0（Clean）
+```
+
+### 3.4 一次判断纠错的记录
+
+C 批初版把残留 5 条写成"必须升 `vitest@5`，而 vitest 5 需要 Node ≥22.12，故不可修"。
+这个结论**不成立**：`vitest@4.1.12` 的 engines 是 `^20 || ^22 || >=24`，在 Node 20 上即可运行，
+且实测能将前端 advisory 清零、`lint/test/build` 全绿。
+教训：`npm audit` 给的 `fixAvailable` 只是"最新版本建议"，不是"最小可修版本"；
+判断能否在现有 Node 基线上修复，必须回到 engines 与 OSV 的 `fixed` 区间做交叉验证。
 
 ## 4. 复核方式
 

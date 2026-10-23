@@ -1451,6 +1451,57 @@
       "version": "4.63.1"
     },
     {
+      "author": "Colin McDonnell",
+      "bom-ref": "@standard-schema/spec@1.1.0",
+      "description": "A family of specs for interoperable TypeScript",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.1.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/standard-schema/standard-schema.git"
+        },
+        {
+          "type": "website",
+          "url": "https://standardschema.dev"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/standard-schema/standard-schema/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "976685cb98c02e19e21b91e0aab0fa8d72e2feb516acabea37fa89c7aca826c80a85b95577e8aaa94e110976af9bf8cf8adc83a394c2bca327a632a73ab8b2d3"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "@standard-schema/spec",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/@standard-schema/spec"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "purl": "pkg:npm/%40standard-schema/spec@1.1.0",
+      "scope": "optional",
+      "type": "library",
+      "version": "1.1.0"
+    },
+    {
       "bom-ref": "@tailwindcss/node@4.3.3",
       "description": "A utility-first CSS framework for rapidly building custom user interfaces.",
       "externalReferences": [
@@ -1999,12 +2050,12 @@
       "version": "5.2.4"
     },
     {
-      "bom-ref": "@vitest/expect@3.2.6",
+      "bom-ref": "@vitest/expect@4.1.12",
       "description": "Jest's expect matchers as a Chai plugin",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/expect/-/expect-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/expect/-/expect-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2012,7 +2063,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/expect#readme"
+          "url": "https://vitest.dev/api/expect"
         },
         {
           "type": "issue-tracker",
@@ -2022,7 +2073,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "d7eeeaf41b5a2b31263be7e6353de462fa0d9f963bd57580c764391d18a6e2d4d5450551bf8b8914043915b2b438f51e34ffd69950a9c58c6825dbee1d58f305"
+          "content": "bc5953b7e604bbd581a4d8dd19ac8d9a5315ceb58f8b5facbfce77ffbb76154ee1a4ee6000504a1f3426902ab95e3a6bf9ebde805dbdf782d04f7845de6465a9"
         }
       ],
       "licenses": [
@@ -2043,18 +2094,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/expect@3.2.6",
+      "purl": "pkg:npm/%40vitest/expect@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/mocker@3.2.6",
+      "bom-ref": "@vitest/mocker@4.1.12",
       "description": "Vitest module mocker implementation",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/mocker/-/mocker-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/mocker/-/mocker-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2062,7 +2113,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/mocker#readme"
+          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/mocker"
         },
         {
           "type": "issue-tracker",
@@ -2072,7 +2123,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1193aba436e42a8b4500fef03c0415d54232a063a4e285fbca75a10612c1eeffa678c1db421535ea83e92181934dee28165869af21a98297193ffb229f7858bb"
+          "content": "7ca4a1369299ceea5666e634cfb7a0c9dbcbd2ca96e08344641104c4c04c01aea2ce510d1151f0a1781d69309a059e5fc25af8c5fda8d705c2f379fd4693be34"
         }
       ],
       "licenses": [
@@ -2093,18 +2144,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/mocker@3.2.6",
+      "purl": "pkg:npm/%40vitest/mocker@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/pretty-format@3.2.6",
+      "bom-ref": "@vitest/pretty-format@4.1.12",
       "description": "Fork of pretty-format with support for ESM",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2112,7 +2163,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/utils#readme"
+          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/pretty-format"
         },
         {
           "type": "issue-tracker",
@@ -2122,107 +2173,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "95bed75d7ce69b6876012cc59d1bd0a43a3aa274f5366309037b641935a2045b5127d971198dddde69bf029b77ea07a3d9b9243952cbff24ceb6e7c36856bf8c"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "@vitest/pretty-format",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/@vitest/snapshot/node_modules/@vitest/pretty-format"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/%40vitest/pretty-format@3.2.6",
-      "scope": "optional",
-      "type": "library",
-      "version": "3.2.6"
-    },
-    {
-      "bom-ref": "@vitest/pretty-format@3.2.6",
-      "description": "Fork of pretty-format with support for ESM",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-3.2.6.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/vitest-dev/vitest.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/utils#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/vitest-dev/vitest/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "95bed75d7ce69b6876012cc59d1bd0a43a3aa274f5366309037b641935a2045b5127d971198dddde69bf029b77ea07a3d9b9243952cbff24ceb6e7c36856bf8c"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "@vitest/pretty-format",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/@vitest/utils/node_modules/@vitest/pretty-format"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/%40vitest/pretty-format@3.2.6",
-      "scope": "optional",
-      "type": "library",
-      "version": "3.2.6"
-    },
-    {
-      "bom-ref": "@vitest/pretty-format@3.2.7",
-      "description": "Fork of pretty-format with support for ESM",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/pretty-format/-/pretty-format-3.2.7.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/vitest-dev/vitest.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/utils#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/vitest-dev/vitest/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "2941e5c2a56ed2c4658427723dd43fc01a137d16a18d4932d4cb9b3a6630f5f59f219cb580da07a6e69a4013c068c69561d4181c92eeaf38fc1020a3e4ec13a8"
+          "content": "5d6f4ef3e331c785690ad91874c24b650430b15af23fdc24edc3ca0f1b5715fc126a4eb2461e7ed9f7a9fd8d1717f12506f247abc6dc61d8ba69eb9a8b4a2964"
         }
       ],
       "licenses": [
@@ -2243,18 +2194,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/pretty-format@3.2.7",
+      "purl": "pkg:npm/%40vitest/pretty-format@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.7"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/runner@3.2.6",
+      "bom-ref": "@vitest/runner@4.1.12",
       "description": "Vitest test runner",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/runner/-/runner-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/runner/-/runner-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2262,7 +2213,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/runner#readme"
+          "url": "https://vitest.dev/api/advanced/runner"
         },
         {
           "type": "issue-tracker",
@@ -2272,7 +2223,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1d87284a3d70e6d720527ce81741dcc9a0108e9035823f5fb5427b892252ba2a5cd368d6f602a48a0c196e31657407d81c0d5f6bc5195517ed74c6399ac58cf5"
+          "content": "34a955282af942709ef238a374c9e69291c753e593aa22c547a1b4a478e2f6e4635caf71265d64d674f0e85de938e8f63c372c0edd86290308ef022c693e3dd7"
         }
       ],
       "licenses": [
@@ -2293,18 +2244,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/runner@3.2.6",
+      "purl": "pkg:npm/%40vitest/runner@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/snapshot@3.2.6",
+      "bom-ref": "@vitest/snapshot@4.1.12",
       "description": "Vitest snapshot manager",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/snapshot/-/snapshot-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/snapshot/-/snapshot-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2312,7 +2263,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/snapshot#readme"
+          "url": "https://vitest.dev/guide/snapshot"
         },
         {
           "type": "issue-tracker",
@@ -2322,7 +2273,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1fe663353586a4e6de9e1d189e505cb403e7252236d0ff353cbf013f35a9c79e185cb2d39bc844b166b0b5c60b32bc2fa4ae3c846c4b2db092fb52915e1b0a87"
+          "content": "928d72d5081bfec97343d9abf9bf3d0aeaae77c586d532adb0f0fcafb65405dbd5386b7ce407f61f00aa1ee8eb87026af7986cffd44cedf7003e0e7ba35be5cf"
         }
       ],
       "licenses": [
@@ -2343,18 +2294,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/snapshot@3.2.6",
+      "purl": "pkg:npm/%40vitest/snapshot@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/spy@3.2.6",
+      "bom-ref": "@vitest/spy@4.1.12",
       "description": "Lightweight Jest compatible spy implementation",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/spy/-/spy-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/spy/-/spy-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2362,7 +2313,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/spy#readme"
+          "url": "https://vitest.dev/api/mock"
         },
         {
           "type": "issue-tracker",
@@ -2372,7 +2323,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a2ae816c7ebc5b37169b0b41ad4f67a8b79a5d34785f0245ec548b90a119a388ba7a85dcaf18dcc12b93bd60484544c2e950bbda75d8ba7cea81903e20a76dc6"
+          "content": "446abdc7824d18d4d91c4271bcdd284a2263792084c66d27da064a28964763d717e40540e8ced52482c14f7649fed27fd09f6e593edf11357dfdbb688bffef4a"
         }
       ],
       "licenses": [
@@ -2393,18 +2344,18 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/spy@3.2.6",
+      "purl": "pkg:npm/%40vitest/spy@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
-      "bom-ref": "@vitest/utils@3.2.6",
+      "bom-ref": "@vitest/utils@4.1.12",
       "description": "Shared Vitest utility functions",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/@vitest/utils/-/utils-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/@vitest/utils/-/utils-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -2412,7 +2363,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/utils#readme"
+          "url": "https://github.com/vitest-dev/vitest/tree/main/packages/utils"
         },
         {
           "type": "issue-tracker",
@@ -2422,7 +2373,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "948db79c8b386e74f74fc348a21faf15acf9b36fc374fd0982dda3c70816963bf09fcd9c2c9b728bf21ff9f8c5ca82cc1883b3d14fdf2af584d1de23b0d4047e"
+          "content": "4376b05ebc0e7c457ea9cdd698ee4e372134c8eed0d6043dfe8c87c462d9fe997b37734efd9ceda90c0a2eec0c915f8203525848878ede09079d10c8a3801568"
         }
       ],
       "licenses": [
@@ -2443,10 +2394,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/%40vitest/utils@3.2.6",
+      "purl": "pkg:npm/%40vitest/utils@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
       "author": "Evan You",
@@ -3970,57 +3921,6 @@
       "version": "5.0.12"
     },
     {
-      "author": "egoist",
-      "bom-ref": "cac@6.7.14",
-      "description": "Simple yet powerful framework for building command-line apps.",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/cac/-/cac-6.7.14.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/egoist/cac.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/egoist/cac#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/egoist/cac/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "6fa225bacf9cdd1add0e4f8984b2940107f3ce02c43f2eb0717a92edfff17b51044efb033fa18e446ed216e3ace9c203e5892a7215bf2d765b5f96dcf23ed971"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "cac",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/cac"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/cac@6.7.14",
-      "scope": "optional",
-      "type": "library",
-      "version": "6.7.14"
-    },
-    {
       "author": "Jordan Harband",
       "bom-ref": "call-bind-apply-helpers@1.0.2",
       "description": "Helper functions around Function call/apply/bind, for use in `call-bind`",
@@ -4120,12 +4020,12 @@
     },
     {
       "author": "Jake Luer",
-      "bom-ref": "chai@5.3.3",
+      "bom-ref": "chai@6.3.0",
       "description": "BDD/TDD assertion library for node.js and the browser. Test framework agnostic.",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/chai/-/chai-5.3.3.tgz"
+          "url": "https://registry.npmjs.org/chai/-/chai-6.3.0.tgz"
         },
         {
           "type": "vcs",
@@ -4143,7 +4043,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e333617490ff88e8d21f4034e5e6be29ee8c5399a6a5071b42c48e92075a50c27dcd39434c3fc6625c28866204daed206b11d88951c49f5170f6667f92d25683"
+          "content": "5d602dc09e8e1cefad8f410a0acd18d946a69f23b1b1e65696d538c76536c21f20e008a0763c2fb548ef2cfdadaa403f6afc4712dcf135aa86abf6063707242a"
         }
       ],
       "licenses": [
@@ -4164,10 +4064,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/chai@5.3.3",
+      "purl": "pkg:npm/chai@6.3.0",
       "scope": "optional",
       "type": "library",
-      "version": "5.3.3"
+      "version": "6.3.0"
     },
     {
       "bom-ref": "chalk@4.1.2",
@@ -4218,57 +4118,6 @@
       "scope": "optional",
       "type": "library",
       "version": "4.1.2"
-    },
-    {
-      "author": "Jake Luer",
-      "bom-ref": "check-error@2.1.3",
-      "description": "Error comparison and information related utility for node and the browser",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/check-error/-/check-error-2.1.3.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+ssh://git@github.com/chaijs/check-error.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/chaijs/check-error#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/chaijs/check-error/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "3c025d0c9baca319f09b55705b4ed55b050dd6c97bb26982dce2a082f9dd24569dc710d1c852415ff8209eefca138910001edadc3a7c7ff6170b5165529ad698"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "check-error",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/check-error"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/check-error@2.1.3",
-      "scope": "optional",
-      "type": "library",
-      "version": "2.1.3"
     },
     {
       "author": "Heather Arthur",
@@ -4571,6 +4420,57 @@
       "scope": "optional",
       "type": "library",
       "version": "1.1.13"
+    },
+    {
+      "author": "Thorsten Lorenz",
+      "bom-ref": "convert-source-map@2.0.0",
+      "description": "Converts a source-map from/to  different formats and allows adding/changing properties.",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/convert-source-map/-/convert-source-map-2.0.0.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git://github.com/thlorenz/convert-source-map.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/thlorenz/convert-source-map"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/thlorenz/convert-source-map/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "2afa78e7d1eb576144275080b22d4abbe318de46ac1f5f53172913cf6c5698c7aae9b936354dd75ef7c9f90eb59b4c64b56c2dfb51d261fdc966c4e6b3769126"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "convert-source-map",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/convert-source-map"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "purl": "pkg:npm/convert-source-map@2.0.0",
+      "scope": "optional",
+      "type": "library",
+      "version": "2.0.0"
     },
     {
       "author": "André Cruz",
@@ -4919,57 +4819,6 @@
       "scope": "optional",
       "type": "library",
       "version": "10.6.0"
-    },
-    {
-      "author": "Jake Luer",
-      "bom-ref": "deep-eql@5.0.2",
-      "description": "Improved deep equality testing for Node.js and the browser.",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/deep-eql/-/deep-eql-5.0.2.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+ssh://git@github.com/chaijs/deep-eql.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/chaijs/deep-eql#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/chaijs/deep-eql/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "87993fe54e74209245a737cbea73bd8da6ae99f8cefdfd8d8cafe8601d838f39b8a7d2fedd3f6a5a966a6768406cb3eeb98abdc2b534f164320532f919b3e4e5"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "deep-eql",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/deep-eql"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/deep-eql@5.0.2",
-      "scope": "optional",
-      "type": "library",
-      "version": "5.0.2"
     },
     {
       "author": "Thorsten Lorenz",
@@ -5513,12 +5362,12 @@
     },
     {
       "author": "Guy Bedford",
-      "bom-ref": "es-module-lexer@1.7.0",
+      "bom-ref": "es-module-lexer@2.3.2",
       "description": "Lexes ES modules returning their import/export metadata",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-1.7.0.tgz"
+          "url": "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-2.3.2.tgz"
         },
         {
           "type": "vcs",
@@ -5536,7 +5385,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "8c44280b093c8726f6019ce220e2e10eaa66e7edb0c39b8813a9643bfea370e0aeb1f93a2e1307a575df04b5d367b61dcadd23e15a1442feae18d61b756fa404"
+          "content": "a681c6a4e4400688c926e72757d29b39abc44d6f250559e98645bbec4479fc1439173ee85d2a0235e93b207def4799d18ddb04cfddba89b1585fc2ad2d099dcb"
         }
       ],
       "licenses": [
@@ -5557,10 +5406,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/es-module-lexer@1.7.0",
+      "purl": "pkg:npm/es-module-lexer@2.3.2",
       "scope": "optional",
       "type": "library",
-      "version": "1.7.0"
+      "version": "2.3.2"
     },
     {
       "author": "Jordan Harband",
@@ -8815,57 +8664,6 @@
       "version": "3.0.8"
     },
     {
-      "author": "Simon Lydell",
-      "bom-ref": "js-tokens@9.0.1",
-      "description": "Tiny JavaScript tokenizer.",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/js-tokens/-/js-tokens-9.0.1.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/lydell/js-tokens.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/lydell/js-tokens#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/lydell/js-tokens/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "9b16bd13d21314eb746da9f78fa2f93298f07a01b3ea505098cd4826459e05919c331b68e74f9e59d8c2ff9db10db4b6bf2d24eef20c2b415edb07cbf4e412a5"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "js-tokens",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/js-tokens"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/js-tokens@9.0.1",
-      "scope": "optional",
-      "type": "library",
-      "version": "9.0.1"
-    },
-    {
       "author": "Vladimir Zapparov",
       "bom-ref": "js-yaml@4.3.2",
       "description": "YAML 1.2 parser and serializer",
@@ -9472,57 +9270,6 @@
       "scope": "optional",
       "type": "library",
       "version": "4.6.2"
-    },
-    {
-      "author": "Veselin Todorov",
-      "bom-ref": "loupe@3.2.1",
-      "description": "Inspect utility for Node.js and browsers",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/loupe/-/loupe-3.2.1.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/chaijs/loupe.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/chaijs/loupe"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/chaijs/loupe/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "09dceaa3044909e2d4ef66c7bd6ab04410652dc304b48bc6ae5bde7fbe24327576028952f58f3152fd48d14fcc34058c84194a228cae120a09d2dfdb6f01db2d"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "loupe",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/loupe"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/loupe@3.2.1",
-      "scope": "optional",
-      "type": "library",
-      "version": "3.2.1"
     },
     {
       "author": "Isaac Z. Schlueter",
@@ -10361,6 +10108,57 @@
       "version": "2.2.28"
     },
     {
+      "author": "Kevin Deng",
+      "bom-ref": "obug@2.2.1",
+      "description": "A lightweight JavaScript debugging utility, forked from debug, featuring TypeScript and ESM support.",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://registry.npmjs.org/obug/-/obug-2.2.1.tgz"
+        },
+        {
+          "type": "vcs",
+          "url": "git+https://github.com/sxzz/obug.git"
+        },
+        {
+          "type": "website",
+          "url": "https://github.com/sxzz/obug#readme"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/sxzz/obug/issues"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-512",
+          "content": "5ebb2b853e6cc9bb4a23ac1a92bd923ce9466565986d45d9edad234fcfd039e00f6aefb55ff6d27a035ee5847be6826611941b2a78a7822ae618e10908893ad5"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "name": "obug",
+      "properties": [
+        {
+          "name": "cdx:npm:package:path",
+          "value": "node_modules/obug"
+        },
+        {
+          "name": "cdx:npm:package:development",
+          "value": "true"
+        }
+      ],
+      "purl": "pkg:npm/obug@2.2.1",
+      "scope": "optional",
+      "type": "library",
+      "version": "2.2.1"
+    },
+    {
       "author": "Isaac Z. Schlueter",
       "bom-ref": "once@1.4.0",
       "description": "Run a function exactly one time",
@@ -10919,57 +10717,6 @@
       "scope": "optional",
       "type": "library",
       "version": "2.0.3"
-    },
-    {
-      "author": "Veselin Todorov",
-      "bom-ref": "pathval@2.0.1",
-      "description": "Object value retrieval given a string path",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/pathval/-/pathval-2.0.1.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+ssh://git@github.com/chaijs/pathval.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/chaijs/pathval"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/chaijs/pathval/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "fff9ec8660f9e5ce3a16e170dbac55ff1140681e4717d5dd6a9ec7241067aca74077afc6c4305a340d7cef43bbf7ef6e7a0eb57192d255cf8e68595f98e6d855"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "pathval",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/pathval"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/pathval@2.0.1",
-      "scope": "optional",
-      "type": "library",
-      "version": "2.0.1"
     },
     {
       "author": "Alexey Raspopov",
@@ -12481,12 +12228,12 @@
       "version": "0.0.2"
     },
     {
-      "bom-ref": "std-env@3.10.0",
+      "bom-ref": "std-env@4.3.0",
       "description": "Runtime agnostic JS utils",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/std-env/-/std-env-3.10.0.tgz"
+          "url": "https://registry.npmjs.org/std-env/-/std-env-4.3.0.tgz"
         },
         {
           "type": "vcs",
@@ -12504,7 +12251,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e464b5d8574e64d9623399803b115183b22bd295b3f0c769626e8063a54f906a5b03b67399bccd701250d063efbf25a0718ed00210a07fd532f3d234ddf68b92"
+          "content": "3ad53f1204359089b92b0a90a410ba644317ad946e8b5d70f3381f4d6a7c71d3bd07c39a3ec6c0f1b4c73b63fe1cda3556551318c541c0f87276eea9a1e5e26a"
         }
       ],
       "licenses": [
@@ -12525,10 +12272,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/std-env@3.10.0",
+      "purl": "pkg:npm/std-env@4.3.0",
       "scope": "optional",
       "type": "library",
-      "version": "3.10.0"
+      "version": "4.3.0"
     },
     {
       "author": "Sindre Sorhus",
@@ -12631,57 +12378,6 @@
       "scope": "optional",
       "type": "library",
       "version": "3.1.1"
-    },
-    {
-      "author": "Anthony Fu",
-      "bom-ref": "strip-literal@3.1.0",
-      "description": "Strip comments and string literals from JavaScript code",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/strip-literal/-/strip-literal-3.1.0.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/antfu/strip-literal.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/antfu/strip-literal#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/antfu/strip-literal/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "f2bde690833fdbe3e98c7a0eb62016f118378c92c7695ef13f01be6111abbfa14fd30c24feda13a404f1598396d0129d5b097cd954f6b45622e4395139ad0cc6"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "strip-literal",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/strip-literal"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/strip-literal@3.1.0",
-      "scope": "optional",
-      "type": "library",
-      "version": "3.1.0"
     },
     {
       "author": "Sindre Sorhus",
@@ -12988,12 +12684,12 @@
     },
     {
       "author": "James Garbutt",
-      "bom-ref": "tinyexec@0.3.2",
+      "bom-ref": "tinyexec@1.3.1",
       "description": "A minimal library for executing processes in Node",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/tinyexec/-/tinyexec-0.3.2.tgz"
+          "url": "https://registry.npmjs.org/tinyexec/-/tinyexec-1.3.1.tgz"
         },
         {
           "type": "vcs",
@@ -13011,7 +12707,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "290411f7237b479f8e4b068ad174288f6da9c07a1396062a994b1c3d8a249cea160967e3ff9fc00533118baf45aca5397df3d587941c16292958923f3f5a1c1c"
+          "content": "182bc1ddaa32b3de88b8314131c4c1e3a24e47a99d32d013a2ac225bc2655a1b288759a11e2ff19fdb2cfc383b379e791a227212ddaace81bf3470b033a87510"
         }
       ],
       "licenses": [
@@ -13032,10 +12728,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/tinyexec@0.3.2",
+      "purl": "pkg:npm/tinyexec@1.3.1",
       "scope": "optional",
       "type": "library",
-      "version": "0.3.2"
+      "version": "1.3.1"
     },
     {
       "author": "Superchupu",
@@ -13089,62 +12785,12 @@
       "version": "0.2.17"
     },
     {
-      "bom-ref": "tinypool@1.1.1",
-      "description": "A minimal and tiny Node.js Worker Thread Pool implementation, a fork of piscina, but with fewer features",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/tinypool/-/tinypool-1.1.1.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/tinylibs/tinypool.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/tinylibs/tinypool#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/tinylibs/tinypool/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "65b6bcdacf3b205abd03d5e68e25f9b9903f011583ac1d3738796af95c357d276dd08fb8fcabadc32f013f863fcbf68e44ca3ad45434bc86f98f8e2f4a8e4f92"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "tinypool",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/tinypool"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/tinypool@1.1.1",
-      "scope": "optional",
-      "type": "library",
-      "version": "1.1.1"
-    },
-    {
-      "bom-ref": "tinyrainbow@2.0.0",
+      "bom-ref": "tinyrainbow@3.2.0",
       "description": "A small library to print colourful messages.",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/tinyrainbow/-/tinyrainbow-2.0.0.tgz"
+          "url": "https://registry.npmjs.org/tinyrainbow/-/tinyrainbow-3.2.0.tgz"
         },
         {
           "type": "vcs",
@@ -13162,7 +12808,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a29e27b13478ed1ea9d2f314528625fdafa58cb155b657da5e42d09aa7cb475a8799ad61ff2b189388445d9f3cd1b7f6098813b24bd36bf7b5f7a55de5d0d05f"
+          "content": "2e03b70fdc99263029522b947e5f62140c2bb5a5f8fa5a24df0248aadb46a0a08795652a1ea6d0a67c427fcd8bf058e02ac878886a3bf21a89c202fc17a4e8d8"
         }
       ],
       "licenses": [
@@ -13183,60 +12829,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/tinyrainbow@2.0.0",
+      "purl": "pkg:npm/tinyrainbow@3.2.0",
       "scope": "optional",
       "type": "library",
-      "version": "2.0.0"
-    },
-    {
-      "bom-ref": "tinyspy@4.0.6",
-      "description": "A minimal fork of nanospy, with more features",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/tinyspy/-/tinyspy-4.0.6.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/tinylibs/tinyspy.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/tinylibs/tinyspy#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/tinylibs/tinyspy/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "bbc2accd7bc67d4ebc855719a511ca1b6f13d24accbafd86e670e188768c2de9ff808b8512020985a26e3baf6a8e75e0e69692adb3cc15fc776eb36e37c7954a"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "tinyspy",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/tinyspy"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/tinyspy@4.0.6",
-      "scope": "optional",
-      "type": "library",
-      "version": "4.0.6"
+      "version": "3.2.0"
     },
     {
       "author": "Jeremy Stashewsky",
@@ -13697,63 +13293,12 @@
     },
     {
       "author": "Anthony Fu",
-      "bom-ref": "vite-node@3.2.4",
-      "description": "Vite as Node.js runtime",
-      "externalReferences": [
-        {
-          "type": "distribution",
-          "url": "https://registry.npmjs.org/vite-node/-/vite-node-3.2.4.tgz"
-        },
-        {
-          "type": "vcs",
-          "url": "git+https://github.com/vitest-dev/vitest.git"
-        },
-        {
-          "type": "website",
-          "url": "https://github.com/vitest-dev/vitest/blob/main/packages/vite-node#readme"
-        },
-        {
-          "type": "issue-tracker",
-          "url": "https://github.com/vitest-dev/vitest/issues"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-512",
-          "content": "11b2922a1f9b875135205c5e3b4a60d67e1dbe8393b7450389731dfea9fefabf7cfa33ced71b498a5bd795d7ae43c822201e489298c280c95e1cc344b061faa6"
-        }
-      ],
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "name": "vite-node",
-      "properties": [
-        {
-          "name": "cdx:npm:package:path",
-          "value": "node_modules/vite-node"
-        },
-        {
-          "name": "cdx:npm:package:development",
-          "value": "true"
-        }
-      ],
-      "purl": "pkg:npm/vite-node@3.2.4",
-      "scope": "optional",
-      "type": "library",
-      "version": "3.2.4"
-    },
-    {
-      "author": "Anthony Fu",
-      "bom-ref": "vitest@3.2.6",
+      "bom-ref": "vitest@4.1.12",
       "description": "Next generation testing framework powered by Vite",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz"
+          "url": "https://registry.npmjs.org/vitest/-/vitest-4.1.12.tgz"
         },
         {
           "type": "vcs",
@@ -13761,7 +13306,7 @@
         },
         {
           "type": "website",
-          "url": "https://github.com/vitest-dev/vitest#readme"
+          "url": "https://vitest.dev"
         },
         {
           "type": "issue-tracker",
@@ -13771,7 +13316,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c5e8f26be6d3fe3ffe47f0066b55ce7d1c4b98d5252ed9708d1b055082c5fb11dfcc496619c985c9dcb682aa88addeb6a6d2047f054ca1f775f6e3560fd2fb37"
+          "content": "e5e59dcf6c9bdda8f1585dc2f02e138e45e5ec51a6de7d84fd595acc02eb407ccaee760c486167099b68d1b6cf365efb03090e6552e4d189c101e8d4bb436258"
         }
       ],
       "licenses": [
@@ -13792,10 +13337,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/vitest@3.2.6",
+      "purl": "pkg:npm/vitest@4.1.12",
       "scope": "optional",
       "type": "library",
-      "version": "3.2.6"
+      "version": "4.1.12"
     },
     {
       "author": "Evan You",
@@ -14870,6 +14415,10 @@
       "ref": "@rollup/rollup-linux-x64-musl@4.63.1"
     },
     {
+      "dependsOn": [],
+      "ref": "@standard-schema/spec@1.1.0"
+    },
+    {
       "dependsOn": [
         "@jridgewell/remapping@2.3.5",
         "enhanced-resolve@5.26.0",
@@ -14937,70 +14486,57 @@
     },
     {
       "dependsOn": [
+        "@standard-schema/spec@1.1.0",
         "@types/chai@5.2.3",
-        "chai@5.3.3",
-        "tinyrainbow@2.0.0",
-        "@vitest/spy@3.2.6",
-        "@vitest/utils@3.2.6"
+        "chai@6.3.0",
+        "tinyrainbow@3.2.0",
+        "@vitest/spy@4.1.12",
+        "@vitest/utils@4.1.12"
       ],
-      "ref": "@vitest/expect@3.2.6"
+      "ref": "@vitest/expect@4.1.12"
     },
     {
       "dependsOn": [
         "vite@6.4.4",
         "estree-walker@3.0.3",
         "magic-string@0.30.21",
-        "@vitest/spy@3.2.6"
+        "@vitest/spy@4.1.12"
       ],
-      "ref": "@vitest/mocker@3.2.6"
+      "ref": "@vitest/mocker@4.1.12"
     },
     {
       "dependsOn": [
-        "tinyrainbow@2.0.0"
+        "tinyrainbow@3.2.0"
       ],
-      "ref": "@vitest/pretty-format@3.2.6"
-    },
-    {
-      "dependsOn": [
-        "tinyrainbow@2.0.0"
-      ],
-      "ref": "@vitest/pretty-format@3.2.6"
-    },
-    {
-      "dependsOn": [
-        "tinyrainbow@2.0.0"
-      ],
-      "ref": "@vitest/pretty-format@3.2.7"
+      "ref": "@vitest/pretty-format@4.1.12"
     },
     {
       "dependsOn": [
         "pathe@2.0.3",
-        "strip-literal@3.1.0",
-        "@vitest/utils@3.2.6"
+        "@vitest/utils@4.1.12"
       ],
-      "ref": "@vitest/runner@3.2.6"
+      "ref": "@vitest/runner@4.1.12"
     },
     {
       "dependsOn": [
         "magic-string@0.30.21",
         "pathe@2.0.3",
-        "@vitest/pretty-format@3.2.6"
+        "@vitest/pretty-format@4.1.12",
+        "@vitest/utils@4.1.12"
       ],
-      "ref": "@vitest/snapshot@3.2.6"
+      "ref": "@vitest/snapshot@4.1.12"
+    },
+    {
+      "dependsOn": [],
+      "ref": "@vitest/spy@4.1.12"
     },
     {
       "dependsOn": [
-        "tinyspy@4.0.6"
+        "convert-source-map@2.0.0",
+        "tinyrainbow@3.2.0",
+        "@vitest/pretty-format@4.1.12"
       ],
-      "ref": "@vitest/spy@3.2.6"
-    },
-    {
-      "dependsOn": [
-        "loupe@3.2.1",
-        "tinyrainbow@2.0.0",
-        "@vitest/pretty-format@3.2.6"
-      ],
-      "ref": "@vitest/utils@3.2.6"
+      "ref": "@vitest/utils@4.1.12"
     },
     {
       "dependsOn": [
@@ -15131,9 +14667,9 @@
         "jsdom@24.1.3",
         "tailwindcss@4.3.3",
         "vite@6.4.4",
-        "vitest@3.2.6"
+        "vitest@4.1.12"
       ],
-      "ref": "agent-forge-studio@1.3.0"
+      "ref": "agent-forge-studio@1.3.1"
     },
     {
       "dependsOn": [
@@ -15211,10 +14747,6 @@
       "ref": "brace-expansion@5.0.12"
     },
     {
-      "dependsOn": [],
-      "ref": "cac@6.7.14"
-    },
-    {
       "dependsOn": [
         "es-errors@1.3.0",
         "function-bind@1.1.2"
@@ -15226,14 +14758,8 @@
       "ref": "callsites@3.1.0"
     },
     {
-      "dependsOn": [
-        "assertion-error@2.0.1",
-        "check-error@2.1.3",
-        "deep-eql@5.0.2",
-        "loupe@3.2.1",
-        "pathval@2.0.1"
-      ],
-      "ref": "chai@5.3.3"
+      "dependsOn": [],
+      "ref": "chai@6.3.0"
     },
     {
       "dependsOn": [
@@ -15241,10 +14767,6 @@
         "supports-color@7.2.0"
       ],
       "ref": "chalk@4.1.2"
-    },
-    {
-      "dependsOn": [],
-      "ref": "check-error@2.1.3"
     },
     {
       "dependsOn": [
@@ -15276,6 +14798,10 @@
         "ini@1.3.8"
       ],
       "ref": "config-chain@1.1.13"
+    },
+    {
+      "dependsOn": [],
+      "ref": "convert-source-map@2.0.0"
     },
     {
       "dependsOn": [
@@ -15316,10 +14842,6 @@
     {
       "dependsOn": [],
       "ref": "decimal.js@10.6.0"
-    },
-    {
-      "dependsOn": [],
-      "ref": "deep-eql@5.0.2"
     },
     {
       "dependsOn": [],
@@ -15381,7 +14903,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "es-module-lexer@1.7.0"
+      "ref": "es-module-lexer@2.3.2"
     },
     {
       "dependsOn": [
@@ -15804,10 +15326,6 @@
       "ref": "js-cookie@3.0.8"
     },
     {
-      "dependsOn": [],
-      "ref": "js-tokens@9.0.1"
-    },
-    {
       "dependsOn": [
         "argparse@2.0.1"
       ],
@@ -15889,10 +15407,6 @@
     {
       "dependsOn": [],
       "ref": "lodash.merge@4.6.2"
-    },
-    {
-      "dependsOn": [],
-      "ref": "loupe@3.2.1"
     },
     {
       "dependsOn": [],
@@ -15979,6 +15493,10 @@
       "ref": "nwsapi@2.2.28"
     },
     {
+      "dependsOn": [],
+      "ref": "obug@2.2.1"
+    },
+    {
       "dependsOn": [
         "wrappy@1.0.2"
       ],
@@ -16041,10 +15559,6 @@
     {
       "dependsOn": [],
       "ref": "pathe@2.0.3"
-    },
-    {
-      "dependsOn": [],
-      "ref": "pathval@2.0.1"
     },
     {
       "dependsOn": [],
@@ -16193,7 +15707,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "std-env@3.10.0"
+      "ref": "std-env@4.3.0"
     },
     {
       "dependsOn": [
@@ -16204,12 +15718,6 @@
     {
       "dependsOn": [],
       "ref": "strip-json-comments@3.1.1"
-    },
-    {
-      "dependsOn": [
-        "js-tokens@9.0.1"
-      ],
-      "ref": "strip-literal@3.1.0"
     },
     {
       "dependsOn": [
@@ -16239,7 +15747,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "tinyexec@0.3.2"
+      "ref": "tinyexec@1.3.1"
     },
     {
       "dependsOn": [
@@ -16250,15 +15758,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "tinypool@1.1.1"
-    },
-    {
-      "dependsOn": [],
-      "ref": "tinyrainbow@2.0.0"
-    },
-    {
-      "dependsOn": [],
-      "ref": "tinyspy@4.0.6"
+      "ref": "tinyrainbow@3.2.0"
     },
     {
       "dependsOn": [
@@ -16308,16 +15808,6 @@
     },
     {
       "dependsOn": [
-        "cac@6.7.14",
-        "debug@4.4.3",
-        "es-module-lexer@1.7.0",
-        "pathe@2.0.3",
-        "vite@6.4.4"
-      ],
-      "ref": "vite-node@3.2.4"
-    },
-    {
-      "dependsOn": [
         "jiti@2.7.0",
         "lightningcss@1.32.0",
         "esbuild@0.25.12",
@@ -16332,31 +15822,28 @@
     {
       "dependsOn": [
         "jsdom@24.1.3",
-        "@types/chai@5.2.3",
-        "chai@5.3.3",
-        "debug@4.4.3",
+        "es-module-lexer@2.3.2",
         "expect-type@1.4.0",
         "magic-string@0.30.21",
+        "obug@2.2.1",
         "pathe@2.0.3",
         "picomatch@4.0.7",
-        "std-env@3.10.0",
+        "std-env@4.3.0",
         "tinybench@2.9.0",
-        "tinyexec@0.3.2",
+        "tinyexec@1.3.1",
         "tinyglobby@0.2.17",
-        "tinypool@1.1.1",
-        "tinyrainbow@2.0.0",
+        "tinyrainbow@3.2.0",
         "vite@6.4.4",
-        "vite-node@3.2.4",
         "why-is-node-running@2.3.0",
-        "@vitest/expect@3.2.6",
-        "@vitest/pretty-format@3.2.7",
-        "@vitest/mocker@3.2.6",
-        "@vitest/runner@3.2.6",
-        "@vitest/snapshot@3.2.6",
-        "@vitest/spy@3.2.6",
-        "@vitest/utils@3.2.6"
+        "@vitest/expect@4.1.12",
+        "@vitest/pretty-format@4.1.12",
+        "@vitest/mocker@4.1.12",
+        "@vitest/snapshot@4.1.12",
+        "@vitest/utils@4.1.12",
+        "@vitest/runner@4.1.12",
+        "@vitest/spy@4.1.12"
       ],
-      "ref": "vitest@3.2.6"
+      "ref": "vitest@4.1.12"
     },
     {
       "dependsOn": [],
@@ -16464,7 +15951,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "agent-forge-studio@1.3.0",
+      "bom-ref": "agent-forge-studio@1.3.1",
       "externalReferences": [],
       "name": "work",
       "properties": [
@@ -16477,10 +15964,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/agent-forge-studio@1.3.0",
+      "purl": "pkg:npm/agent-forge-studio@1.3.1",
       "scope": "required",
       "type": "library",
-      "version": "1.3.0"
+      "version": "1.3.1"
     },
     "lifecycles": [
       {
