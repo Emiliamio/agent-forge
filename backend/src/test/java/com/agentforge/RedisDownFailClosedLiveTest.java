@@ -71,9 +71,23 @@ public class RedisDownFailClosedLiveTest {
         }
     }
 
+    /** 容器名可覆盖（CI 用 docker run 起的容器名与本地 compose 一致，均为 agentforge-redis）。 */
+    private static String redisContainer() {
+        String fromEnv = System.getenv("REDIS_CONTAINER_NAME");
+        return (fromEnv == null || fromEnv.isBlank()) ? "agentforge-redis" : fromEnv;
+    }
+
     private void stopRedis() {
         try {
-            new ProcessBuilder("docker", "stop", "agentforge-redis").inheritIO().start().waitFor();
+            int code = new ProcessBuilder("docker", "stop", redisContainer()).inheritIO().start().waitFor();
+            if (code != 0) {
+                // 不能静默忽略：容器没停下来会让后续断言失真（曾导致 CI 上"应当抛异常却没有"）
+                throw new IllegalStateException(
+                        "docker stop " + redisContainer() + " 退出码 " + code
+                                + "，无法模拟 Redis 宕机；请检查容器名或用 REDIS_CONTAINER_NAME 覆盖");
+            }
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Failed to stop redis container", e);
         }
@@ -81,9 +95,9 @@ public class RedisDownFailClosedLiveTest {
 
     private void startRedis() {
         try {
-            new ProcessBuilder("docker", "start", "agentforge-redis").inheritIO().start().waitFor();
+            new ProcessBuilder("docker", "start", redisContainer()).inheritIO().start().waitFor();
             for (int i = 0; i < 20; i++) {
-                int code = new ProcessBuilder("docker", "exec", "agentforge-redis", "redis-cli", "-a", "redis123", "ping")
+                int code = new ProcessBuilder("docker", "exec", redisContainer(), "redis-cli", "-a", "redis123", "ping")
                         .start().waitFor();
                 if (code == 0) {
                     break;

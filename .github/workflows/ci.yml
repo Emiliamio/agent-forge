@@ -25,7 +25,7 @@ env:
 
 jobs:
   backend-test:
-    name: Backend · tests (live) + coverage + spotbugs
+    name: Backend 路 tests (live) + coverage + spotbugs
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -51,12 +51,12 @@ jobs:
 
       - name: Start Redis with password
         run: |
-          docker run -d --name redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
+          docker run -d --name agentforge-redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
           for i in $(seq 1 30); do
-            docker exec redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
+            docker exec agentforge-redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
             sleep 2
           done
-          docker exec redis redis-cli -a redis123 ping | grep -q PONG
+          docker exec agentforge-redis redis-cli -a redis123 ping | grep -q PONG
 
       - name: Prepare live test database (agentforge_it)
         run: |
@@ -87,7 +87,7 @@ jobs:
           if-no-files-found: warn
 
   frontend-build:
-    name: Frontend · lint + vitest + build
+    name: Frontend 路 lint + vitest + build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -108,7 +108,7 @@ jobs:
           npm run build
 
   security-audit:
-    name: Security · gitleaks + OSV + trivy
+    name: Security 路 gitleaks + OSV + trivy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -125,7 +125,7 @@ jobs:
 
       - name: Install OSV-Scanner
         run: |
-          # v1.9.x 命令为 osv-scanner -r ./ ； v2.x 改为 osv-scanner scan source -r .
+          # v1.9.x 鍛戒护涓?osv-scanner -r ./ 锛?v2.x 鏀逛负 osv-scanner scan source -r .
           OSV_VERSION=1.9.0
           curl -sSfL "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64" \
             -o /tmp/osv-scanner
@@ -144,7 +144,7 @@ jobs:
                     --skip-dirs node_modules --skip-dirs backend/target .
 
   sbom-drift:
-    name: SBOM · drift check
+    name: SBOM 路 drift check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -171,10 +171,10 @@ jobs:
         run: |
           bash scripts/refresh-sbom.sh
           git diff --exit-code docs/sbom/ || {
-            echo "[FAIL] docs/sbom 与当前依赖不一致，请运行 scripts/refresh-sbom.sh 并提交"; exit 1; }
+            echo "[FAIL] docs/sbom 涓庡綋鍓嶄緷璧栦笉涓€鑷达紝璇疯繍琛?scripts/refresh-sbom.sh 骞舵彁浜?; exit 1; }
 
   benchmark-drift:
-    name: Benchmark · stable-metric drift check
+    name: Benchmark 路 stable-metric drift check
     runs-on: ubuntu-latest
     needs: backend-test
     services:
@@ -201,12 +201,12 @@ jobs:
 
       - name: Start Redis with password
         run: |
-          docker run -d --name redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
+          docker run -d --name agentforge-redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
           for i in $(seq 1 30); do
-            docker exec redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
+            docker exec agentforge-redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
             sleep 2
           done
-          docker exec redis redis-cli -a redis123 ping | grep -q PONG
+          docker exec agentforge-redis redis-cli -a redis123 ping | grep -q PONG
 
       - name: Boot backend
         working-directory: backend
@@ -244,7 +244,7 @@ jobs:
           if-no-files-found: warn
 
   docker-e2e:
-    name: Docker · full-stack build & smoke test
+    name: Docker 路 full-stack build & smoke test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -263,7 +263,7 @@ jobs:
           docker compose --profile full down -v
 
   claims-verify:
-    name: Claims · reproducible claims matrix gate
+    name: Claims 路 reproducible claims matrix gate
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     steps:
@@ -299,7 +299,7 @@ jobs:
           docker compose --profile full down -v
 
   publish-images:
-    name: Docker · publish images to GHCR
+    name: Docker 路 publish images to GHCR
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     needs: [backend-test, frontend-build, docker-e2e]
