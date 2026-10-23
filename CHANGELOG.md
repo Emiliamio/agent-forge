@@ -3,6 +3,17 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.3.0] - 2026-10-23
+
+### Changed
+- **Spring Boot 3.4.13 → 3.5.16**：清掉 `spring-boot` / `spring-boot-autoconfigure` / `spring-boot-starter-actuator` / `spring-data-commons` / `spring-data-keyvalue` 五条跨线 CVE；Maven 侧 OSV 告警 **14 条 → 8 条（4 个包）**。
+- **MyBatis-Plus 3.5.5 → 3.5.17**：适配 Boot 3.5 的模块化拆分，新增 `mybatis-plus-spring` 与 `mybatis-plus-jsqlparser` 两个官方模块（`PaginationInnerInterceptor` / `TenantLineInnerInterceptor` / `IService` / `ServiceImpl` 所在）。
+- **Sa-Token 1.37.0 → 1.46.0**：适配 Boot 3.5 与 Jakarta Servlet 上下文；相关 Mockito 测试改为显式保存/还原 `SaManager` 全局上下文（ThreadLocal 隔离）。
+- **移除 Redisson**：`redisson-spring-boot-starter` 的 `spring-data-32` 适配与 Spring Data Redis 3.5.13 的 `pExpire` 存在二进制不兼容并触发递归调用（即 Boot 3.5 spike 中 `/auth/login` 的 `StackOverflowError` 真正根因）。本项目限流/锁/会话全部走 Spring Data Redis + Lua，无需 Redisson 客户端，移除后回归原生 Lettuce。SBOM 组件数 177 → 164。
+
+### Fixed
+- **Boot 3.5 spike 结论归档**：`StackOverflowError` 不是 Sa-Token 的问题，而是 Redisson × Spring Data Redis 3.5 的 `pExpire` 递归；该结论与试错组合已写入 `docs/security/VEX.md`，避免后人再走一遍。
+
 ## [v1.2.1] - 2026-10-23
 
 ### Changed
