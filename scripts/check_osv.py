@@ -37,7 +37,7 @@ def same_minor_line(a: str, b: str) -> bool:
 
 def run_osv() -> dict:
     cmd = ["osv-scanner", "scan", "--format", "json", "--config=" + OSV_TOML, "-r", "."]
-    proc = subprocess.run(cmd, capture_output=True, text=True)
+    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if not proc.stdout.strip():
         print("[FAIL] osv-scanner 无输出，stderr:", proc.stderr[-800:], file=sys.stderr)
         sys.exit(1)

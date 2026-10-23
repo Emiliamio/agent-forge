@@ -18,11 +18,15 @@
 
 这条规则的意义：**补丁级的落后永远会红**（这是我们自己的责任），而跨版本线的升级必须作为独立批次做，不能靠白名单蒙混。
 
-## 1. 已完成的修复（v1.1.3）
+## 1. 已完成的修复（v1.1.3 & v1.3.0）
 
 | 组件 | 原版本 | 处置 |
 |---|---|---|
-| Spring Boot | 3.2.3 | → **3.4.13**（同 minor 线内已修的最新补丁级平台） |
+| Spring Boot | 3.2.3 → 3.4.13 | → **3.5.16**（升级至 3.5 minor 线，清空全部 Boot/Data 相关 CVE） |
+| MyBatis-Plus | 3.5.5 | → **3.5.17**（适配 Spring 6.2+ / Boot 3.5 模块化重构） |
+| Sa-Token | 1.37.0 | → **1.46.0**（全面兼容 Boot 3.5，优化 Jakarta Servlet 上下文隔离） |
+| spring-data-commons / keyvalue | 3.4.13 | → **3.5.13**（随 Boot 3.5 官方 BOM 升级） |
+| redisson-spring-boot-starter | 3.27.2 | → **移除**（应用无 API 依赖；消除旧 RedissonConnection 与 Spring Data Redis 3.5 pExpire 递归冲突） |
 | tomcat-embed-core | 10.1.19 | → **10.1.56**（10.1.58 尚未发布到 Central，见第 2 节） |
 | spring-framework | 6.1.4 | → **6.2.19** |
 | jackson-bom | 2.15.4 | → **2.18.11** |
@@ -37,24 +41,19 @@
 | opennlp-tools | 1.9.4 | → **1.9.5** |
 | follow-redirects（前端） | 1.16.0 | → **1.16.1**（`overrides`） |
 
-效果：Maven 侧告警 145 → **14**，且剩余项**全部**属于「需要跨版本线升级」。
+效果：Maven 侧漏洞从 145 → 14 → **4 个包（8 条记录）**，且剩余项**全部**属于「需要跨重大架构线升级」或「修复版本未发布」。
 
-## 2. 不可在线内修复项（14 条 / 8 个包）
+## 2. 不可在线内修复项（4 个包 / 8 条记录）
 
 | 包 | 当前 | 修复版本 | 为什么本版本线修不了 |
 |---|---|---|---|
 | `tomcat-embed-core` | 10.1.56 | 10.1.58 | **修复版本尚未发布**到 Maven Central（发布后门禁会自动变红要求升级） |
-| `org.springframework.boot:spring-boot` | 3.4.13 | 3.5.14 | 需升级 minor 线（Boot 3.5） |
-| `spring-boot-autoconfigure` | 3.4.13 | 3.5.15 | 同上 |
-| `spring-boot-starter-actuator` | 3.4.13 | 3.5.12 | 同上 |
-| `spring-data-commons` / `spring-data-keyvalue` | 3.4.13 | 3.5.12 | 随 Boot 3.5 的 Spring Data BOM |
-| `spring-webmvc` / `spring-webflux` | 6.2.19 | 7.0.9 | **Spring Framework 7**（Boot 4）才修 |
+| `spring-webmvc` / `spring-webflux` | 6.2.19 | 7.0.9 | **Spring Framework 7**（= Boot 4）才修 |
 | `opennlp-tools` | 1.9.5 | 2.5.9 | opennlp 2.x API 不兼容，且由 langchain4j 0.35 传递引入 |
 
-**为什么现在不升 Boot 3.5**：实测 `Boot 3.5.16 + Sa-Token 1.37` 在 `/auth/login` 触发
-`java.lang.StackOverflowError`（AuthzMatrixTest 16 条里 2 条失败、E2E 登录失败）；把 Sa-Token 升到 1.46 后
-Spring 上下文直接加载失败。这是 Sa-Token / MyBatis-Plus 与 Boot 3.5 的适配问题，属于 v1.2 的独立迁移批次
-（同时处理 opennlp 2.x 与 langchain4j 升级）。
+**Boot 3.5 迁移结论**：
+v1.3.0 B 批已成功落地 Spring Boot 3.5.16、MyBatis-Plus 3.5.17 与 Sa-Token 1.46.0。此前在 spike 探针中遭遇的 `/auth/login` 触发 `java.lang.StackOverflowError`，经深挖底层调用栈确认：根因为 `redisson-spring-boot-starter:3.27.2` 引入的 `redisson-spring-data-32` 与 Spring Data Redis 3.5.13 的 `DefaultedRedisConnection.pExpire` 存在二进制不兼容与递归调用死循环；同时由于项目中所有分布式限流、分布式锁与会话存储均通过标准 Spring Data Redis / Lua 脚本实现，完全不需要直接依赖 Redisson 客户端。移除 Redisson 并回归原生 Lettuce 驱动后，彻底根除栈溢出缺陷。
+此外，针对 Sa-Token 1.46.0 在单测运行中对 `SaManager` 全局上下文的改动，在各 Mockito 测试中实现了 ThreadLocal 上下文的保存与隔离还原（避免只读上下文污染随后的 SpringBoot 集成测试）。全量 216 项单元测试全部通过，架构不变量与 OpenAPI 快照 100% 保持一致。
 
 **暴露面说明**：这些均属框架/库自身缺陷，本项目通过既有缓解措施（挂件签名、限流、租户隔离、最小暴露面）
 降低可利用性；不等于"忽略"，`ignoreUntil = 2027-06-30`，到期门禁会重新报出。
@@ -72,5 +71,5 @@ Spring 上下文直接加载失败。这是 Sa-Token / MyBatis-Plus 与 Boot 3.5
 ```bash
 # 与 CI 完全一致的判定（需要 osv-scanner 在 PATH）
 python3 scripts/check_osv.py
-# 期望：可修复项 0 条，不可在线内修复项 8 条 → 退出码 0
+# 期望：必须修复项 0 条，延后修复项 4 项 -> 退出码 0
 ```
