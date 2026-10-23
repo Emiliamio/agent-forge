@@ -7290,12 +7290,12 @@
     },
     {
       "author": "Ruben Verborgh",
-      "bom-ref": "follow-redirects@1.16.0",
+      "bom-ref": "follow-redirects@1.16.1",
       "description": "HTTP and HTTPS modules that follow redirects.",
       "externalReferences": [
         {
           "type": "distribution",
-          "url": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz"
+          "url": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.1.tgz"
         },
         {
           "type": "vcs",
@@ -7313,7 +7313,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "cb9acdfee3ac69d153fc97d8c21c514b947b41c7be837cc6f7bf89aed159942f64957fd6e610fb8a22f349c2389d9a944bb0cd51d84f830e3123c5b62ee5e553"
+          "content": "14dbc51b3a0c2d6984e988fdb296ffce377bca23421e2016f7f4e0f425eb43cc2ebb7d87b6524ec163b5d4e25a7e5e457d8dc3c53750d2f8f8db353592fbf98e"
         }
       ],
       "licenses": [
@@ -7330,10 +7330,10 @@
           "value": "node_modules/follow-redirects"
         }
       ],
-      "purl": "pkg:npm/follow-redirects@1.16.0",
+      "purl": "pkg:npm/follow-redirects@1.16.1",
       "scope": "required",
       "type": "library",
-      "version": "1.16.0"
+      "version": "1.16.1"
     },
     {
       "author": "Felix Geisendörfer",
@@ -17831,7 +17831,7 @@
         "jsdom@24.1.3",
         "@vue/test-utils@2.5.1"
       ],
-      "ref": "agent-forge-studio@1.1.2"
+      "ref": "agent-forge-studio@1.1.3"
     },
     {
       "dependsOn": [
@@ -17896,7 +17896,7 @@
     },
     {
       "dependsOn": [
-        "follow-redirects@1.16.0",
+        "follow-redirects@1.16.1",
         "form-data@4.0.6",
         "https-proxy-agent@5.0.1",
         "proxy-from-env@2.1.0"
@@ -18386,7 +18386,7 @@
     },
     {
       "dependsOn": [],
-      "ref": "follow-redirects@1.16.0"
+      "ref": "follow-redirects@1.16.1"
     },
     {
       "dependsOn": [
@@ -19542,7 +19542,7 @@
   ],
   "metadata": {
     "component": {
-      "bom-ref": "agent-forge-studio@1.1.2",
+      "bom-ref": "agent-forge-studio@1.1.3",
       "externalReferences": [],
       "name": "work",
       "properties": [
@@ -19555,10 +19555,10 @@
           "value": "true"
         }
       ],
-      "purl": "pkg:npm/agent-forge-studio@1.1.2",
+      "purl": "pkg:npm/agent-forge-studio@1.1.3",
       "scope": "required",
       "type": "library",
-      "version": "1.1.2"
+      "version": "1.1.3"
     },
     "lifecycles": [
       {

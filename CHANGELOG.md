@@ -3,6 +3,17 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.1.3] - 2026-10-23
+
+### Security
+- **Spring Boot 3.2.3 → 3.2.12**：清除 OSV-Scanner 在 Maven 侧报出的约 140 条告警（Tomcat 10.1.19、Spring 6.1.4、Jackson 2.15.4、Netty 4.1.107、Logback 1.4.14 等，含多个 CVSS 9.8），生产依赖漏洞归零。
+- **前端 `follow-redirects` 固定到 1.16.1**（`overrides`），修复 GHSA-8r9p-f939-6h3c / GHSA-q3jh-wrc6-jgq8。
+- **新增依赖漏洞门禁的可审计豁免机制**：`osv-scanner.toml`（每条含 `ignoreUntil` + `reason`）与 `docs/security/VEX.md`（暴露面判定）。15 条前端构建期依赖（vite/vitest/esbuild/tinypool/braces 等）在证明「不进入运行时镜像」后带到期日豁免；清单外出现任何漏洞仍然阻断构建。
+
+### Fixed
+- **CI live 测试库建表**：`flyway:migrate` 在全新 checkout 上因 `classpath:db/migration` 无编译产物而扫到 0 条迁移、静默退出，导致种子脚本报 `relation "sys_tenant" does not exist`；改显式 `-Dflyway.locations=filesystem:src/main/resources/db/migration`。
+- **SBOM 漂移门禁误报**：`normalize_sbom.py` 追加剔除 cyclonedx 的 `cdx:reproducible` 元数据属性（是否出现取决于构建环境，不属于依赖证据）。
+
 ## [v1.1.2] - 2026-10-23
 
 ### Fixed
