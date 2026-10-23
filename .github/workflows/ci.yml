@@ -149,9 +149,13 @@ jobs:
           trivy sbom --severity HIGH,CRITICAL --ignore-unfixed --scanners vuln \
                      --ignorefile .trivyignore --exit-code 1 docs/sbom/frontend-bom.json
 
-      - name: Config & secret gate (trivy fs)
+      - name: Config & secret gate (trivy)
         run: |
-          trivy fs --scanners misconfig,secret --exit-code 1 \
+          # trivy config 只解析 IaC（Dockerfile / compose / k8s），不触发 Maven 依赖解析
+          trivy config --exit-code 1 .
+          # secret 扫描跳过依赖清单，避免 trivy 顺手去 Central 解析 pom 被 429 限流
+          trivy fs --scanners secret --exit-code 1 \
+                   --skip-files '**/pom.xml' --skip-files '**/package-lock.json' \
                    --skip-dirs node_modules --skip-dirs backend/target .
 
   sbom-drift:
