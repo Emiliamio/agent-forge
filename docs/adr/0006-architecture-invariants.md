@@ -61,7 +61,7 @@
 | R2 | ✅ | `r2_controllers_should_not_depend_on_entities`，基于字节码依赖，全限定名（FQN）写法同样会被拦下（审计已注入 FQN 探针验证） |
 | R3 | ✅ | `r3_transactional_only_in_service` |
 | R4 无环 | ✅ | `r4_no_cycles`（`slices().matching("com.agentforge.(*)..")`） |
-| R4 特性隔离 | ✅ 全部切片覆盖 | 已落地 `agent / rag / billing / security / platform` 五个特性域（各含 `api` 与 `internal` 两层）；追加 Rule 11 切片规则（`slices().matching("com.agentforge.service.(*).internal..")`）通用杜绝跨特性 internal 耦合；`workflow / chat / market` 尚未切分 |
+| R4 特性隔离 | ✅ 8 个域全覆盖 | 已落地 8 个业务特性域全覆盖（`agent` / `rag` / `billing` / `security` / `platform` / `workflow` / `chat` / `market`，各含 `api` 与 `internal` 两层）；通用 Rule 11 切片规则（`slices().matching("com.agentforge.service.(*).internal..")`）杜绝跨特性 internal 耦合；`service/converter` 属于跨特性共享映射层（不属于单一特性域） |
 | R5 | ✅ 且实测有效 | 审计时注入 `/health-probe` 端点 → 契约测试立即红（`Failures: 1`），回滚后转绿 |
 | R6 | ✅ | 3 端口 + 3 Fake（`test/java/com/agentforge/fake/`），由 `HexagonalPortsAndFakesTest` 注入使用 |
 
