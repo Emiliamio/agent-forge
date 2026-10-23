@@ -35,7 +35,7 @@
 
         <!-- 安全补丁：以下版本覆盖 Spring Boot 3.4.13 默认管理版本，
              均为同一大版本线内的最小已修版本（依据 OSV 建议的 fixed 版本）。 -->
-        <tomcat.version>10.1.52</tomcat.version>
+        <tomcat.version>10.1.56</tomcat.version>
         <spring-framework.version>6.2.19</spring-framework.version>
         <jackson-bom.version>2.18.11</jackson-bom.version>
         <logback.version>1.5.34</logback.version>

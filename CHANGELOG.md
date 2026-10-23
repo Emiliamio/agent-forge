@@ -6,9 +6,10 @@
 ## [v1.1.3] - 2026-10-23
 
 ### Security
-- **Spring Boot 3.2.3 → 3.2.12**：清除 OSV-Scanner 在 Maven 侧报出的约 140 条告警（Tomcat 10.1.19、Spring 6.1.4、Jackson 2.15.4、Netty 4.1.107、Logback 1.4.14 等，含多个 CVSS 9.8），生产依赖漏洞归零。
+- **Spring Boot 3.2.3 → 3.4.13 + 全量补丁级依赖钉版**：Tomcat `10.1.19→10.1.56`、Spring `6.1.4→6.2.19`、Jackson `2.15.4→2.18.11`、Logback `1.4.14→1.5.34`、Netty `4.1.107→4.1.137.Final`、Micrometer `1.12.3→1.15.12`、Log4j `2.24.3→2.25.5`、PostgreSQL `42.6.1→42.7.12`、commons-compress `1.26.0`、commons-lang3 `3.18.0`、POI `5.4.0`、opennlp `1.9.5`。Maven 侧 OSV 告警由 **145 条降到 14 条**，剩余项全部属于跨 minor/大版本线（见 `docs/security/VEX.md`）。
+- **新增可审计依赖门禁 `scripts/check_osv.py`**：机器判定"是否落后于已发布补丁"——同 minor 线内存在已发布修复版本即构建失败；跨版本线或尚未发布的修复项打印清单并记录归档，无人工白名单。
+- **trivy 改用 SBOM 扫描**：`trivy sbom docs/sbom/*.json` 不触发 Maven Central 依赖解析，彻底消除 429 限流导致的随机失败；另保留 `trivy fs --scanners misconfig,secret` 做配置与密钥检查。
 - **前端 `follow-redirects` 固定到 1.16.1**（`overrides`），修复 GHSA-8r9p-f939-6h3c / GHSA-q3jh-wrc6-jgq8。
-- **新增依赖漏洞门禁的可审计豁免机制**：`osv-scanner.toml`（每条含 `ignoreUntil` + `reason`）与 `docs/security/VEX.md`（暴露面判定）。15 条前端构建期依赖（vite/vitest/esbuild/tinypool/braces 等）在证明「不进入运行时镜像」后带到期日豁免；清单外出现任何漏洞仍然阻断构建。
 
 ### Fixed
 - **CI live 测试库建表**：`flyway:migrate` 在全新 checkout 上因 `classpath:db/migration` 无编译产物而扫到 0 条迁移、静默退出，导致种子脚本报 `relation "sys_tenant" does not exist`；改显式 `-Dflyway.locations=filesystem:src/main/resources/db/migration`。

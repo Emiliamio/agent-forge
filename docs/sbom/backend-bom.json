@@ -6586,7 +6586,7 @@
       "version": "5.4.0"
     },
     {
-      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.52?type=jar",
+      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.56?type=jar",
       "description": "Core Tomcat implementation",
       "externalReferences": [
         {
@@ -6598,35 +6598,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "07ade2b34a0b171c18bfd1338a39959d"
+          "content": "a8c4403f51c66f43ea5b5d5794d8745e"
         },
         {
           "alg": "SHA-1",
-          "content": "f512bef2796b51299f4752f95918982c3003131d"
+          "content": "bcd119b9b6402e25a96be5af1014d45776faed56"
         },
         {
           "alg": "SHA-256",
-          "content": "522f540d09d14c86e0d300d6c85d9604ccc951ade60678e16822410bad6658a8"
+          "content": "db6e95e846192c2bf24ebc0e9ee140ba60462bebbf96d6a079896bea02182443"
         },
         {
           "alg": "SHA-512",
-          "content": "9d984636e83338e37ecd8e9d44d4f16634be210a4347bb7496ec755064438a4881490293f896ca808360e2da6d68c4a075bbda8446020d65375ddfe3a312c576"
+          "content": "fc163685c3da1a902833529fd6788c70abeaf3fee6f60fee200bf577854103b9d01a2077278dde4cd2731ffabc6fa0d30ce06ddb48d193c7963b146e7d275bc2"
         },
         {
           "alg": "SHA-384",
-          "content": "f7088c57d0c8ecdf0ed7c2d20fca69e887b37d7d6d344151c767758cd07a6a8c4e000e50f093a251af52b13afe95fd48"
+          "content": "7b27687cd3fe4ac0794f25dfe3f56dd6bcece7f5b757a8ca12c17be26abb0b13d0728cc342446db1dd8095079543005c"
         },
         {
           "alg": "SHA3-384",
-          "content": "72d32176d4373307936546aab79ea741c042a2e58bf6b221c8e3ef03ffbf02481875f7bd458adb0e52f53f4e25afcc91"
+          "content": "7d0d29dc75b20a045ced3585804f85bd21501d0eed09e79c1147ee01a25e3cc71e309d4d13c03fd0ee39bc280111f1d0"
         },
         {
           "alg": "SHA3-256",
-          "content": "f0681ea910f62658a5f08d5bfad4bc55aae3e42f7a73ad9920be96a417246a2c"
+          "content": "f4c088a89c7dc32f7bc01d4a56ec9319a63f8b81c763c70d63db04a81d57f85f"
         },
         {
           "alg": "SHA3-512",
-          "content": "2748d556840e08fe9702c1358bc5f69495a15f3945b12e0a82140bfcd079c35a68af0c26175743ac0eed79a09ce45e3bb1c1e0f929effe1fe2a63d1308199b61"
+          "content": "ede90e03b86d5051b9a741053930a6d94bb004b3ed19f5ca8e03e3dbb5540f24e895e81dea4b412c7e992abbe7143b8f901a234948ccfb0c4d858ba72dcb9e7b"
         }
       ],
       "licenses": [
@@ -6637,13 +6637,13 @@
         }
       ],
       "name": "tomcat-embed-core",
-      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.52?type=jar",
+      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.56?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "10.1.52"
+      "version": "10.1.56"
     },
     {
-      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.52?type=jar",
+      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.56?type=jar",
       "description": "Core Tomcat implementation",
       "externalReferences": [
         {
@@ -6655,35 +6655,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "86904149380b49701b38d6d2f0f1e295"
+          "content": "720dc56c69e22ba5bd3b315224b2c21c"
         },
         {
           "alg": "SHA-1",
-          "content": "cd94ce17c5a9937eca365eb494711efa10d49b86"
+          "content": "d6b241f60510a23870130f645a6d6b7834065f57"
         },
         {
           "alg": "SHA-256",
-          "content": "cbb6ed2e5746215273027e8a8083a4e2472e28c0132491f1e772f8fea5a5e0ac"
+          "content": "164066134f1c21d4117218e5475d38869043ceb523afdac033fe6e539f750c70"
         },
         {
           "alg": "SHA-512",
-          "content": "3db6b8c0421d96d88d4a6e53d6133ac398fa1e6977ac5b68f1c0132114e888e02bd8af5e927220db2492ac8587c1ae211784a51bcd94497a219f2467c6daf047"
+          "content": "e73501137f47f41d61ed0bd95d4e1ea79720ac87b3a052619cef6588f4fd610b69bc9ad507f59d38333e31511dd9d65b9346f936d02b0e72bc8a2fe197dbab60"
         },
         {
           "alg": "SHA-384",
-          "content": "f352799a45368915fb53a93458a2767ae07cca71f25529660d9ba31c8b6ab4c4daefeec53f43100dbe6570c09c877fca"
+          "content": "332475bfcd6cbc9791b4883d8b824b0aeace7a6d2194a7405fba5fc8fd0694f8f09f34ee3a5e86c5cb6a35879778ea66"
         },
         {
           "alg": "SHA3-384",
-          "content": "7def724c3c3de7667a9790f156f43a7971b0911e4ca7b97bcacf412aca81d507ddc957a1966a6f81fc6e8ed1d992db1a"
+          "content": "64a1525529bfb5c6473491be15978d01f5048166d4420d9f50c0e80fc1287b7caf816970f69a97133a152735b6b0ac03"
         },
         {
           "alg": "SHA3-256",
-          "content": "6a0d64fa396eed1018f6a8cdff032080b3d5fa80b193ee019e7eddb55e993bb0"
+          "content": "80e6ceedc1b01352d3ed1bb770857298388b42fc42eb8af2fa28e9f973b3c680"
         },
         {
           "alg": "SHA3-512",
-          "content": "a97dd8d853c2a82929d5131b016ce59f5e2ad899693eb4957e24f3b637446975f40c3878adbef756984292369bfaa5f572145014bf6560929b13556381c46e2b"
+          "content": "a8b36cf54cfda835df91a6d17239867bf77f679f472f2c569d95572814b792317b5cbea9391ce1ee6d34e36fb529e5188204f831d2a7cabc96940461074e9ec3"
         }
       ],
       "licenses": [
@@ -6694,13 +6694,13 @@
         }
       ],
       "name": "tomcat-embed-el",
-      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.52?type=jar",
+      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.56?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "10.1.52"
+      "version": "10.1.56"
     },
     {
-      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.52?type=jar",
+      "bom-ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.56?type=jar",
       "description": "Core Tomcat implementation",
       "externalReferences": [
         {
@@ -6712,35 +6712,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "a394929a3f7fe04421df356d92b06d7e"
+          "content": "bbda961779642be22562ceb5e72851fe"
         },
         {
           "alg": "SHA-1",
-          "content": "9d32b801fb474306349013fcdd8317c8cb4d739e"
+          "content": "68ca2e776035330c0c9a5a02853d56ebcf88322b"
         },
         {
           "alg": "SHA-256",
-          "content": "27b1f5c0c94d96cf8cc222219d189e092fab7b2ddee48e8320a60248aa9d0e75"
+          "content": "ddec0460ef1cae013d3c1fe4c0e663bdc2d4410cc8bd42e08a754e8f04091994"
         },
         {
           "alg": "SHA-512",
-          "content": "5a393954a9c9a60f15ea3e1329d31e84e304b593c2bdeedf97b783adb3185823f4c53d8c833e7aa7abc6d8ea0965b21d19f655256c0c643f11a8a3521ff4dff4"
+          "content": "6925141927e085e349eaff83b10c9705992610a259a69a986e2cc55d7752ab7c1c34e48217927209fd99391f5841c9a41a5fb5a6f2440744d9e3b64bced8e326"
         },
         {
           "alg": "SHA-384",
-          "content": "ff0829ca856457d0b96c8181629cafc5228cb4aa72124f8459c7c1461e105b23ae5b3e66cd2d1695c63dbced43e6b01c"
+          "content": "ed28a545cfe9dbc4ef03e0ee029046310a9bfd869ed621b1102831dacc20ea5e05aaf94a8a19df63e3d6c46a441c5811"
         },
         {
           "alg": "SHA3-384",
-          "content": "e70932d33b707686b5c81f211a2161bad442166bd933d8b92f30c2cb46345ec7fb8b1a756562607ed978a112cc3881c5"
+          "content": "d9035d734c7a28593da585b8233fee5db91622f0c54ef707e5c2f5286d7326a09b587eaf871a6dfb4ecdcb7e97dbef93"
         },
         {
           "alg": "SHA3-256",
-          "content": "0a1b1483227166c421436c004fb565edb3ba88f141c75edf9ae485d02b7aca79"
+          "content": "a5542674501e2079ff82d627ff9194f4c635b5d7c2206d03367ed366ff2c32eb"
         },
         {
           "alg": "SHA3-512",
-          "content": "ab871d5a077852482f45fdc7f7f13a1f202e8deab91a99798392311975f94c095140aab263945fb91e5bf7537d8c72493c4472364932e08a9d1edbf07db842df"
+          "content": "0f3c65fcc57b6c006442f84300b095bd2764a20cd3de287c254b5d4e87bd8b53e1cf5cb36e8f04ccd81b2a023146cb8da426d6ee9b13a0e75d40fc6bdfa73904"
         }
       ],
       "licenses": [
@@ -6751,10 +6751,10 @@
         }
       ],
       "name": "tomcat-embed-websocket",
-      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.52?type=jar",
+      "purl": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.56?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "10.1.52"
+      "version": "10.1.56"
     },
     {
       "bom-ref": "pkg:maven/org.apache.xmlbeans/xmlbeans@5.3.0?type=jar",
@@ -12278,17 +12278,17 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.52?type=jar"
+      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.56?type=jar"
     },
     {
       "dependsOn": [],
-      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.52?type=jar"
+      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.56?type=jar"
     },
     {
       "dependsOn": [
-        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.52?type=jar"
+        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.56?type=jar"
       ],
-      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.52?type=jar"
+      "ref": "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.56?type=jar"
     },
     {
       "dependsOn": [
@@ -12617,16 +12617,16 @@
     {
       "dependsOn": [
         "pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1?type=jar",
-        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.52?type=jar",
-        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.52?type=jar",
-        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.52?type=jar"
+        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.56?type=jar",
+        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.56?type=jar",
+        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.56?type=jar"
       ],
       "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.4.13?type=jar"
     },
     {
       "dependsOn": [
         "pkg:maven/org.springframework.boot/spring-boot-starter@3.4.13?type=jar",
-        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.52?type=jar",
+        "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.56?type=jar",
         "pkg:maven/org.hibernate.validator/hibernate-validator@8.0.3.Final?type=jar"
       ],
       "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-validation@3.4.13?type=jar"

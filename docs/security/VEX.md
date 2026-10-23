@@ -2,8 +2,9 @@
 
 本文件记录依赖漏洞门禁的**处置口径**与**不可在线内修复项**清单。
 
-- 门禁脚本：`scripts/check_osv.py`（CI 的 `security-audit` job 调用）
-- 机器清单：`osv-scanner.toml`（前端构建期依赖豁免）、`.trivyignore`（trivy 同样的清单）
+- 门禁脚本：`scripts/check_osv.py`（CI 的 `security-audit` job 调用，权威判定）
+- 第二道扫描：`trivy sbom`（直接扫已提交 SBOM，不触发 Maven Central 解析 → 避免 429 限流导致的假失败）
+- 机器清单：`osv-scanner.toml`（前端构建期依赖豁免）、`.trivyignore`（GHSA + CVE 双份同源清单）
 
 ## 0. 门禁判定规则（机器可判，无人工白名单）
 
@@ -22,7 +23,7 @@
 | 组件 | 原版本 | 处置 |
 |---|---|---|
 | Spring Boot | 3.2.3 | → **3.4.13**（同 minor 线内已修的最新补丁级平台） |
-| tomcat-embed-core | 10.1.19 | → **10.1.52** |
+| tomcat-embed-core | 10.1.19 | → **10.1.56**（10.1.58 尚未发布到 Central，见第 2 节） |
 | spring-framework | 6.1.4 | → **6.2.19** |
 | jackson-bom | 2.15.4 | → **2.18.11** |
 | logback | 1.4.14 | → **1.5.34** |
@@ -42,6 +43,7 @@
 
 | 包 | 当前 | 修复版本 | 为什么本版本线修不了 |
 |---|---|---|---|
+| `tomcat-embed-core` | 10.1.56 | 10.1.58 | **修复版本尚未发布**到 Maven Central（发布后门禁会自动变红要求升级） |
 | `org.springframework.boot:spring-boot` | 3.4.13 | 3.5.14 | 需升级 minor 线（Boot 3.5） |
 | `spring-boot-autoconfigure` | 3.4.13 | 3.5.15 | 同上 |
 | `spring-boot-starter-actuator` | 3.4.13 | 3.5.12 | 同上 |

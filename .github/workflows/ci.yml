@@ -135,13 +135,24 @@ jobs:
       - name: Dependency vulnerability gate (OSV)
         run: python3 scripts/check_osv.py
 
-      - name: Filesystem CVE gate (trivy)
+      - name: Install trivy
         run: |
           curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
             | sudo sh -s -- -b /usr/local/bin
-          trivy fs --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
-                    --ignorefile .trivyignore \
-                    --skip-dirs node_modules --skip-dirs backend/target .
+          trivy --version
+
+      - name: Dependency CVE gate (trivy · SBOM)
+        run: |
+          # 直接扫已提交的 SBOM：不触发 Maven Central 解析，避免 429 限流导致随机失败
+          trivy sbom --severity HIGH,CRITICAL --ignore-unfixed --scanners vuln \
+                     --ignorefile .trivyignore --exit-code 1 docs/sbom/backend-bom.json
+          trivy sbom --severity HIGH,CRITICAL --ignore-unfixed --scanners vuln \
+                     --ignorefile .trivyignore --exit-code 1 docs/sbom/frontend-bom.json
+
+      - name: Config & secret gate (trivy fs)
+        run: |
+          trivy fs --scanners misconfig,secret --exit-code 1 \
+                   --skip-dirs node_modules --skip-dirs backend/target .
 
   sbom-drift:
     name: SBOM · drift check
