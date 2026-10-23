@@ -1,4 +1,4 @@
-﻿name: AgentForge CI
+name: AgentForge CI
 
 on:
   push:
@@ -65,7 +65,8 @@ jobs:
           psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE agentforge_it;"
           cd backend
           mvn -q -B flyway:migrate \
-            -Dflyway.url=jdbc:postgresql://localhost:5432/agentforge_it -Dflyway.user=postgres -Dflyway.password=password123
+            -Dflyway.url=jdbc:postgresql://localhost:5432/agentforge_it -Dflyway.user=postgres -Dflyway.password=password123 \
+            -Dflyway.locations=filesystem:src/main/resources/db/migration
           psql -h localhost -U postgres -d agentforge_it -v ON_ERROR_STOP=1 -f src/main/resources/sql/seed-data.sql
 
       - name: Run tests with live channel + JaCoCo gate + SpotBugs

@@ -9,6 +9,11 @@ def normalize(path: str) -> None:
     # 生成工具版本随执行环境漂移（如 npm 版本随 CI 镜像变化），不纳入证据范围：
     # cyclonedx-maven-plugin 版本由 pom 固定、npm 版本由 CI 镜像固定，均可在构建脚本中追溯。
     meta.pop("tools", None)
+    # cyclonedx 在启用可重复构建（outputTimestamp）时会追加 cdx:reproducible 属性，
+    # 是否出现取决于 Maven 版本/构建环境，不属于依赖证据，统一剔除。
+    props = meta.get("properties")
+    if isinstance(props, list):
+        meta["properties"] = [p for p in props if p.get("name") != "cdx:reproducible"]
     doc["metadata"] = meta
     if isinstance(doc.get("components"), list):
         doc["components"] = sorted(
