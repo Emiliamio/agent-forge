@@ -2,7 +2,7 @@ package com.agentforge.service.rag;
 
 import com.agentforge.entity.Dataset;
 import com.agentforge.vo.PageResult;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 
 /**
  * 知识库数据集服务接口

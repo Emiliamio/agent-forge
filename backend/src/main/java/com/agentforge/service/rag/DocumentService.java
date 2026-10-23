@@ -2,7 +2,7 @@ package com.agentforge.service.rag;
 
 import com.agentforge.entity.Document;
 import com.agentforge.vo.PageResult;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.spring.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

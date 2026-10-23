@@ -57,7 +57,7 @@ AgentForge 采用**单一商业授权模式**（源码私有，All Rights Reserv
 
 ## 5. 第三方组件
 
-本软件包含 Apache-2.0 / MIT / BSD / MulanPSL-2.0 等宽松许可的第三方组件（Spring Boot、MyBatis-Plus、Sa-Token、LangChain4j、Apache POI、PDFBox、Redisson、fastjson2、Hutool、Vue 3 等），各自仍受其原始许可约束，清单见 `THIRD-PARTY-NOTICES.md`。商业授权**不改变**这些组件的许可，也不对其提供担保。
+本软件包含 Apache-2.0 / MIT / BSD / MulanPSL-2.0 等宽松许可的第三方组件（Spring Boot、MyBatis-Plus、Sa-Token、LangChain4j、Apache POI、PDFBox、Lettuce、fastjson2、Hutool、Vue 3 等），各自仍受其原始许可约束，清单见 `THIRD-PARTY-NOTICES.md`。商业授权**不改变**这些组件的许可，也不对其提供担保。
 
 ---
 

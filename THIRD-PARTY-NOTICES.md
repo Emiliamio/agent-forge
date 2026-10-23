@@ -45,11 +45,11 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 
 | 组件名称 (Artifact) | 组织 / 项目 (Group) | 采用许可证 (License) | 用途说明 |
 | :--- | :--- | :--- | :--- |
-| **Spring Boot Stack** (`3.2.3`) | `org.springframework.boot` | Apache-2.0 | 核心服务容器与微服务框架 |
-| **MyBatis-Plus** (`3.5.5`) | `com.baomidou` | Apache-2.0 | ORM 持久层与多租户分表分库插件 |
-| **Sa-Token** (`1.37.0`) | `cn.dev33` | Apache-2.0 | 企业级轻量权限认证与会话管理 |
+| **Spring Boot Stack** (`3.5.16`) | `org.springframework.boot` | Apache-2.0 | 核心服务容器与微服务框架 |
+| **MyBatis-Plus** (`3.5.17`) | `com.baomidou` | Apache-2.0 | ORM 持久层与多租户分表分库插件 |
+| **Sa-Token** (`1.46.0`) | `cn.dev33` | Apache-2.0 | 企业级轻量权限认证与会话管理 |
 | **LangChain4j** (`0.27.1`) | `dev.langchain4j` | Apache-2.0 | 大语言模型抽象层与 Prompt 治理 |
-| **Redisson** (`3.27.0`) | `org.redisson` | Apache-2.0 | 分布式锁、滑动窗口限流与分布式缓存 |
+| **Lettuce / Spring Data Redis** (`6.5.x` / `3.5.13`) | `io.lettuce` / `org.springframework.data` | Apache-2.0 | 高性能非阻塞 Redis 驱动与会话/限流缓存 |
 | **Apache POI** (`5.2.5`) | `org.apache.poi` | Apache-2.0 | Office 格式（Word/Excel）文档解析 |
 | **Apache PDFBox** (`2.0.30`) | `org.apache.pdfbox` | Apache-2.0 | PDF 文本结构化提取与切片 |
 | **fastjson2** (`2.0.46`) | `com.alibaba.fastjson2` | Apache-2.0 | 高性能 JSON 序列化引擎 |
