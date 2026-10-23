@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ReActAgentService {
 
-    private final LlmClient llmClient;
+    private final com.agentforge.service.agent.api.ChatModelPort llmClient;
     private final ToolRegistry toolRegistry;
     private final RagService ragService;
     private final AgentAppMapper agentAppMapper;

@@ -1,5 +1,8 @@
 package com.agentforge.service.rag.impl;
 
+import com.agentforge.service.rag.api.DocumentStoragePort;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import cn.hutool.core.io.FileUtil;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.Dataset;
@@ -48,6 +51,8 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     private final DocumentParserFactory parserFactory;
     private final ChunkerEngine chunkerEngine;
     private final EmbeddingService embeddingService;
+    @Autowired(required = false)
+    private DocumentStoragePort documentStoragePort;
 
     @Override
     public Document uploadAndParse(Long datasetId, MultipartFile file) {
@@ -81,6 +86,9 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         // 2. 读取字节数据并在虚拟线程中异步执行 RAG 解析与向量化入库
         try {
             byte[] fileBytes = file.getBytes();
+            if (documentStoragePort != null) {
+                documentStoragePort.store(tenantId + "/" + document.getId(), fileBytes);
+            }
             CompletableFuture.runAsync(() -> {
                 TenantContextHolder.runWithTenant(tenantId, () -> {
                     processDocument(document.getId(), fileBytes, originalFilename, fileType);
@@ -121,6 +129,10 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         chunkMapper.delete(new LambdaQueryWrapper<DocumentChunk>()
                 .eq(DocumentChunk::getTenantId, tenantId)
                 .eq(DocumentChunk::getDocumentId, documentId));
+
+        if (documentStoragePort != null) {
+            documentStoragePort.delete(tenantId + "/" + documentId);
+        }
 
         // 2. 清理文档记录
         removeById(documentId);

@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.agentforge.config.mybatis.PgJsonbTypeHandler;
-import com.agentforge.config.mybatis.PgVectorTypeHandler;
+import com.agentforge.entity.handler.PgJsonbTypeHandler;
+import com.agentforge.entity.handler.PgVectorTypeHandler;
 
 /**
  * 知识库文档分块与高维向量实体

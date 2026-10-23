@@ -4,6 +4,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -100,4 +101,23 @@ public class ArchitectureTest {
                     .should().dependOnClassesThat().haveFullyQualifiedName("org.springframework.transaction.annotation.Transactional")
                     .as("Rule 6 (R3): @Transactional 事务注解只能在 Service 业务逻辑层声明")
                     .because("事务生命周期边界必须严格收敛在 Service 业务层，严禁在 Controller 接入层或其它包声明事务，防止长事务死锁与连接池资源耗尽（反例：在 Controller 类或方法上标注 @Transactional）");
+
+    /**
+     * Rule 7 (R4): 包级无环形依赖
+     */
+    @ArchTest
+    static final ArchRule r4_no_cycles =
+            slices().matching("com.agentforge.(*)..").should().beFreeOfCycles()
+                    .as("Rule 7 (R4): 包级无环形依赖")
+                    .because("架构切片之间不得存在循环依赖，保障系统模块单向演进与独立可维护性");
+
+    /**
+     * Rule 8 (R4): 业务特性内部实现隔离 (跨特性模块只能面向 api 契约通信，严禁跨特性直接穿透依赖 internal 内部实现类)
+     */
+    @ArchTest
+    static final ArchRule r8_cross_feature_internal_boundary =
+            noClasses().that().resideInAPackage("..agent.internal..")
+                    .should().dependOnClassesThat().resideInAnyPackage("..rag.internal..", "..billing.internal..")
+                    .as("Rule 8: 业务特性实现隔离（跨模块禁止依赖 internal 内部实现类）")
+                    .because("业务特性模块之间必须保持单向接口依赖，跨模块只能依赖对外暴露的 api 契约，严禁穿透耦合 internal 内部实现");
 }

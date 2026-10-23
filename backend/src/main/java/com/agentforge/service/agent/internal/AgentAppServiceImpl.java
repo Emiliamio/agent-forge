@@ -1,4 +1,4 @@
-package com.agentforge.service.agent.impl;
+package com.agentforge.service.agent.internal;
 
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.entity.AgentApp;

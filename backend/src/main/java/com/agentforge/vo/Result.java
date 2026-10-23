@@ -1,6 +1,5 @@
 package com.agentforge.vo;
 
-import com.agentforge.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,8 +40,8 @@ public class Result<T> implements Serializable {
 
     public static <T> Result<T> success(T data) {
         return Result.<T>builder()
-                .code(ErrorCode.SUCCESS.getCode())
-                .message(ErrorCode.SUCCESS.getMessage())
+                .code(200)
+                .message("操作成功")
                 .data(data)
                 .timestamp(System.currentTimeMillis())
                 .build();
@@ -50,22 +49,14 @@ public class Result<T> implements Serializable {
 
     public static <T> Result<T> success(String message, T data) {
         return Result.<T>builder()
-                .code(ErrorCode.SUCCESS.getCode())
+                .code(200)
                 .message(message)
                 .data(data)
                 .timestamp(System.currentTimeMillis())
                 .build();
     }
 
-    public static <T> Result<T> fail(ErrorCode errorCode) {
-        return Result.<T>builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .data(null)
-                .timestamp(System.currentTimeMillis())
-                .build();
-    }
-
+    
     public static <T> Result<T> fail(int code, String message) {
         return Result.<T>builder()
                 .code(code)
@@ -77,7 +68,7 @@ public class Result<T> implements Serializable {
 
     public static <T> Result<T> fail(String message) {
         return Result.<T>builder()
-                .code(ErrorCode.SYSTEM_ERROR.getCode())
+                .code(500)
                 .message(message)
                 .data(null)
                 .timestamp(System.currentTimeMillis())

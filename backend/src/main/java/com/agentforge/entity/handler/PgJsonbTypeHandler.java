@@ -1,4 +1,4 @@
-package com.agentforge.config.mybatis;
+package com.agentforge.entity.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;

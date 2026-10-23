@@ -1,6 +1,5 @@
-package com.agentforge.tools.builtin;
+package com.agentforge.service.rag;
 
-import com.agentforge.service.rag.RagService;
 import com.agentforge.tools.BaseTool;
 import com.agentforge.vo.Citation;
 import com.alibaba.fastjson2.JSON;

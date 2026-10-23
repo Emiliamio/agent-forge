@@ -1,6 +1,6 @@
 package com.agentforge;
 
-import com.agentforge.config.mybatis.PgJsonbTypeHandler;
+import com.agentforge.entity.handler.PgJsonbTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

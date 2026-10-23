@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class LlmClient {
+public class LlmClient implements com.agentforge.service.agent.api.ChatModelPort {
 
     @Value("${agentforge.llm.deepseek.api-key:sk-placeholder}")
     private String deepseekApiKey;

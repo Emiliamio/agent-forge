@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 文本向量化计算服务接口
  */
-public interface EmbeddingService {
+public interface EmbeddingService extends com.agentforge.service.rag.api.EmbeddingPort {
 
     /**
      * 单条文本 Embedding 向量化

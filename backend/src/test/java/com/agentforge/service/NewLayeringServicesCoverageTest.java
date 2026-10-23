@@ -6,7 +6,7 @@ import com.agentforge.entity.*;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.mapper.*;
 import com.agentforge.service.agent.ReActAgentService;
-import com.agentforge.service.agent.impl.AgentAppServiceImpl;
+import com.agentforge.service.agent.internal.AgentAppServiceImpl;
 import com.agentforge.service.auth.impl.AuthQueryServiceImpl;
 import com.agentforge.service.billing.impl.BillingServiceImpl;
 import com.agentforge.service.chat.impl.ChatSessionServiceImpl;

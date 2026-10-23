@@ -1,6 +1,6 @@
 package com.agentforge.entity;
 
-import com.agentforge.config.mybatis.PgJsonbTypeHandler;
+import com.agentforge.entity.handler.PgJsonbTypeHandler;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
