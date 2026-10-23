@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,6 +57,8 @@ public class DocumentAndDatasetServiceTest {
     @BeforeEach
     void setUp() {
         TenantContextHolder.setTenantId(1L);
+        TableInfoHelper.remove(Dataset.class);
+        TableInfoHelper.remove(Document.class);
         MybatisConfiguration config = new MybatisConfiguration();
         MapperBuilderAssistant assistant = new MapperBuilderAssistant(config, "");
         assistant.setCurrentNamespace("com.agentforge.mapper.DatasetMapper");
@@ -67,6 +70,14 @@ public class DocumentAndDatasetServiceTest {
 
     @AfterEach
     void tearDown() {
+        TenantContextHolder.clear();
+    }
+
+    @AfterAll
+    static void clearMybatisMetadata() {
+        TableInfoHelper.remove(Document.class);
+        TableInfoHelper.remove(Dataset.class);
+        TableInfoHelper.remove(com.agentforge.entity.DocumentChunk.class);
         TenantContextHolder.clear();
     }
 
@@ -130,13 +141,6 @@ public class DocumentAndDatasetServiceTest {
         ds.setChunkOverlap(50);
         when(datasetMapper.selectById(1L)).thenReturn(ds);
 
-        MockMultipartFile file = new MockMultipartFile("file", "policy.txt", "text/plain", "北京出差住宿标准500元".getBytes(StandardCharsets.UTF_8));
-        Document doc = service.uploadAndParse(1L, file);
-        assertNotNull(doc);
-        assertEquals("policy.txt", doc.getName());
-        assertEquals("PENDING", doc.getParseStatus());
-
-        // 3. 执行同步解析流水线
         Document existingDoc = Document.builder()
                 .tenantId(1L)
                 .datasetId(1L)
@@ -144,8 +148,15 @@ public class DocumentAndDatasetServiceTest {
                 .fileType("TXT")
                 .build();
         existingDoc.setId(100L);
-        when(documentMapper.selectById(100L)).thenReturn(existingDoc);
+        when(documentMapper.selectById(any())).thenReturn(existingDoc);
 
+        MockMultipartFile file = new MockMultipartFile("file", "policy.txt", "text/plain", "北京出差住宿标准500元".getBytes(StandardCharsets.UTF_8));
+        Document doc = service.uploadAndParse(1L, file);
+        assertNotNull(doc);
+        assertEquals("policy.txt", doc.getName());
+        assertEquals("PENDING", doc.getParseStatus());
+
+        // 3. 执行同步解析流水线
         when(parserFactory.getParser(anyString())).thenReturn(documentParser);
         ParsedDocument parsedDoc = ParsedDocument.builder()
                 .fullText("北京出差住宿标准500元")

@@ -18,6 +18,7 @@ import com.agentforge.service.rag.impl.DocumentServiceImpl;
 import com.agentforge.service.rag.parser.DocumentParserFactory;
 import com.agentforge.tools.ToolRegistry;
 import com.agentforge.vo.AgentExecutionResult;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,6 +55,7 @@ public class HexagonalPortsAndFakesTest {
     @BeforeEach
     void setUp() {
         TenantContextHolder.setTenantId(1L);
+        com.baomidou.mybatisplus.core.metadata.TableInfoHelper.remove(Document.class);
         com.baomidou.mybatisplus.core.MybatisConfiguration config = new com.baomidou.mybatisplus.core.MybatisConfiguration();
         org.apache.ibatis.builder.MapperBuilderAssistant assistant = new org.apache.ibatis.builder.MapperBuilderAssistant(config, "");
         assistant.setCurrentNamespace("com.agentforge.mapper.DocumentMapper");
@@ -62,6 +64,13 @@ public class HexagonalPortsAndFakesTest {
 
     @AfterEach
     void tearDown() {
+        TenantContextHolder.clear();
+    }
+
+    @AfterAll
+    static void clearMybatisMetadata() {
+        com.baomidou.mybatisplus.core.metadata.TableInfoHelper.remove(Document.class);
+        com.baomidou.mybatisplus.core.metadata.TableInfoHelper.remove(Dataset.class);
         TenantContextHolder.clear();
     }
 
