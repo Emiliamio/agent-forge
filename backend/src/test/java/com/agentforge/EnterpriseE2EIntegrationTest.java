@@ -49,6 +49,10 @@ import static org.mockito.Mockito.when;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("AgentForge 企业级全链路集成测试 (认证、跨租户拦截、RAG检索召回)")
 public class EnterpriseE2EIntegrationTest {
+    private cn.dev33.satoken.config.SaTokenConfig originalConfig;
+    private cn.dev33.satoken.dao.SaTokenDao originalDao;
+    private cn.dev33.satoken.context.SaTokenContext originalContext;
+
 
     @Mock
     private AuthQueryService authQueryService;
@@ -66,6 +70,10 @@ public class EnterpriseE2EIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        originalConfig = SaManager.getConfig();
+        originalDao = SaManager.getSaTokenDao();
+        originalContext = SaManager.getSaTokenContext();
+
         SaTokenConfig config = new SaTokenConfig();
         config.setTokenName("Authorization");
         config.setTokenPrefix("Bearer");
@@ -79,12 +87,21 @@ public class EnterpriseE2EIntegrationTest {
         org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(
                 new org.springframework.web.context.request.ServletRequestAttributes(request, response)
         );
-        SaManager.setSaTokenContext(new cn.dev33.satoken.spring.SaTokenContextForSpringInJakartaServlet());
+                cn.dev33.satoken.context.SaHolder.getContext().setContext(
+                new cn.dev33.satoken.servlet.model.SaRequestForServlet(request),
+                new cn.dev33.satoken.servlet.model.SaResponseForServlet(response),
+                new cn.dev33.satoken.servlet.model.SaStorageForServlet(request)
+        );
         TenantContextHolder.clear();
     }
 
     @AfterEach
     void tearDown() {
+        cn.dev33.satoken.context.SaHolder.getContext().clearContext();
+        if (originalConfig != null) { SaManager.setConfig(originalConfig); }
+        if (originalDao != null) { SaManager.setSaTokenDao(originalDao); }
+        if (originalContext != null) { SaManager.setSaTokenContext(originalContext); }
+
         TenantContextHolder.clear();
         try {
             if (StpUtil.isLogin()) {

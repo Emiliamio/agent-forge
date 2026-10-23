@@ -3,6 +3,7 @@ package com.agentforge.service;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.Dataset;
 import com.agentforge.entity.Document;
+import com.agentforge.entity.DocumentChunk;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.mapper.DatasetMapper;
 import com.agentforge.mapper.DocumentChunkMapper;
@@ -175,8 +176,8 @@ public class DocumentAndDatasetServiceTest {
         when(embeddingService.embedBatch(anyList())).thenReturn(List.of(new float[1536]));
 
         service.processDocument(100L, file.getBytes(), "policy.txt", "TXT");
-        verify(chunkMapper, atLeastOnce()).insert(any());
-        verify(documentMapper, atLeastOnce()).updateById(any());
+        verify(chunkMapper, atLeastOnce()).insert(any(DocumentChunk.class));
+        verify(documentMapper, atLeastOnce()).updateById(any(Document.class));
 
         // 4. 删除文档
         when(documentMapper.deleteById(100L)).thenReturn(1);

@@ -32,6 +32,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SsoAuthServiceTest: 企业 SSO 免密登入与组织架构同步单测")
 public class SsoAuthServiceTest {
+    private cn.dev33.satoken.config.SaTokenConfig originalConfig;
+    private cn.dev33.satoken.dao.SaTokenDao originalDao;
+    private cn.dev33.satoken.context.SaTokenContext originalContext;
+
 
     @Mock
     private SysUserMapper userMapper;
@@ -41,6 +45,10 @@ public class SsoAuthServiceTest {
 
     @BeforeEach
     void setUp() {
+        originalConfig = SaManager.getConfig();
+        originalDao = SaManager.getSaTokenDao();
+        originalContext = SaManager.getSaTokenContext();
+
         SaTokenConfig config = new SaTokenConfig();
         config.setTokenName("Authorization");
         config.setTokenPrefix("Bearer");
@@ -52,7 +60,11 @@ public class SsoAuthServiceTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
-        SaManager.setSaTokenContext(new cn.dev33.satoken.spring.SaTokenContextForSpringInJakartaServlet());
+                cn.dev33.satoken.context.SaHolder.getContext().setContext(
+                new cn.dev33.satoken.servlet.model.SaRequestForServlet(request),
+                new cn.dev33.satoken.servlet.model.SaResponseForServlet(response),
+                new cn.dev33.satoken.servlet.model.SaStorageForServlet(request)
+        );
 
         TenantContextHolder.clear();
         TenantContextHolder.setTenantId(1L);
@@ -60,6 +72,11 @@ public class SsoAuthServiceTest {
 
     @AfterEach
     void tearDown() {
+        cn.dev33.satoken.context.SaHolder.getContext().clearContext();
+        if (originalConfig != null) { SaManager.setConfig(originalConfig); }
+        if (originalDao != null) { SaManager.setSaTokenDao(originalDao); }
+        if (originalContext != null) { SaManager.setSaTokenContext(originalContext); }
+
         TenantContextHolder.clear();
         try {
             if (StpUtil.isLogin()) {

@@ -172,7 +172,7 @@ public class AgentAndWorkflowExecutionTest {
 
         // 1. 保存检查点
         manager.saveCheckpoint(100L, "node_1", Map.of("out", "ok"), ctx);
-        verify(workflowExecutionMapper, atLeastOnce()).updateById(any());
+        verify(workflowExecutionMapper, atLeastOnce()).updateById(any(WorkflowExecution.class));
 
         // 空执行 ID 幂等
         manager.saveCheckpoint(null, "node_1", Map.of(), ctx);

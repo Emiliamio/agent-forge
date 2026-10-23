@@ -34,6 +34,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("身份认证、密码哈希校验与跨租户越权拦截全链路测试")
 public class AuthAndTenantSecurityMvcTest {
+    private cn.dev33.satoken.config.SaTokenConfig originalConfig;
+    private cn.dev33.satoken.dao.SaTokenDao originalDao;
+    private cn.dev33.satoken.context.SaTokenContext originalContext;
+
 
     @Mock
     private AuthQueryService authQueryService;
@@ -45,6 +49,10 @@ public class AuthAndTenantSecurityMvcTest {
 
     @BeforeEach
     void setUp() {
+        originalConfig = SaManager.getConfig();
+        originalDao = SaManager.getSaTokenDao();
+        originalContext = SaManager.getSaTokenContext();
+
         SaTokenConfig config = new SaTokenConfig();
         config.setTokenName("Authorization");
         config.setTokenPrefix("Bearer");
@@ -57,12 +65,21 @@ public class AuthAndTenantSecurityMvcTest {
         org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(
                 new org.springframework.web.context.request.ServletRequestAttributes(request, response)
         );
-        SaManager.setSaTokenContext(new cn.dev33.satoken.spring.SaTokenContextForSpringInJakartaServlet());
+                cn.dev33.satoken.context.SaHolder.getContext().setContext(
+                new cn.dev33.satoken.servlet.model.SaRequestForServlet(request),
+                new cn.dev33.satoken.servlet.model.SaResponseForServlet(response),
+                new cn.dev33.satoken.servlet.model.SaStorageForServlet(request)
+        );
         TenantContextHolder.clear();
     }
 
     @AfterEach
     void tearDown() {
+        cn.dev33.satoken.context.SaHolder.getContext().clearContext();
+        if (originalConfig != null) { SaManager.setConfig(originalConfig); }
+        if (originalDao != null) { SaManager.setSaTokenDao(originalDao); }
+        if (originalContext != null) { SaManager.setSaTokenContext(originalContext); }
+
         TenantContextHolder.clear();
         try {
             if (StpUtil.isLogin()) {

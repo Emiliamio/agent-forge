@@ -397,8 +397,8 @@ public class RagParsersAndEmbeddingTest {
 
         // 1. 提交异步任务
         service.submitAsyncChunkingTask(10L, "长正文内容", 1L, 2L, "doc.txt");
-        verify(documentMapper, timeout(3000).atLeastOnce()).updateById(any());
-        verify(chunkMapper, timeout(3000).atLeast(2)).insert(any());
+        verify(documentMapper, timeout(3000).atLeastOnce()).updateById(any(Document.class));
+        verify(chunkMapper, timeout(3000).atLeast(2)).insert(any(DocumentChunk.class));
 
         // 2. 进度查询
         AsyncDocumentChunkerService.IngestionProgress mockProgress = AsyncDocumentChunkerService.IngestionProgress.builder()
