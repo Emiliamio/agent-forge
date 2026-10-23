@@ -4908,7 +4908,7 @@
       "version": "3.1.12"
     },
     {
-      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.19?type=jar",
+      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.28?type=jar",
       "description": "swagger-annotations-jakarta",
       "externalReferences": [
         {
@@ -4936,35 +4936,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "4b1320c4f5045ceb958793d4521be2f8"
+          "content": "5fd3f4f195398bff5cb53721c7c8793b"
         },
         {
           "alg": "SHA-1",
-          "content": "c180d87c78d367771bbd954ebceba1b6c576fb52"
+          "content": "04b303c4bf8940b417e50e3600eb63aa6f6531f0"
         },
         {
           "alg": "SHA-256",
-          "content": "26379dd7123ea64083de33378fc9451efb7785a27f436834ed651d6d0337e7b6"
+          "content": "1f57998b30b1a9e503948a820831432e3eb85843a50058ab96168f621e2a0fd8"
         },
         {
           "alg": "SHA-512",
-          "content": "99fde5cdfce5d0472132caf8a19fc40733191a5f8b4afb30af0f22ea1cffecd4a7d721950c2f5655c4a7d7306844145ac4f28ace50b3990c8224fd13cc82d385"
+          "content": "0894e01b29342123e131991f1ebe5d2dbee195f18732deeccfadb28a66f3cb41b6ed7703c9966f562d5a98a300b50d8adc3b379a938687de2206457cfb55f238"
         },
         {
           "alg": "SHA-384",
-          "content": "4b200154c64a7334baac456afb18cc08ce7e35cd16ddea4d548e35aae8d7d39b743a64cee3de15f4889ffbf96b663777"
+          "content": "e43c229df69ba5ca2507c3e1abfaa41b9d9f43949b329d1db9ee5178ec6e7dc2fbee0ecf31af8906d2bf90b8e2de5efd"
         },
         {
           "alg": "SHA3-384",
-          "content": "b14a61a812a5ccf6e77482cd3d3fa283ba8f56a5fe544964d01f23d59dc37d4f294156569fe2ea53b21f1ca7af9722dd"
+          "content": "cd89d068e0a28902ab262c1a62b6079b9c19a3ed0eb1988c9c4f3299c1fd0e64846e126e4cd0f3159280ed1f0f56d099"
         },
         {
           "alg": "SHA3-256",
-          "content": "70a51664c8dcbc05f3633934a8b088e0eecf277219cce6e4061a103483e6eb9b"
+          "content": "dbc691cf14311cfe1f970229975c8d5e61788f9f95e327f7f0fcaaec057200b6"
         },
         {
           "alg": "SHA3-512",
-          "content": "4aebff670a39cd420fb112da60029846bcc1a43e1ad6340243cde171e5875d8aa9642d9fa3978351526bb37ac1d8b16ce92819c7d36c0ef9c15e0648d10dc5ff"
+          "content": "b8414dd49ea0c900e45be33b321e89884dac80c6565a2d2ad3a7b0fd5b17ffd5d3a87946ae3b5ae5bcbf3ebc9013717cd22db831be2ae3bf88c2a33f63728d76"
         }
       ],
       "licenses": [
@@ -4976,13 +4976,13 @@
         }
       ],
       "name": "swagger-annotations-jakarta",
-      "purl": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.19?type=jar",
+      "purl": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.28?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.2.19"
+      "version": "2.2.28"
     },
     {
-      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.19?type=jar",
+      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.28?type=jar",
       "description": "swagger-core-jakarta",
       "externalReferences": [
         {
@@ -5010,35 +5010,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "bc140b02d298bd60acb4db24384a7ab7"
+          "content": "1f5fe7d1a58c79f8faae5009b0cc268f"
         },
         {
           "alg": "SHA-1",
-          "content": "1bbc09fba4c0ac2375da7563cb03dfd0f3e07100"
+          "content": "d990934d07d250cedcf2bbc7632118ae316bf712"
         },
         {
           "alg": "SHA-256",
-          "content": "eaf161173a52057a7051fec567405bbff957c75ff184158f2981703b11d9afe3"
+          "content": "a59b839b3d4d5ce9a7cd9a50978bee56de5c812d6fdb30b011f0d189fd69d7a7"
         },
         {
           "alg": "SHA-512",
-          "content": "c40bd901081a6da3da4fd067a86ebb718dafba5576ce0067385bbbcf9c8969b7d27b1e22eae179c5331a682997df73ab2d05d522b8db72a4af1a70d24390f537"
+          "content": "4941a9cebd4f965178416c0f029f8f5badc38d9df93439621eeb377b03684b9474c497195bedce78f73ce5d2e64e59d9edcd5135aa0739d43b811c71ed81880a"
         },
         {
           "alg": "SHA-384",
-          "content": "212f60e2fd62d106605ae370197c4765bae41b1a9f7e4ea2863ce6c8471315c8876d2df963365f0a7497aafc1c780f1d"
+          "content": "a096856f4d93663911d113f11670205776a98960fdb5b41f74acb732511c9bfb1613c5c181eb86d59c48715748804d46"
         },
         {
           "alg": "SHA3-384",
-          "content": "c89d9801d944073adc5ac6deb274d10d7df8d79ba4b0214f0e01760c150b3a94a08be909f4b699c2d0c2231464e37910"
+          "content": "5d38819e3975e63d4d22b8fdca09eb9c52579c1aeb4abcec1dece3ca90b3a08cac638515ff4f568415941f8ce4118799"
         },
         {
           "alg": "SHA3-256",
-          "content": "6bfb836f98eaa917cef6bc94d121fdaa6885cab07677027e45a8a3f2842284e2"
+          "content": "960663279e2a48538e28d4e9d5e720b33f171b76f2b211c41986a78a3cac05d9"
         },
         {
           "alg": "SHA3-512",
-          "content": "c19a16ef7f553fc493dd7ffa0d0999fff3f8493c7efcdde703410e83bf90107b3a20cdbd1e4896e532ec57f55e25be61113c9814118bf61a91b51e085fb031fc"
+          "content": "4755838f3e7d3079fc1002b0235bcd84670c972f6f633836975a2e8a648b3ed19437546a08d666c2b7b975f3a2b47a457fc67d450eb8c45f905ee93cabfcb7c2"
         }
       ],
       "licenses": [
@@ -5050,13 +5050,13 @@
         }
       ],
       "name": "swagger-core-jakarta",
-      "purl": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.19?type=jar",
+      "purl": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.28?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.2.19"
+      "version": "2.2.28"
     },
     {
-      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.19?type=jar",
+      "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.28?type=jar",
       "description": "swagger-models-jakarta",
       "externalReferences": [
         {
@@ -5084,35 +5084,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "c814aee17864e66fc6a21f26a5f07eb4"
+          "content": "ae5290d0cfea7f4aab0178762fdba955"
         },
         {
           "alg": "SHA-1",
-          "content": "72b8a8ba29654ba31d951311081c33d464cee138"
+          "content": "72865af71d886a979322def19fc86753f267d4f7"
         },
         {
           "alg": "SHA-256",
-          "content": "60885575302fe8a79bc4098bca56a93922a2b650c83bd97fe23536efb41aef1b"
+          "content": "52d265d12bb54ed139d00833a6108f71e0c7ea36df59ade5598ed39e0a9ae40c"
         },
         {
           "alg": "SHA-512",
-          "content": "640a1336209890aa80f5d224a52018d38049ecab3cff40cc0ee566d8db14685e66ad2adc68084bbaef90d0e64125f251be58c1b3fdf6caf033315629a3a44cce"
+          "content": "fc921d51a85b179701aed94fca1d8f3597d7c6017ad8ac9a0289f6bc3e36e86aa918c6d01a0efebdd61d1cb63a80a5b322a7100379176cf45917fb5bd959883d"
         },
         {
           "alg": "SHA-384",
-          "content": "31c7c9b9160d2a524390e3580accfdd6ee0baaf193202f6100f5e06160e3dec620afb6034b90fc493c8f79cb3116207d"
+          "content": "abab9a5ec886bc7e5273809c6495a01a9ddb213cf672ed3d4d3242fec267a6e900f4253adb32dcfe9eaf02b9b67dda6b"
         },
         {
           "alg": "SHA3-384",
-          "content": "9b7c22acdc2caaff20a9d772c6627ad00f7277fe23a76862cc23538e96476028a1d0f3465f849384d485c5976b9a5cb5"
+          "content": "49f40769f51a4a76486d154c950c34cc707e08734a1535d86e6c19d0c36bd50f5f0225d040d3f5f8388211ed75bfca15"
         },
         {
           "alg": "SHA3-256",
-          "content": "89be73c830eb8ebd42a0ad4114281018bdd1b192ec18419a62b863e007a4a3bc"
+          "content": "57dd9dbdaa360756809c2eb93d89cb6c3e8bc3a08ab586fd57c3d32e118036e7"
         },
         {
           "alg": "SHA3-512",
-          "content": "f1d5e09c3b932064b62d34b70089a06f571a3ff9c46b18e4284570c4253a4eca63ab1a82c5369a5e2cc4df04a6c8691ea4bc6f564f6371f9c1c9188afdd85717"
+          "content": "96f16200991882b6628c28c07307be71c471c00cafb1337875390e1a0398e2b1df8e0e453025e72d52a54f61780ab04c00d0c8089beb193e4b80e082c4ecf29b"
         }
       ],
       "licenses": [
@@ -5124,10 +5124,10 @@
         }
       ],
       "name": "swagger-models-jakarta",
-      "purl": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.19?type=jar",
+      "purl": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.28?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.2.19"
+      "version": "2.2.28"
     },
     {
       "bom-ref": "pkg:maven/jakarta.activation/jakarta.activation-api@2.1.4?type=jar",
@@ -7929,6 +7929,67 @@
       "version": "5.1.6"
     },
     {
+      "bom-ref": "pkg:maven/org.jspecify/jspecify@1.0.0?type=jar",
+      "description": "An artifact of well-named and well-specified annotations to power static analysis checks",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://jspecify.org/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/jspecify/jspecify/"
+        }
+      ],
+      "group": "org.jspecify",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "9133aba420d0ca3b001dbb6ae9992cf6"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "7425a601c1c7ec76645a78d22b8c6a627edee507"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "efded31ef5b342f09422935076e599789076431e93a746685c0607e7de5592719ba6aacde0be670b3f064d1e85630d58d5bce6b34aed2a288fdb34f745efb7bc"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "814f860e5a44ead6c457676841eef471a8b87be31b84c60a8a4477a18a9cbcb6e3c2ae700969d5c5e52309d961e0537a"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "c8844e5b71e5ecfbb7366097ce34af2f5863d86d5ccc3f9ec384d8ade4b60ccc8124c7fc88664f1afd2b0962fc8775bf"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "4b4f08ad7606a3ac62997779484919a302267b26d26ee19125f8a7eea60e8a71"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "65c6845ebae981cb81b61107707ced39f5b377dae970b47606ef482aaf10e3729def0da40d9377c43abbfb483a5ceae039b0d51c129c50a6d36ad351a5d6b01e"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "jspecify",
+      "purl": "pkg:maven/org.jspecify/jspecify@1.0.0?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
       "bom-ref": "pkg:maven/org.junit.jupiter/junit-jupiter@5.11.4?type=jar",
       "description": "Module \"junit-jupiter\" of JUnit 5.",
       "externalReferences": [
@@ -9161,7 +9222,7 @@
       "version": "2.0.17"
     },
     {
-      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.3.0?type=jar",
+      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.8.5?type=jar",
       "description": "Spring openapi documentation",
       "externalReferences": [
         {
@@ -9177,35 +9238,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "852e6eae3d699ec13629cbd96681113c"
+          "content": "8152f68cfdcfa810dc659b0523aecf0c"
         },
         {
           "alg": "SHA-1",
-          "content": "acf3654082b3e000d5b59cc9733227702aa57f75"
+          "content": "6642dd0895e9b06848584797d1f97293f2e2afd6"
         },
         {
           "alg": "SHA-256",
-          "content": "7fb1f747bb6e10ea619b9d76bb8026ee6898943353506b20770f7eb237bc0f82"
+          "content": "6da955fd7bd00d3a9f4f96fd18ade7d00f9ff170d54983cad366aa2e60a7cfb0"
         },
         {
           "alg": "SHA-512",
-          "content": "7b2cd73e127c116234b31029ec5d3767dc5919b2554a42fc3da0a0f0a80267f1fabbdb9a7d76575848904473e484abded4406760c858586883b4f88c8eaa7e58"
+          "content": "287bfc8856fd1774723958910e32d327fa45b1bb488746ab8e5108e25a8dec217cb304b4b5726f359a7c94cd0a6337982d616c6d6e35623e3ab9c291f32787b3"
         },
         {
           "alg": "SHA-384",
-          "content": "01bb4f845f44c7f5c00c89831b53dd2dd7ac5c8113f4f4c5e00c4c70be5098449b62679de0539eec0b07c0ff94f24e0f"
+          "content": "c43f34288c60aca2e22d176e5f38be5320ed7bd760271cda47c0e25fe682546385986508375d96f9e74e61c39852a857"
         },
         {
           "alg": "SHA3-384",
-          "content": "20e0af67fa3a25d6b71616830f44dd1b239e762b48333912fc0cc560e55a27590846fee11834aaa47df3d13d72fd232e"
+          "content": "e7dc9aa14fac9c63db9c562db1648058d176d8b1915bf6c12daf26eba3ac6f2f223aee9c635651cd4d8c8cd214fbd95e"
         },
         {
           "alg": "SHA3-256",
-          "content": "6ec6482beef4b0596f0b1222f026ffe43e5bdbec4e9d36eca82a72a88adeb9f3"
+          "content": "879335434ad1e216be6ab76c09f372521accf23b703d7ba21815d617753a31dd"
         },
         {
           "alg": "SHA3-512",
-          "content": "5ec64561b375e415a92ab71d370403840c4ee01fd44c93c2740061a547b4061dee212cce139c521944b0bbc1a978922b67c9d19f27a2b36479423d37a1c6098a"
+          "content": "5abdd284041fe65fbf1cd0566caf5832ca7ee74a7d4a0608ef045783b6b85de1df585ee388d41e3ecc0cd1e38d9a535958405586dbc00b1bc99bbffa62fe0eb4"
         }
       ],
       "licenses": [
@@ -9216,13 +9277,13 @@
         }
       ],
       "name": "springdoc-openapi-starter-common",
-      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.3.0?type=jar",
+      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.8.5?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.3.0"
+      "version": "2.8.5"
     },
     {
-      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.3.0?type=jar",
+      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.8.5?type=jar",
       "description": "Spring openapi documentation",
       "externalReferences": [
         {
@@ -9238,35 +9299,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "68e1e2fc5df1630fb9a86fd0a5a194c8"
+          "content": "e31e07650c9fbd14f8c953080a6b60b4"
         },
         {
           "alg": "SHA-1",
-          "content": "e8e6e46e2b7875c1789782d3820536bb2d868b17"
+          "content": "14b01ce78902bd69087abaaf364688d1de2bddcf"
         },
         {
           "alg": "SHA-256",
-          "content": "68c223da9ba1b155779cd251e106e9f45a54332eecf2a24125555b1ac26abe45"
+          "content": "eec25d1037d8dec625aeff8c9ae3ba5e6a5763d2d089b7e3a65e249bc21f01e1"
         },
         {
           "alg": "SHA-512",
-          "content": "46ee62124669f8fc1be01f79ce8abc204b0071b5d212f76a73d7c19649099e7a2b2b5dc2bbd30204fd3ba90d0d96594506d8dcf16d2d91a3ca4b1801ad85015c"
+          "content": "6435805b7c9beb8caa6d46613623526214cc948474574b46a28b2d67fc2cc1f872ea8bdef80ece6d89426d5d7935c194f076a083107c8ddde8b8c4f6e366583a"
         },
         {
           "alg": "SHA-384",
-          "content": "ecca08a7b93a7e79964af61f1d144915540622584972e12dbe83f6ae6e922e58a4d34a6bd7b93157d880701110b5275d"
+          "content": "995735c1fa089837f8a5bba98760d698f2168b39ba492cad9ef48ed401d715c461c040d494baf1429ad48e65e3bb42d3"
         },
         {
           "alg": "SHA3-384",
-          "content": "c60e72576e0621b409b453f187d2675ea859e2dc2c99e73371580c75cff164342d1565a1cf58d71de2701544ec320fc8"
+          "content": "bbceb0c6479642e9a3468496d11c4c385ab6ba05d5f6ed29935bad1f3ed104a7fe74eff6cfd59efbaaef82466d113f52"
         },
         {
           "alg": "SHA3-256",
-          "content": "242445d2d76c4eddd8f50bfb8528b96da0a1dd2b08d435ec01395e63ce1adecf"
+          "content": "afb7e25243b5ab5892b7bbe7b48ca721b25592d718ab6375559ab8b04fca6474"
         },
         {
           "alg": "SHA3-512",
-          "content": "e0fe1f619dbee8c2206ac10798e5b4b47cb2acc12fa77c12ea91dbbcf54e23bc17ccc954b7b699fbfdd257790804eff55f2e284c7b9fb633b37a7b722768f21c"
+          "content": "17c8b69476ab015cf5dea3088e59694ecc01ed07d006281c9bdc5455b1e92ba51791f99931dc2d8192b9dba0bab33dee00f62868145699caf89f4d7946788032"
         }
       ],
       "licenses": [
@@ -9277,13 +9338,13 @@
         }
       ],
       "name": "springdoc-openapi-starter-webmvc-api",
-      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.3.0?type=jar",
+      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.8.5?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.3.0"
+      "version": "2.8.5"
     },
     {
-      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.3.0?type=jar",
+      "bom-ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.8.5?type=jar",
       "description": "Spring openapi documentation",
       "externalReferences": [
         {
@@ -9299,35 +9360,35 @@
       "hashes": [
         {
           "alg": "MD5",
-          "content": "e97fd1df6f6afc53622a1691e4a03ec9"
+          "content": "6529ff5b64c58039f91192031898e03d"
         },
         {
           "alg": "SHA-1",
-          "content": "b4af31e9d40539c94f8debbf760134d961333c24"
+          "content": "03cb90c2405edb9b0a841b8be06dff85810f6669"
         },
         {
           "alg": "SHA-256",
-          "content": "4c95a83e748cd378736c71f4f4d040b30e9c5d193ca815115efc3d7c5ca0696f"
+          "content": "8417ddc0e2b00f02cf20880be4402e258b414ca3500a09a2ba375a2b970f8016"
         },
         {
           "alg": "SHA-512",
-          "content": "bed7278e76edd2a158cfa196111251e010e3cbd44bdfb133ef02e493fb360525a145fe1a4e8bf5437a472710797c77aef0fcd69b7093b7595b51b19e55451d28"
+          "content": "4d3956497069fc9f0d4406f521a07d5341f517fbae01d24c273de0e565174dcbe29da24a15c125333969bc7683ce0f5a3dcd94a29d5e05b9b8e118305cff2a6d"
         },
         {
           "alg": "SHA-384",
-          "content": "4f0bb3b27b24c3012a8eb68baafe19c87d5d3e5ee5ed0a6f9bcc27cbf7393b5551f7422950c3e70fc350af1e00d009d3"
+          "content": "5baf2a26f1ef12371eb659b0b4770032408027c0a77a5280dcd2acc68e1c604cd1d7bce0da6b122957c7137f3bcb6ac3"
         },
         {
           "alg": "SHA3-384",
-          "content": "a6fb79899a743eebd042768014d1915715c2c90dd8d75bc0590974d020ffb1a1c34be9c40fec0e718fa2f4d74f94519d"
+          "content": "73fae8c37f1f3f82b92bd80837241d6dda5c557aefc322ce6e020f3414961e151f4440af5fa6bec5a00b016943925404"
         },
         {
           "alg": "SHA3-256",
-          "content": "73d6151b4c10bd8a82b9f7a81ad715691c541dc35f82e79ac2a2056179f7d13f"
+          "content": "bb3f092b228259b770a34a50eb8430eb7729c11d88b342e5a0ab49428fa290d6"
         },
         {
           "alg": "SHA3-512",
-          "content": "8474f44a4694cf4b6594ccff4bbf7d03b7adc31289441248a07de159bc0d9741125d4b9800a787a922f97a4cc16c7b715f23cb48c5420b38584baaacbfa3dfe8"
+          "content": "4fb4e52988c686e68b5cd00d692ddaf8d39dd3221d6b3f3891809a35903bbe752282f8e3785aa91e29cc5dcbaf6cd4302fdf078b7e892089165f4c618db49810"
         }
       ],
       "licenses": [
@@ -9338,10 +9399,10 @@
         }
       ],
       "name": "springdoc-openapi-starter-webmvc-ui",
-      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.3.0?type=jar",
+      "purl": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.8.5?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "2.3.0"
+      "version": "2.8.5"
     },
     {
       "bom-ref": "pkg:maven/org.springframework/spring-aop@6.2.19?type=jar",
@@ -11456,69 +11517,144 @@
       "version": "3.4.13"
     },
     {
-      "bom-ref": "pkg:maven/org.webjars/swagger-ui@5.10.3?type=jar",
+      "bom-ref": "pkg:maven/org.webjars/swagger-ui@5.18.3?type=jar",
       "description": "WebJar for Swagger UI",
       "externalReferences": [
         {
           "type": "website",
-          "url": "http://webjars.org"
+          "url": "https://www.webjars.org"
         },
         {
-          "type": "distribution-intake",
-          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+          "type": "issue-tracker",
+          "url": "https://github.com/swagger-api/swagger-ui/issues"
         },
         {
           "type": "vcs",
-          "url": "http://github.com/webjars/swagger-ui"
+          "url": "https://github.com/swagger-api/swagger-ui"
         }
       ],
       "group": "org.webjars",
       "hashes": [
         {
           "alg": "MD5",
-          "content": "9200f0cb56c5aa687e235eed3db164c6"
+          "content": "17f2bb2d30ba04fbef27a9bf2ce39559"
         },
         {
           "alg": "SHA-1",
-          "content": "744ae2862cc79c137020f2ce6e07de2f1d6a2657"
+          "content": "f67530d3015d70cca8fad24d64065684bba2ac74"
         },
         {
           "alg": "SHA-256",
-          "content": "d60e00557f6ee8cfff0c00f4fa5ad4ad94a9c9e5d3bdebebbb298c9441ad54aa"
+          "content": "59e9f523ebeafee68a0bdaa530444bba0e4f385f0fb853652921d3b38b6c3814"
         },
         {
           "alg": "SHA-512",
-          "content": "6f7730e2a1abf285fd3b36b150883263c878cab89d69cb4a689a45f42f45b666c93c5bf56c5a4592bfbba2e3c7f9f1fcfd55f4e83499df6778f8ccfe58c4e5ac"
+          "content": "e433a4d35118d464525426e1d88b692dbab730645feffe82193bafce57ce524f613b5ddd7c4930440d1c8e1777c3c63b5237b403b076fab986e927196c806c8d"
         },
         {
           "alg": "SHA-384",
-          "content": "2e90611371af11b2a508b3294579c0704d305ea3b0f648c31cf818d59c76ea7b4fb3c9e692941a5b64396e832d7ea769"
+          "content": "07923ee88217dd3e4c255365572024e638db3c2b649c5a884255dc3d235fbb67f6a23a643ce27c3db402b7469873888d"
         },
         {
           "alg": "SHA3-384",
-          "content": "4ce968bd1b2759efc642f3e6f008e1aa0fe74c58c070150a5846aafa9843e4a000b6244733d3b74ad4dc03982a52c7ae"
+          "content": "585fd8e17feac157e5db91220f3e9654f8fecfad88800ddf550d978d9b4cb2eeb3ac9befad66326c77ad89f45877657a"
         },
         {
           "alg": "SHA3-256",
-          "content": "b1814f8a971a74de99b6028e5aa32428f7d5fd57ebee7b2858558a0918639e1a"
+          "content": "bd99791051c809ad2545568ff7d0e0176e573f084d9d49d39983cd6472abfb33"
         },
         {
           "alg": "SHA3-512",
-          "content": "3e70c1e2cf47649fb45a017839a7c186a72936b6043064557ca816f9786850c670b12a44f3e6954fa85c8a930d2908e8120678c8d63ed0413ca26e3f8db1a2f5"
+          "content": "c9753e81a3a5355d5a86b0d274dcce4092681940b3a54537cf9b6db7e9d0ba29556336d20b7b04eb3455da8cb8f497ea2f5a56f33a05ca8474b64fc4076515f8"
         }
       ],
       "licenses": [
         {
           "license": {
-            "id": "Apache-2.0"
+            "id": "Apache-2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
           }
         }
       ],
       "name": "swagger-ui",
-      "purl": "pkg:maven/org.webjars/swagger-ui@5.10.3?type=jar",
+      "purl": "pkg:maven/org.webjars/swagger-ui@5.18.3?type=jar",
       "scope": "required",
       "type": "library",
-      "version": "5.10.3"
+      "version": "5.18.3"
+    },
+    {
+      "bom-ref": "pkg:maven/org.webjars/webjars-locator-lite@1.0.1?type=jar",
+      "description": "WebJars Locator Lite",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://webjars.org"
+        },
+        {
+          "type": "build-system",
+          "url": "https://github.com/webjars/webjars-locator-lite/actions"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/webjars/webjars-locator-lite/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/webjars/webjars-locator-lite"
+        }
+      ],
+      "group": "org.webjars",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "1016823f8027f1d6ce442b94cce43391"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "b4389136604123d4fe4199cc29b94a33206996bc"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "a216c101379f6654bd65e50bf2c9d8a3575bc7d6e8de2898286ac49c56d9ae99"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "83f7c1d9f5eb2cee73c248ec647a7da69a7ef654067a207f5220dc359d1bf25c340a56d1f6fabd250fa523e2dceb1ed07c02c3f2317f44b9a6b9aa1c96df58e9"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "c0c2ba74b1ac660d76f0fa8ba95b7afb8a3888224a9706f5427d4770e4215f72c5c4ef79b52a3ffc8a077a184aca9c3a"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "7f110e122dfbde06cc9aa18eb52e6032d9a23cdfd7c413481c0a2e36322b3c158dc2de048a517242595f1146c619aedb"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "4fd199a43a6b222b43051d6ab62ecb451a786c3bc26138e3e1c0fc560a5bb392"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "b7415b05b21f3dcae69a49d1ea658fde1b1fe3ef5aebd414d69a74a8ab88a6045c550013553cff8d458866e8d0fb5ba4f6f71aae26cc0df973c20aeb4161e92a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+          }
+        }
+      ],
+      "name": "webjars-locator-lite",
+      "purl": "pkg:maven/org.webjars/webjars-locator-lite@1.0.1?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.0.1"
     },
     {
       "bom-ref": "pkg:maven/org.yaml/snakeyaml@2.3?type=jar",
@@ -11658,7 +11794,7 @@
         "pkg:maven/org.apache.poi/poi-ooxml@5.4.0?type=jar",
         "pkg:maven/org.commonmark/commonmark@0.21.0?type=jar",
         "pkg:maven/com.alibaba.fastjson2/fastjson2@2.0.47?type=jar",
-        "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.3.0?type=jar",
+        "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.8.5?type=jar",
         "pkg:maven/cn.hutool/hutool-all@5.8.25?type=jar",
         "pkg:maven/org.projectlombok/lombok@1.18.42?type=jar"
       ],
@@ -12134,14 +12270,14 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.19?type=jar"
+      "ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.28?type=jar"
     },
     {
       "dependsOn": [
         "pkg:maven/org.apache.commons/commons-lang3@3.18.0?type=jar",
         "pkg:maven/org.slf4j/slf4j-api@2.0.17?type=jar",
-        "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.19?type=jar",
-        "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.19?type=jar",
+        "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.28?type=jar",
+        "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.28?type=jar",
         "pkg:maven/org.yaml/snakeyaml@2.3?type=jar",
         "pkg:maven/jakarta.xml.bind/jakarta.xml.bind-api@4.0.4?type=jar",
         "pkg:maven/jakarta.validation/jakarta.validation-api@3.0.2?type=jar",
@@ -12150,13 +12286,13 @@
         "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml@2.18.11?type=jar",
         "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.18.11?type=jar"
       ],
-      "ref": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.19?type=jar"
+      "ref": "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.28?type=jar"
     },
     {
       "dependsOn": [
         "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.18.11?type=jar"
       ],
-      "ref": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.19?type=jar"
+      "ref": "pkg:maven/io.swagger.core.v3/swagger-models-jakarta@2.2.28?type=jar"
     },
     {
       "dependsOn": [],
@@ -12385,6 +12521,10 @@
       "ref": "pkg:maven/org.jodd/jodd-core@5.1.6?type=jar"
     },
     {
+      "dependsOn": [],
+      "ref": "pkg:maven/org.jspecify/jspecify@1.0.0?type=jar"
+    },
+    {
       "dependsOn": [
         "pkg:maven/org.opentest4j/opentest4j@1.3.0?type=jar",
         "pkg:maven/org.junit.platform/junit-platform-commons@1.11.4?type=jar",
@@ -12516,23 +12656,24 @@
     {
       "dependsOn": [
         "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.4.13?type=jar",
-        "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.19?type=jar"
+        "pkg:maven/io.swagger.core.v3/swagger-core-jakarta@2.2.28?type=jar"
       ],
-      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.3.0?type=jar"
+      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.8.5?type=jar"
     },
     {
       "dependsOn": [
-        "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.3.0?type=jar",
+        "pkg:maven/org.springdoc/springdoc-openapi-starter-common@2.8.5?type=jar",
         "pkg:maven/org.springframework/spring-webmvc@6.2.19?type=jar"
       ],
-      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.3.0?type=jar"
+      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.8.5?type=jar"
     },
     {
       "dependsOn": [
-        "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.3.0?type=jar",
-        "pkg:maven/org.webjars/swagger-ui@5.10.3?type=jar"
+        "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-api@2.8.5?type=jar",
+        "pkg:maven/org.webjars/swagger-ui@5.18.3?type=jar",
+        "pkg:maven/org.webjars/webjars-locator-lite@1.0.1?type=jar"
       ],
-      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.3.0?type=jar"
+      "ref": "pkg:maven/org.springdoc/springdoc-openapi-starter-webmvc-ui@2.8.5?type=jar"
     },
     {
       "dependsOn": [
@@ -12797,7 +12938,13 @@
     },
     {
       "dependsOn": [],
-      "ref": "pkg:maven/org.webjars/swagger-ui@5.10.3?type=jar"
+      "ref": "pkg:maven/org.webjars/swagger-ui@5.18.3?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/org.jspecify/jspecify@1.0.0?type=jar"
+      ],
+      "ref": "pkg:maven/org.webjars/webjars-locator-lite@1.0.1?type=jar"
     },
     {
       "dependsOn": [],
