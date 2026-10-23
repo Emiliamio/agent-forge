@@ -38,12 +38,7 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U postgres -d agentforge"
           --health-interval 5s --health-timeout 3s --health-retries 5
-      redis:
-        image: redis:7-alpine
-        ports: [ "6379:6379" ]
-        options: >-
-          --health-cmd "redis-cli -a redis123 ping"
-          --health-interval 5s --health-timeout 3s --health-retries 5
+      
     steps:
       - uses: actions/checkout@v4
 
@@ -53,6 +48,15 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+
+      - name: Start Redis with password
+        run: |
+          docker run -d --name redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
+          for i in $(seq 1 30); do
+            docker exec redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
+            sleep 2
+          done
+          docker exec redis redis-cli -a redis123 ping | grep -q PONG
 
       - name: Prepare live test database (agentforge_it)
         run: |
@@ -114,7 +118,8 @@ jobs:
         run: |
           GITLEAKS_VERSION=8.18.4
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            | tar -xz -C /usr/local/bin gitleaks
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
           gitleaks detect --no-git --source . --config .gitleaks.toml --redact --exit-code 1 --verbose
 
       - name: Install OSV-Scanner
@@ -122,8 +127,8 @@ jobs:
           # v1.9.x 命令为 osv-scanner -r ./ ； v2.x 改为 osv-scanner scan source -r .
           OSV_VERSION=1.9.3
           curl -sSfL "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64" \
-            -o /usr/local/bin/osv-scanner
-          chmod +x /usr/local/bin/osv-scanner
+            -o /tmp/osv-scanner
+          sudo install -m 0755 /tmp/osv-scanner /usr/local/bin/osv-scanner
           osv-scanner --version
 
       - name: Dependency vulnerability gate (OSV)
@@ -181,12 +186,7 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U postgres -d agentforge"
           --health-interval 5s --health-timeout 3s --health-retries 5
-      redis:
-        image: redis:7-alpine
-        ports: [ "6379:6379" ]
-        options: >-
-          --health-cmd "redis-cli -a redis123 ping"
-          --health-interval 5s --health-timeout 3s --health-retries 5
+      
     steps:
       - uses: actions/checkout@v4
 
@@ -196,6 +196,15 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+
+      - name: Start Redis with password
+        run: |
+          docker run -d --name redis -p 6379:6379 redis:7-alpine redis-server --requirepass redis123
+          for i in $(seq 1 30); do
+            docker exec redis redis-cli -a redis123 ping 2>/dev/null | grep -q PONG && break
+            sleep 2
+          done
+          docker exec redis redis-cli -a redis123 ping | grep -q PONG
 
       - name: Boot backend
         working-directory: backend
