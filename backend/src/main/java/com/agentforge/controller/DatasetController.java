@@ -3,8 +3,9 @@ package com.agentforge.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import com.agentforge.entity.Dataset;
+import com.agentforge.dto.DatasetRequest;
 import com.agentforge.service.rag.DatasetService;
+import com.agentforge.vo.DatasetVo;
 import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,18 +35,18 @@ public class DatasetController {
     @Operation(summary = "创建知识库数据集")
     @SaCheckRole(value = {"OWNER", "ADMIN", "EDITOR"}, mode = SaMode.OR)
     @PostMapping
-    public Result<Dataset> createDataset(@RequestBody Dataset dataset) {
+    public Result<DatasetVo> createDataset(@RequestBody DatasetRequest dataset) {
         return Result.success("知识库创建成功", datasetService.createDataset(dataset));
     }
 
     @Operation(summary = "分页查询知识库列表")
     @GetMapping
-    public Result<PageResult<Dataset>> listDatasets(
+    public Result<PageResult<DatasetVo>> listDatasets(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") long pageNum,
             @RequestParam(defaultValue = "10") long pageSize
     ) {
-        return Result.success(datasetService.listDatasets(keyword, pageNum, pageSize));
+        return Result.success(datasetService.listDatasetVos(keyword, pageNum, pageSize));
     }
 
     @Operation(summary = "删除知识库数据集 (级联清理文档与切片)")

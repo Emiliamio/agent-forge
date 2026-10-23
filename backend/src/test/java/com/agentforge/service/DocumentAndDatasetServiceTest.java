@@ -104,6 +104,10 @@ public class DocumentAndDatasetServiceTest {
         service.deleteDataset(1L);
         verify(chunkMapper, atLeastOnce()).delete(any(LambdaQueryWrapper.class));
         verify(documentMapper, atLeastOnce()).delete(any(LambdaQueryWrapper.class));
+
+        when(datasetMapper.selectPage(any(), any())).thenReturn(new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, 10));
+        assertNotNull(service.createDataset(com.agentforge.dto.DatasetRequest.builder().name("财务制度库").embeddingDim(1536).chunkSize(500).chunkOverlap(50).build()));
+        assertNotNull(service.listDatasetVos("", 1, 10));
     }
 
     @Test
@@ -167,5 +171,8 @@ public class DocumentAndDatasetServiceTest {
         when(documentMapper.deleteById(100L)).thenReturn(1);
         service.deleteDocument(100L);
         verify(chunkMapper, atLeastOnce()).delete(any(LambdaQueryWrapper.class));
+
+        when(documentMapper.selectPage(any(), any())).thenReturn(new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, 10));
+        assertNotNull(service.listDocumentVos(1L, 1, 10));
     }
 }

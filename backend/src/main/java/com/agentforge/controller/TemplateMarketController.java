@@ -1,9 +1,10 @@
 package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.agentforge.entity.WorkflowDefinition;
 import com.agentforge.service.market.TemplateMarketService;
+import com.agentforge.vo.IndustryTemplateVo;
 import com.agentforge.vo.Result;
+import com.agentforge.vo.WorkflowDefinitionVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +30,14 @@ public class TemplateMarketController {
 
     @Operation(summary = "获取模板市场全量模板列表")
     @GetMapping("/templates")
-    public Result<List<TemplateMarketService.IndustryTemplate>> listTemplates() {
-        return Result.success(marketService.listTemplates());
+    public Result<List<IndustryTemplateVo>> listTemplates() {
+        return Result.success(marketService.listTemplateVos());
     }
 
     @Operation(summary = "一键克隆行业模板到当前租户")
     @PostMapping("/templates/{templateId}/clone")
-    public Result<WorkflowDefinition> cloneTemplate(@PathVariable String templateId) {
-        WorkflowDefinition workflow = marketService.cloneTemplateToTenant(templateId);
+    public Result<WorkflowDefinitionVo> cloneTemplate(@PathVariable String templateId) {
+        WorkflowDefinitionVo workflow = marketService.cloneTemplateToTenantVo(templateId);
         return Result.success("模板克隆成功，已加入工作流列表", workflow);
     }
 }

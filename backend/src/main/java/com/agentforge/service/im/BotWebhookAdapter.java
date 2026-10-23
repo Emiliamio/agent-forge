@@ -1,4 +1,5 @@
 package com.agentforge.service.im;
+import com.agentforge.vo.AgentExecutionResult;
 
 import com.agentforge.service.agent.ReActAgentService;
 import com.alibaba.fastjson2.JSON;
@@ -37,7 +38,7 @@ public class BotWebhookAdapter {
                 String userQuery = eventObj.getJSONObject("message").getString("content");
                 Long agentId = 1L; // 默认绑定智能体
 
-                ReActAgentService.AgentExecutionResult result = reActAgentService.runAgent(agentId, userQuery, 5);
+                AgentExecutionResult result = reActAgentService.runAgent(agentId, userQuery, 5);
                 log.info("飞书机器人应答完成: query={}, answerLength={}", userQuery, result.getFinalAnswer().length());
             }
         }

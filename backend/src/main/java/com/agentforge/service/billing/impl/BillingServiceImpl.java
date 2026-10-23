@@ -119,6 +119,15 @@ public class BillingServiceImpl implements BillingService {
     }
 
     @Override
+    public com.agentforge.vo.PageResult<com.agentforge.vo.TokenUsageLogVo> listUsageLogsVo(Long tenantId, long pageNum, long pageSize) {
+        Page<TokenUsageLog> page = listUsageLogs(tenantId, pageNum, pageSize);
+        java.util.List<com.agentforge.vo.TokenUsageLogVo> list = page.getRecords().stream()
+                .map(com.agentforge.service.converter.TokenUsageLogConverter::toVo)
+                .toList();
+        return com.agentforge.vo.PageResult.of(page.getCurrent(), page.getSize(), page.getTotal(), list);
+    }
+
+    @Override
     public Page<TokenUsageLog> listUsageLogs(Long tenantId, long pageNum, long pageSize) {
         return tokenUsageLogMapper.selectPage(
                 new Page<>(pageNum, pageSize),

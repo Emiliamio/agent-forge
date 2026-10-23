@@ -46,4 +46,24 @@ public class AuthQueryServiceImpl implements AuthQueryService {
     public SysUser findUserById(Long id) {
         return userMapper.selectById(id);
     }
+
+    @Override
+    public com.agentforge.vo.SysTenantVo findTenantVoByCode(String code) {
+        return com.agentforge.service.converter.SysTenantConverter.toVo(findTenantByCode(code));
+    }
+
+    @Override
+    public com.agentforge.vo.SysTenantVo findTenantVoById(Long id) {
+        return com.agentforge.service.converter.SysTenantConverter.toVo(findTenantById(id));
+    }
+
+    @Override
+    public com.agentforge.vo.SysUserVo findUserVoByTenantAndUsername(Long tenantId, String username) {
+        return com.agentforge.service.converter.SysUserConverter.toVo(findUserByTenantAndUsername(tenantId, username));
+    }
+
+    @Override
+    public com.agentforge.vo.SysUserVo findUserVoById(Long id) {
+        return com.agentforge.service.converter.SysUserConverter.toVo(findUserById(id));
+    }
 }

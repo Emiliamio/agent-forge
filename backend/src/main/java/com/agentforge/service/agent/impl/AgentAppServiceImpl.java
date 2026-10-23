@@ -56,4 +56,30 @@ public class AgentAppServiceImpl implements AgentAppService {
     public AgentApp findPublicApp(Long id) {
         return agentAppMapper.selectByIdWithoutTenant(id);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public com.agentforge.vo.AgentAppVo createAgent(com.agentforge.dto.AgentAppRequest request, Long tenantId) {
+        AgentApp app = com.agentforge.service.converter.AgentAppConverter.toEntity(request);
+        return com.agentforge.service.converter.AgentAppConverter.toVo(createAgent(app, tenantId));
+    }
+
+    @Override
+    public com.agentforge.vo.PageResult<com.agentforge.vo.AgentAppVo> listAgentsVo(Long tenantId, String keyword, long pageNum, long pageSize) {
+        Page<AgentApp> page = listAgents(tenantId, keyword, pageNum, pageSize);
+        java.util.List<com.agentforge.vo.AgentAppVo> vos = page.getRecords().stream()
+                .map(com.agentforge.service.converter.AgentAppConverter::toVo)
+                .toList();
+        return com.agentforge.vo.PageResult.of(page.getCurrent(), page.getSize(), page.getTotal(), vos);
+    }
+
+    @Override
+    public com.agentforge.vo.AgentAppVo getAgentVo(Long id, Long tenantId) {
+        return com.agentforge.service.converter.AgentAppConverter.toVo(getAgent(id, tenantId));
+    }
+
+    @Override
+    public com.agentforge.vo.AgentAppVo findPublicAppVo(Long id) {
+        return com.agentforge.service.converter.AgentAppConverter.toVo(findPublicApp(id));
+    }
 }

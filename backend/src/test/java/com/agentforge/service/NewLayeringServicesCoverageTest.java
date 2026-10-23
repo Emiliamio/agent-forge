@@ -1,6 +1,7 @@
 package com.agentforge.service;
 
 import com.agentforge.context.TenantContextHolder;
+import com.agentforge.dto.*;
 import com.agentforge.entity.*;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.mapper.*;
@@ -100,6 +101,12 @@ public class NewLayeringServicesCoverageTest {
         // findPublicApp
         when(agentAppMapper.selectByIdWithoutTenant(10L)).thenReturn(found);
         assertEquals(10L, service.findPublicApp(10L).getId());
+
+        // VO methods
+        assertNotNull(service.createAgent(new AgentAppRequest("test", "desc", "av", "AGENT", "sp", "{}", "[]", "[]", 1, 1, "tok", "prev"), 1L));
+        assertNotNull(service.listAgentsVo(1L, "kw", 1, 10));
+        assertNotNull(service.getAgentVo(10L, 1L));
+        assertNotNull(service.findPublicAppVo(10L));
     }
 
     @Test
@@ -157,6 +164,21 @@ public class NewLayeringServicesCoverageTest {
         // runWorkflow: 引擎执行抛错
         when(workflowEngine.executeWorkflow(any(), any())).thenReturn(Mono.error(new RuntimeException("Engine error")));
         assertThrows(BusinessException.class, () -> service.runWorkflow(5L, 1L, null));
+
+        // VO methods
+        when(workflowEngine.executeWorkflow(any(), any())).thenReturn(
+                Mono.just(WorkflowContext.builder().outputs(Map.of("res", "done")).stepLogs(List.of()).build())
+        );
+        WorkflowDefinitionRequest req = WorkflowDefinitionRequest.builder()
+                .name("vo-flow")
+                .description("desc")
+                .dagJson("{}")
+                .version(1)
+                .status(1)
+                .build();
+        assertNotNull(service.saveWorkflowVo(req, 1L));
+        assertNotNull(service.getWorkflowVo(5L, 1L));
+        assertNotNull(service.runWorkflowVo(5L, 1L, Map.of()));
     }
 
     @Test
@@ -175,6 +197,11 @@ public class NewLayeringServicesCoverageTest {
 
         when(userMapper.selectById(1L)).thenReturn(new SysUser());
         assertNotNull(service.findUserById(1L));
+
+        assertNotNull(service.findTenantVoById(1L));
+        assertNotNull(service.findTenantVoByCode("code"));
+        assertNotNull(service.findUserVoById(1L));
+        assertNotNull(service.findUserVoByTenantAndUsername(1L, "user"));
     }
 
     @Test
@@ -205,6 +232,7 @@ public class NewLayeringServicesCoverageTest {
         assertThrows(BusinessException.class, () -> billingService.recharge(1L, new BigDecimal("-5")));
         BigDecimal updated = billingService.recharge(1L, new BigDecimal("50.00"));
         assertEquals(new BigDecimal("250.00"), updated);
+        assertNotNull(billingService.listUsageLogsVo(1L, 1, 10));
 
         // ChatSessionServiceImpl.listUserSessions
         ChatSessionServiceImpl chatSessionService = new ChatSessionServiceImpl(
@@ -212,5 +240,10 @@ public class NewLayeringServicesCoverageTest {
         );
         when(chatSessionMapper.selectList(any())).thenReturn(List.of(new ChatSession()));
         assertEquals(1, chatSessionService.listUserSessions(1L, 1L).size());
+        assertEquals(1, chatSessionService.listUserSessionVos(1L, 1L).size());
+
+        when(chatMessageMapper.selectList(any())).thenReturn(List.of(new ChatMessage()));
+        assertEquals(1, chatSessionService.listMessageVos(1L).size());
+        assertNotNull(chatSessionService.createOrGetSessionVo(10L, 1L, "title"));
     }
 }

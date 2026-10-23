@@ -1,4 +1,5 @@
 package com.agentforge.service.chat.impl;
+import com.agentforge.vo.AgentExecutionResult;
 
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.context.TenantContextHolder;
@@ -100,7 +101,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
         PiiMaskingService.MaskResult maskResult = piiMaskingService.maskSensitiveData(userQuery);
 
         // 3. 调度 ReAct Agent 推理
-        ReActAgentService.AgentExecutionResult agentResult = reActAgentService.runAgent(
+        AgentExecutionResult agentResult = reActAgentService.runAgent(
                 session.getAppId(), maskResult.getMaskedText(), 5
         );
 
@@ -147,4 +148,29 @@ public class ChatSessionServiceImpl implements ChatSessionService {
         feedbackMapper.insert(feedback);
         log.info("📊 问答质量评价已录入: msgId={}, rating={}, type={}", messageId, rating, feedbackType);
     }
+
+    @Override
+    public com.agentforge.vo.ChatSessionVo createOrGetSessionVo(Long appId, Long userId, String title) {
+        return com.agentforge.service.converter.ChatSessionConverter.toVo(createOrGetSession(appId, userId, title));
+    }
+
+    @Override
+    public java.util.List<com.agentforge.vo.ChatSessionVo> listUserSessionVos(Long tenantId, Long userId) {
+        return listUserSessions(tenantId, userId).stream()
+                .map(com.agentforge.service.converter.ChatSessionConverter::toVo)
+                .toList();
+    }
+
+    @Override
+    public java.util.List<com.agentforge.vo.ChatMessageVo> listMessageVos(Long sessionId) {
+        return listMessages(sessionId).stream()
+                .map(com.agentforge.service.converter.ChatMessageConverter::toVo)
+                .toList();
+    }
+
+    @Override
+    public com.agentforge.vo.ChatMessageVo sendQueryVo(Long sessionId, Long userId, String userQuery) {
+        return com.agentforge.service.converter.ChatMessageConverter.toVo(sendQuery(sessionId, userId, userQuery));
+    }
+
 }

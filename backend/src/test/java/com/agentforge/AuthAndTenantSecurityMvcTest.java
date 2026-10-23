@@ -8,8 +8,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.controller.AuthController;
 import com.agentforge.dto.LoginRequest;
-import com.agentforge.entity.SysTenant;
-import com.agentforge.entity.SysUser;
+import com.agentforge.vo.SysTenantVo;
+import com.agentforge.vo.SysUserVo;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.service.auth.AuthQueryService;
@@ -76,14 +76,14 @@ public class AuthAndTenantSecurityMvcTest {
     @Test
     @DisplayName("测试正确的默认管理员账户密码登录成功并颁发 Token")
     void testLoginSuccess() {
-        SysTenant tenant = SysTenant.builder()
+        SysTenantVo tenant = SysTenantVo.builder()
                 .name("演示租户")
                 .code("tenant_default")
                 .status(1)
                 .build();
         tenant.setId(1L);
 
-        SysUser user = SysUser.builder()
+        SysUserVo user = SysUserVo.builder()
                 .tenantId(1L)
                 .username("admin")
                 .passwordHash("$2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6")
@@ -92,8 +92,8 @@ public class AuthAndTenantSecurityMvcTest {
                 .build();
         user.setId(1L);
 
-        when(authQueryService.findTenantByCode(any())).thenReturn(tenant);
-        when(authQueryService.findUserByTenantAndUsername(any(), any())).thenReturn(user);
+        when(authQueryService.findTenantVoByCode(any())).thenReturn(tenant);
+        when(authQueryService.findUserVoByTenantAndUsername(any(), any())).thenReturn(user);
 
         LoginRequest request = new LoginRequest();
         request.setTenantCode("tenant_default");
@@ -111,13 +111,13 @@ public class AuthAndTenantSecurityMvcTest {
     @Test
     @DisplayName("测试密码错误时抛出 USER_PASSWORD_ERROR")
     void testLoginWrongPassword() {
-        SysTenant tenant = SysTenant.builder()
+        SysTenantVo tenant = SysTenantVo.builder()
                 .code("tenant_default")
                 .status(1)
                 .build();
         tenant.setId(1L);
 
-        SysUser user = SysUser.builder()
+        SysUserVo user = SysUserVo.builder()
                 .tenantId(1L)
                 .username("admin")
                 .passwordHash("$2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6")
@@ -125,8 +125,8 @@ public class AuthAndTenantSecurityMvcTest {
                 .build();
         user.setId(1L);
 
-        when(authQueryService.findTenantByCode(any())).thenReturn(tenant);
-        when(authQueryService.findUserByTenantAndUsername(any(), any())).thenReturn(user);
+        when(authQueryService.findTenantVoByCode(any())).thenReturn(tenant);
+        when(authQueryService.findUserVoByTenantAndUsername(any(), any())).thenReturn(user);
 
         LoginRequest request = new LoginRequest();
         request.setTenantCode("tenant_default");

@@ -29,7 +29,8 @@ public class ArchitectureTest {
     static final ArchRule controllers_should_not_access_mappers =
             noClasses().that().resideInAPackage("..controller..")
                     .should().dependOnClassesThat().resideInAPackage("..mapper..")
-                    .as("控制器只能访问 Service，严禁直接访问 Mapper（零白名单零例外）");
+                    .as("Rule 1: 控制器只能访问 Service，严禁直接访问 Mapper（零白名单零例外）")
+                    .because("控制器严禁越过 Service 编排层直接操作数据库 Mapper，防止业务逻辑与事务控制在接入层泄露");
 
     /**
      * Rule 2: Service 层严禁反向依赖 Controller 层
@@ -38,7 +39,8 @@ public class ArchitectureTest {
     static final ArchRule services_should_not_depend_on_controllers =
             noClasses().that().resideInAPackage("..service..")
                     .should().dependOnClassesThat().resideInAPackage("..controller..")
-                    .as("Service 业务逻辑层严禁反向依赖 Controller 接入层");
+                    .as("Rule 2: Service 业务逻辑层严禁反向依赖 Controller 接入层")
+                    .because("Service 作为核心业务域，必须具备协议无关性，严禁反向耦合上层 HTTP 控制器或接入层实现");
 
     /**
      * Rule 3: 严禁在 main 代码中执行 DDL 或引用历史 schema.sql
@@ -68,4 +70,34 @@ public class ArchitectureTest {
             assertTrue(offending.isEmpty(), "Found prohibited DDL or schema.sql in main Java files: " + offending);
         }
     }
+
+    /**
+     * Rule 4 (R1): DTO 与 VO 严禁依赖 Mapper 与 Entity 持久层，保障严格单向分层 controller -> service -> mapper -> entity
+     */
+    @ArchTest
+    static final ArchRule r1_dto_and_vo_should_not_depend_on_mappers_or_entities =
+            noClasses().that().resideInAnyPackage("..dto..", "..vo..")
+                    .should().dependOnClassesThat().resideInAnyPackage("..mapper..", "..entity..")
+                    .as("Rule 4 (R1): DTO 与 VO 严禁直接依赖 Mapper 与 Entity（数据契约与持久层解耦）")
+                    .because("DTO 与 VO 是协议层数据契约，必须独立于底层数据库实体与持久层映射，防止领域模型穿透泄露并破坏严格单向分层架构");
+
+    /**
+     * Rule 5 (R2): 控制器严禁直接依赖 Entity 领域实体，入参与返回值只能使用 DTO/VO/基础类型
+     */
+    @ArchTest
+    static final ArchRule r2_controllers_should_not_depend_on_entities =
+            noClasses().that().resideInAPackage("..controller..")
+                    .should().dependOnClassesThat().resideInAPackage("..entity..")
+                    .as("Rule 5 (R2): 控制器严禁依赖 Entity 领域实体（入参出参严格 DTO/VO 化）")
+                    .because("控制器只能接收 DTO 入参并返回 VO/基础类型，严禁直接暴露 Entity 数据库实体（反例：@RequestBody AgentApp 或 Result<WorkflowDefinition>）");
+
+    /**
+     * Rule 6 (R3): @Transactional 事务注解只能在 service 包中使用，严禁在其他层声明事务
+     */
+    @ArchTest
+    static final ArchRule r3_transactional_only_in_service =
+            noClasses().that().resideOutsideOfPackage("..service..")
+                    .should().dependOnClassesThat().haveFullyQualifiedName("org.springframework.transaction.annotation.Transactional")
+                    .as("Rule 6 (R3): @Transactional 事务注解只能在 Service 业务逻辑层声明")
+                    .because("事务生命周期边界必须严格收敛在 Service 业务层，严禁在 Controller 接入层或其它包声明事务，防止长事务死锁与连接池资源耗尽（反例：在 Controller 类或方法上标注 @Transactional）");
 }

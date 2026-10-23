@@ -35,6 +35,8 @@ public interface BillingService {
      */
     Page<TokenUsageLog> listUsageLogs(Long tenantId, long pageNum, long pageSize);
 
+    com.agentforge.vo.PageResult<com.agentforge.vo.TokenUsageLogVo> listUsageLogsVo(Long tenantId, long pageNum, long pageSize);
+
     /**
      * 租户钱包在线充值
      */

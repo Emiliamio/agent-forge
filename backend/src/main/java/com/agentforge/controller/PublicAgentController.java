@@ -3,7 +3,6 @@ package com.agentforge.controller;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.agentforge.context.TenantContextHolder;
-import com.agentforge.entity.AgentApp;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.security.ClientIpResolver;
@@ -12,6 +11,9 @@ import com.agentforge.security.ReplayGuard;
 import com.agentforge.security.SignedWidgetToken;
 import com.agentforge.service.agent.AgentAppService;
 import com.agentforge.service.agent.ReActAgentService;
+import com.agentforge.dto.WidgetChatRequest;
+import com.agentforge.vo.AgentAppVo;
+import com.agentforge.vo.AgentExecutionResult;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,7 +70,7 @@ public class PublicAgentController {
 
     @Operation(summary = "挂件免登录对话 (支持跨租户定位、安全开关与常量时间凭据校验)")
     @PostMapping("/{id}/chat")
-    public Result<ReActAgentService.AgentExecutionResult> widgetChat(
+    public Result<AgentExecutionResult> widgetChat(
             @PathVariable Long id,
             @Valid @RequestBody WidgetChatRequest request,
             @RequestHeader(value = "X-Public-Token", required = false) String headerToken,
@@ -94,7 +96,7 @@ public class PublicAgentController {
         checkMultiDimensionRateLimit(ip, id, incomingToken);
 
         // 3. 跨租户物理检索智能体元数据 (忽略拦截器对未登录默认租户 1 的硬过滤，精准定位目标租户)
-        AgentApp app = agentAppService.findPublicApp(id);
+        AgentAppVo app = agentAppService.findPublicAppVo(id);
         if (app == null || app.getStatus() == null || app.getStatus() != 1) {
             throw new BusinessException(ErrorCode.AGENT_APP_NOT_FOUND, "目标智能体不存在或已被停用");
         }
@@ -146,7 +148,7 @@ public class PublicAgentController {
         try {
             TenantContextHolder.setTenantId(app.getTenantId());
             int maxIterations = request.getMaxIterations() > 0 ? Math.min(request.getMaxIterations(), 5) : 3;
-            ReActAgentService.AgentExecutionResult result = reActAgentService.runAgent(id, request.getMessage(), maxIterations);
+            AgentExecutionResult result = reActAgentService.runAgent(id, request.getMessage(), maxIterations);
             return Result.success("对话完成", result);
         } finally {
             if (originalTenantId != null) {
@@ -211,11 +213,4 @@ public class PublicAgentController {
         }
     }
 
-    @Data
-    public static class WidgetChatRequest {
-        @NotBlank(message = "提问内容不能为空")
-        private String message;
-        private int maxIterations = 3;
-        private String token; // 安全挂件访问凭证
-    }
 }

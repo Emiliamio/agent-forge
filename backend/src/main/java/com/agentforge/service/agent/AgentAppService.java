@@ -15,4 +15,12 @@ public interface AgentAppService {
     AgentApp getAgent(Long id, Long tenantId);
 
     AgentApp findPublicApp(Long id);
+
+    com.agentforge.vo.AgentAppVo createAgent(com.agentforge.dto.AgentAppRequest app, Long tenantId);
+
+    com.agentforge.vo.PageResult<com.agentforge.vo.AgentAppVo> listAgentsVo(Long tenantId, String keyword, long pageNum, long pageSize);
+
+    com.agentforge.vo.AgentAppVo getAgentVo(Long id, Long tenantId);
+
+    com.agentforge.vo.AgentAppVo findPublicAppVo(Long id);
 }

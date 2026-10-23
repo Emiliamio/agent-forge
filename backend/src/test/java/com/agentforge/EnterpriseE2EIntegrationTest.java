@@ -9,8 +9,8 @@ import com.agentforge.controller.AuthController;
 import com.agentforge.controller.RagController;
 import com.agentforge.dto.LoginRequest;
 import com.agentforge.entity.DocumentChunk;
-import com.agentforge.entity.SysTenant;
-import com.agentforge.entity.SysUser;
+import com.agentforge.vo.SysTenantVo;
+import com.agentforge.vo.SysUserVo;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.DocumentChunkMapper;
@@ -100,7 +100,7 @@ public class EnterpriseE2EIntegrationTest {
     @DisplayName("集成测试 1: 管理员登录全链路 (BCrypt校验 + Bearer Token颁发 + 会话租户绑定)")
     void test1_LoginAuthenticationLifecycle() {
         // 模拟种子数据中的系统管理员与租户
-        SysTenant tenant = SysTenant.builder()
+        SysTenantVo tenant = SysTenantVo.builder()
                 .name("默认超级租户")
                 .code("tenant_default")
                 .status(1)
@@ -108,7 +108,7 @@ public class EnterpriseE2EIntegrationTest {
         tenant.setId(1L);
 
         // 使用正确的 Sa-Token BCrypt 密码哈希 ($2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6)
-        SysUser user = SysUser.builder()
+        SysUserVo user = SysUserVo.builder()
                 .tenantId(1L)
                 .username("admin")
                 .passwordHash("$2a$10$VnTSObTDaYlHVoAUrU72Tu/ohEH3hdJxAw6VbNHGs1zavk..1wfi6")
@@ -117,8 +117,8 @@ public class EnterpriseE2EIntegrationTest {
                 .build();
         user.setId(1L);
 
-        when(authQueryService.findTenantByCode(any())).thenReturn(tenant);
-        when(authQueryService.findUserByTenantAndUsername(any(), any())).thenReturn(user);
+        when(authQueryService.findTenantVoByCode(any())).thenReturn(tenant);
+        when(authQueryService.findUserVoByTenantAndUsername(any(), any())).thenReturn(user);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setTenantCode("tenant_default");

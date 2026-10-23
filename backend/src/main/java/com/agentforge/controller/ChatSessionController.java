@@ -3,13 +3,15 @@ package com.agentforge.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.agentforge.context.TenantContextHolder;
-import com.agentforge.entity.ChatMessage;
-import com.agentforge.entity.ChatSession;
+import com.agentforge.dto.CreateSessionRequest;
+import com.agentforge.dto.FeedbackRequest;
+import com.agentforge.dto.SendMessageRequest;
 import com.agentforge.service.chat.ChatSessionService;
+import com.agentforge.vo.ChatMessageVo;
+import com.agentforge.vo.ChatSessionVo;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,36 +36,36 @@ public class ChatSessionController {
 
     @Operation(summary = "创建或初始化新会话")
     @PostMapping("/sessions")
-    public Result<ChatSession> createSession(@RequestBody CreateSessionRequest req) {
+    public Result<ChatSessionVo> createSession(@RequestBody CreateSessionRequest req) {
         Long userId = StpUtil.getLoginIdAsLong();
-        ChatSession session = chatSessionService.createOrGetSession(req.getAppId(), userId, req.getTitle());
+        ChatSessionVo session = chatSessionService.createOrGetSessionVo(req.getAppId(), userId, req.getTitle());
         return Result.success(session);
     }
 
     @Operation(summary = "获取当前用户的所有历史会话列表")
     @GetMapping("/sessions")
-    public Result<List<ChatSession>> listSessions() {
+    public Result<List<ChatSessionVo>> listSessions() {
         Long tenantId = TenantContextHolder.getTenantId();
         Long userId = StpUtil.getLoginIdAsLong();
-        List<ChatSession> list = chatSessionService.listUserSessions(tenantId, userId);
+        List<ChatSessionVo> list = chatSessionService.listUserSessionVos(tenantId, userId);
         return Result.success(list);
     }
 
     @Operation(summary = "获取会话历史消息记录")
     @GetMapping("/sessions/{sessionId}/messages")
-    public Result<List<ChatMessage>> listMessages(@PathVariable Long sessionId) {
-        List<ChatMessage> list = chatSessionService.listMessages(sessionId);
+    public Result<List<ChatMessageVo>> listMessages(@PathVariable Long sessionId) {
+        List<ChatMessageVo> list = chatSessionService.listMessageVos(sessionId);
         return Result.success(list);
     }
 
     @Operation(summary = "发送对话消息 (支持 PII 敏感脱敏与多轮持久化)")
     @PostMapping("/sessions/{sessionId}/send")
-    public Result<ChatMessage> sendMessage(
+    public Result<ChatMessageVo> sendMessage(
             @PathVariable Long sessionId,
             @RequestBody SendMessageRequest req
     ) {
         Long userId = StpUtil.getLoginIdAsLong();
-        ChatMessage assistantMsg = chatSessionService.sendQuery(sessionId, userId, req.getMessage());
+        ChatMessageVo assistantMsg = chatSessionService.sendQueryVo(sessionId, userId, req.getMessage());
         return Result.success("生成完成", assistantMsg);
     }
 
@@ -76,23 +78,5 @@ public class ChatSessionController {
         Long userId = StpUtil.getLoginIdAsLong();
         chatSessionService.submitFeedback(messageId, userId, req.getRating(), req.getFeedbackType(), req.getComment());
         return Result.success("反馈已提交，感谢您的评价！", "OK");
-    }
-
-    @Data
-    public static class CreateSessionRequest {
-        private Long appId;
-        private String title;
-    }
-
-    @Data
-    public static class SendMessageRequest {
-        private String message;
-    }
-
-    @Data
-    public static class FeedbackRequest {
-        private Integer rating; // 1 for thumbs up, -1 for thumbs down
-        private String feedbackType;
-        private String comment;
     }
 }

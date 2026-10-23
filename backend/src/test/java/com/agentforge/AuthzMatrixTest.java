@@ -132,7 +132,7 @@ public class AuthzMatrixTest {
 
         // 5. Mock ReActAgentService 避免外部模型调用
         when(reActAgentService.runAgent(any(), any(), anyInt()))
-                .thenReturn(ReActAgentService.AgentExecutionResult.builder()
+                .thenReturn(com.agentforge.vo.AgentExecutionResult.builder()
                         .finalAnswer("模拟挂件回复")
                         .totalTokens(10)
                         .build());

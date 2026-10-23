@@ -36,4 +36,12 @@ public interface ChatSessionService {
      * 提交点赞/点踩反馈与 Bad Case 批注
      */
     void submitFeedback(Long messageId, Long userId, int rating, String feedbackType, String comment);
+
+    com.agentforge.vo.ChatSessionVo createOrGetSessionVo(Long appId, Long userId, String title);
+
+    java.util.List<com.agentforge.vo.ChatSessionVo> listUserSessionVos(Long tenantId, Long userId);
+
+    java.util.List<com.agentforge.vo.ChatMessageVo> listMessageVos(Long sessionId);
+
+    com.agentforge.vo.ChatMessageVo sendQueryVo(Long sessionId, Long userId, String userQuery);
 }

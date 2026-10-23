@@ -39,6 +39,26 @@ public class PageResult<T> implements Serializable {
     @Schema(description = "数据列表")
     private List<T> list;
 
+    @com.fasterxml.jackson.annotation.JsonProperty("pages")
+    public long getPages() {
+        return totalPages;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("records")
+    public List<T> getRecords() {
+        return list != null ? list : Collections.emptyList();
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("current")
+    public long getCurrent() {
+        return pageNum;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("size")
+    public long getSize() {
+        return pageSize;
+    }
+
     public static <T> PageResult<T> of(long pageNum, long pageSize, long total, List<T> list) {
         long totalPages = (total + pageSize - 1) / pageSize;
         return PageResult.<T>builder()

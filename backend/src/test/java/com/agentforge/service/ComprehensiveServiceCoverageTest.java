@@ -116,7 +116,7 @@ public class ComprehensiveServiceCoverageTest {
 
         // 2. 消息事件分发
         when(reActAgentService.runAgent(anyLong(), anyString(), anyInt()))
-                .thenReturn(ReActAgentService.AgentExecutionResult.builder()
+                .thenReturn(com.agentforge.vo.AgentExecutionResult.builder()
                         .finalAnswer("已为您查询到差旅报销政策。")
                         .build());
 
@@ -186,6 +186,8 @@ public class ComprehensiveServiceCoverageTest {
         Page<DocumentChunk> listRes = service.listChunks(10L, 1, 10);
         assertNotNull(listRes);
         assertEquals(1, listRes.getRecords().size());
+        assertNotNull(service.updateChunkContentVo(100L, "新政策内容"));
+        assertNotNull(service.listChunkVos(10L, 1, 10));
     }
 
     // =========================================================================
@@ -308,7 +310,7 @@ public class ComprehensiveServiceCoverageTest {
                         .tokenMap(Map.of())
                         .build());
         when(reActAgentService.runAgent(anyLong(), anyString(), anyInt()))
-                .thenReturn(ReActAgentService.AgentExecutionResult.builder()
+                .thenReturn(com.agentforge.vo.AgentExecutionResult.builder()
                         .finalAnswer("北京住宿上限 800 元。")
                         .totalTokens(50)
                         .citations(List.of())
@@ -597,6 +599,7 @@ public class ComprehensiveServiceCoverageTest {
         // TemplateMarketService
         TemplateMarketService marketService = new TemplateMarketService(mock(WorkflowDefinitionMapper.class), mock(AgentAppMapper.class));
         assertFalse(marketService.listTemplates().isEmpty());
+        assertFalse(marketService.listTemplateVos().isEmpty());
         assertThrows(IllegalArgumentException.class, () -> marketService.cloneTemplateToTenant("non_exist"));
 
         TemplateMarketService.IndustryTemplate tFull = TemplateMarketService.IndustryTemplate.builder()

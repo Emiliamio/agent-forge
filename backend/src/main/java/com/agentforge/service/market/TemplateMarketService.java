@@ -167,4 +167,15 @@ public class TemplateMarketService {
 
         return workflow;
     }
+
+    public java.util.List<com.agentforge.vo.IndustryTemplateVo> listTemplateVos() {
+        return TEMPLATES.stream()
+                .map(com.agentforge.service.converter.IndustryTemplateConverter::toVo)
+                .toList();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public com.agentforge.vo.WorkflowDefinitionVo cloneTemplateToTenantVo(String templateId) {
+        return com.agentforge.service.converter.WorkflowDefinitionConverter.toVo(cloneTemplateToTenant(templateId));
+    }
 }

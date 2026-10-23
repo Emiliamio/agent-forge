@@ -3,8 +3,8 @@ package com.agentforge.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import com.agentforge.entity.Document;
 import com.agentforge.service.rag.DocumentService;
+import com.agentforge.vo.DocumentVo;
 import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,22 +36,22 @@ public class DocumentController {
     @Operation(summary = "上传文档并触发 RAG 管道解析切片 (支持 PDF/DOCX/MD/TXT)")
     @SaCheckRole(value = {"OWNER", "ADMIN", "EDITOR"}, mode = SaMode.OR)
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Result<Document> uploadDocument(
+    public Result<DocumentVo> uploadDocument(
             @RequestParam("datasetId") Long datasetId,
             @RequestPart("file") MultipartFile file
     ) {
-        Document document = documentService.uploadAndParse(datasetId, file);
+        DocumentVo document = documentService.uploadAndParseVo(datasetId, file);
         return Result.success("文档已接收，正在异步执行分块与向量化入库", document);
     }
 
     @Operation(summary = "分页查询指定知识库下的文档列表")
     @GetMapping("/list")
-    public Result<PageResult<Document>> listDocuments(
+    public Result<PageResult<DocumentVo>> listDocuments(
             @RequestParam("datasetId") Long datasetId,
             @RequestParam(defaultValue = "1") long pageNum,
             @RequestParam(defaultValue = "10") long pageSize
     ) {
-        return Result.success(documentService.listDocuments(datasetId, pageNum, pageSize));
+        return Result.success(documentService.listDocumentVos(datasetId, pageNum, pageSize));
     }
 
     @Operation(summary = "删除指定文档及关联的切片向量")

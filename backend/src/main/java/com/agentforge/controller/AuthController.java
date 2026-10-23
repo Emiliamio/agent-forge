@@ -5,12 +5,12 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.dto.LoginRequest;
-import com.agentforge.entity.SysTenant;
-import com.agentforge.entity.SysUser;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.service.auth.AuthQueryService;
 import com.agentforge.vo.LoginVO;
+import com.agentforge.vo.SysTenantVo;
+import com.agentforge.vo.SysUserVo;
 import com.agentforge.vo.Result;
 import com.agentforge.vo.UserInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -118,13 +118,13 @@ public class AuthController {
         checkLoginRateLimit(rateLimitKey);
 
         // 1. 查询租户
-        SysTenant tenant = authQueryService.findTenantByCode(tenantCode);
+        SysTenantVo tenant = authQueryService.findTenantVoByCode(tenantCode);
         if (tenant == null) {
             throw new BusinessException(ErrorCode.TENANT_NOT_FOUND);
         }
 
         // 2. 查询用户 (必须在该租户下)
-        SysUser user = authQueryService.findUserByTenantAndUsername(tenant.getId(), request.getUsername());
+        SysUserVo user = authQueryService.findUserVoByTenantAndUsername(tenant.getId(), request.getUsername());
         if (user == null) {
             throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
         }
@@ -169,12 +169,12 @@ public class AuthController {
     @GetMapping("/user-info")
     public Result<UserInfoVO> getUserInfo() {
         long userId = StpUtil.getLoginIdAsLong();
-        SysUser user = authQueryService.findUserById(userId);
+        SysUserVo user = authQueryService.findUserVoById(userId);
         if (user == null) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
 
-        SysTenant tenant = authQueryService.findTenantById(user.getTenantId());
+        SysTenantVo tenant = authQueryService.findTenantVoById(user.getTenantId());
 
         UserInfoVO vo = UserInfoVO.builder()
                 .id(user.getId())

@@ -1,13 +1,13 @@
 package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import com.agentforge.entity.DocumentChunk;
+import com.agentforge.dto.UpdateChunkRequest;
 import com.agentforge.service.rag.chunk.ChunkManagementService;
+import com.agentforge.vo.DocumentChunkVo;
+import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,22 +31,21 @@ public class ChunkManagementController {
 
     @Operation(summary = "分页获取指定文档的分块列表")
     @GetMapping("/document/{documentId}")
-    public Result<Page<DocumentChunk>> listChunks(
+    public Result<PageResult<DocumentChunkVo>> listChunks(
             @PathVariable Long documentId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Page<DocumentChunk> result = chunkService.listChunks(documentId, page, size);
-        return Result.success(result);
+        return Result.success(chunkService.listChunkVos(documentId, page, size));
     }
 
     @Operation(summary = "在线热编辑单条切片文本 (自动重算向量并驱逐旧缓存)")
     @PutMapping("/{chunkId}")
-    public Result<DocumentChunk> updateChunk(
+    public Result<DocumentChunkVo> updateChunk(
             @PathVariable Long chunkId,
             @RequestBody UpdateChunkRequest req
     ) {
-        DocumentChunk chunk = chunkService.updateChunkContent(chunkId, req.getContent());
+        DocumentChunkVo chunk = chunkService.updateChunkContentVo(chunkId, req.getContent());
         return Result.success("切片更新成功，向量已自动重新计算", chunk);
     }
 
@@ -58,10 +57,5 @@ public class ChunkManagementController {
     ) {
         chunkService.toggleChunkStatus(chunkId, isPublic);
         return Result.success(isPublic ? "切片已启用" : "切片已禁用 (检索时将自动排除)", null);
-    }
-
-    @Data
-    public static class UpdateChunkRequest {
-        private String content;
     }
 }

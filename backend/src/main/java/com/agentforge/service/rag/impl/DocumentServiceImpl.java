@@ -128,6 +128,20 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     }
 
     @Override
+    public com.agentforge.vo.DocumentVo uploadAndParseVo(Long datasetId, MultipartFile file) {
+        return com.agentforge.service.converter.DocumentConverter.toVo(uploadAndParse(datasetId, file));
+    }
+
+    @Override
+    public com.agentforge.vo.PageResult<com.agentforge.vo.DocumentVo> listDocumentVos(Long datasetId, long pageNum, long pageSize) {
+        PageResult<Document> pr = listDocuments(datasetId, pageNum, pageSize);
+        java.util.List<com.agentforge.vo.DocumentVo> vos = pr.getList().stream()
+                .map(com.agentforge.service.converter.DocumentConverter::toVo)
+                .toList();
+        return com.agentforge.vo.PageResult.of(pr.getPageNum(), pr.getPageSize(), pr.getTotal(), vos);
+    }
+
+    @Override
     public void processDocument(Long documentId, byte[] fileBytes, String fileName, String fileType) {
         Document document = getById(documentId);
         if (document == null) {

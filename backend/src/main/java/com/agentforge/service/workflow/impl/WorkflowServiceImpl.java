@@ -60,6 +60,22 @@ public class WorkflowServiceImpl implements WorkflowService {
     }
 
     @Override
+    public com.agentforge.vo.WorkflowDefinitionVo saveWorkflowVo(com.agentforge.dto.WorkflowDefinitionRequest definition, Long tenantId) {
+        WorkflowDefinition entity = com.agentforge.service.converter.WorkflowDefinitionConverter.toEntity(definition);
+        return com.agentforge.service.converter.WorkflowDefinitionConverter.toVo(saveWorkflow(entity, tenantId));
+    }
+
+    @Override
+    public com.agentforge.vo.WorkflowDefinitionVo getWorkflowVo(Long id, Long tenantId) {
+        return com.agentforge.service.converter.WorkflowDefinitionConverter.toVo(getWorkflow(id, tenantId));
+    }
+
+    @Override
+    public com.agentforge.vo.WorkflowExecutionVo runWorkflowVo(Long id, Long tenantId, Map<String, Object> inputs) {
+        return com.agentforge.service.converter.WorkflowExecutionConverter.toVo(runWorkflow(id, tenantId, inputs));
+    }
+
+    @Override
     public WorkflowExecution runWorkflow(Long id, Long tenantId, Map<String, Object> inputs) {
         WorkflowDefinition definition = workflowDefinitionMapper.selectById(id);
         if (definition == null || !definition.getTenantId().equals(tenantId)) {

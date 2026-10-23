@@ -2,16 +2,15 @@ package com.agentforge.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.agentforge.context.TenantContextHolder;
-import com.agentforge.entity.TokenUsageLog;
+import com.agentforge.dto.RechargeRequest;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.service.billing.BillingService;
 import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.agentforge.vo.TokenUsageLogVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,13 +54,12 @@ public class BillingController {
 
     @Operation(summary = "分页查询 Token 消耗审计日志")
     @GetMapping("/logs")
-    public Result<PageResult<TokenUsageLog>> listUsageLogs(
+    public Result<PageResult<TokenUsageLogVo>> listUsageLogs(
             @RequestParam(defaultValue = "1") long pageNum,
             @RequestParam(defaultValue = "10") long pageSize
     ) {
         Long tenantId = TenantContextHolder.getTenantId();
-        Page<TokenUsageLog> page = billingService.listUsageLogs(tenantId, pageNum, pageSize);
-        return Result.success(PageResult.of(page.getCurrent(), page.getSize(), page.getTotal(), page.getRecords()));
+        return Result.success(billingService.listUsageLogsVo(tenantId, pageNum, pageSize));
     }
 
     @Operation(summary = "租户钱包在线充值")
@@ -70,10 +68,5 @@ public class BillingController {
         Long tenantId = TenantContextHolder.getTenantId();
         BigDecimal balance = billingService.recharge(tenantId, request.getAmount());
         return Result.success("充值成功", balance);
-    }
-
-    @Data
-    public static class RechargeRequest {
-        private BigDecimal amount;
     }
 }

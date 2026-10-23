@@ -82,4 +82,21 @@ public class DatasetServiceImpl extends ServiceImpl<DatasetMapper, Dataset> impl
         removeById(datasetId);
         log.info("成功级联删除知识库数据集: tenantId={}, datasetId={}", tenantId, datasetId);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public com.agentforge.vo.DatasetVo createDataset(com.agentforge.dto.DatasetRequest request) {
+        com.agentforge.entity.Dataset dataset = com.agentforge.service.converter.DatasetConverter.toEntity(request);
+        return com.agentforge.service.converter.DatasetConverter.toVo(createDataset(dataset));
+    }
+
+    @Override
+    public com.agentforge.vo.PageResult<com.agentforge.vo.DatasetVo> listDatasetVos(String keyword, long pageNum, long pageSize) {
+        com.agentforge.vo.PageResult<com.agentforge.entity.Dataset> pr = listDatasets(keyword, pageNum, pageSize);
+        java.util.List<com.agentforge.vo.DatasetVo> vos = pr.getList().stream()
+                .map(com.agentforge.service.converter.DatasetConverter::toVo)
+                .toList();
+        return com.agentforge.vo.PageResult.of(pr.getPageNum(), pr.getPageSize(), pr.getTotal(), vos);
+    }
+
 }

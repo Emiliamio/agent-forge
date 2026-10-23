@@ -24,4 +24,10 @@ public interface WorkflowService {
      * 运行并调度执行工作流
      */
     WorkflowExecution runWorkflow(Long id, Long tenantId, Map<String, Object> inputs);
+
+    com.agentforge.vo.WorkflowDefinitionVo saveWorkflowVo(com.agentforge.dto.WorkflowDefinitionRequest definition, Long tenantId);
+
+    com.agentforge.vo.WorkflowDefinitionVo getWorkflowVo(Long id, Long tenantId);
+
+    com.agentforge.vo.WorkflowExecutionVo runWorkflowVo(Long id, Long tenantId, Map<String, Object> inputs);
 }

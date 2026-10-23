@@ -15,4 +15,12 @@ public interface AuthQueryService {
     SysUser findUserByTenantAndUsername(Long tenantId, String username);
 
     SysUser findUserById(Long id);
+
+    com.agentforge.vo.SysTenantVo findTenantVoByCode(String code);
+
+    com.agentforge.vo.SysTenantVo findTenantVoById(Long id);
+
+    com.agentforge.vo.SysUserVo findUserVoByTenantAndUsername(Long tenantId, String username);
+
+    com.agentforge.vo.SysUserVo findUserVoById(Long id);
 }

@@ -80,7 +80,7 @@ public class AgentAndWorkflowExecutionTest {
                 .build();
         when(llmClient.generate(any(LlmRequest.class))).thenReturn(answerResp);
 
-        ReActAgentService.AgentExecutionResult result = agentService.runAgent(1L, "北京住宿标准", 5);
+        com.agentforge.vo.AgentExecutionResult result = agentService.runAgent(1L, "北京住宿标准", 5);
         assertNotNull(result);
         assertEquals("北京住宿标准是 500 元。", result.getFinalAnswer());
         assertFalse(result.getCitations().isEmpty());
@@ -93,7 +93,7 @@ public class AgentAndWorkflowExecutionTest {
         assertFalse(collected.isEmpty());
 
         // 4. ReActStep 与 AgentExecutionResult 实体结构
-        ReActAgentService.ReActStep step = ReActAgentService.ReActStep.builder()
+        com.agentforge.vo.ReActStep step = com.agentforge.vo.ReActStep.builder()
                 .stepIndex(1)
                 .thought("思考中")
                 .action("calculator")
@@ -119,7 +119,7 @@ public class AgentAndWorkflowExecutionTest {
                 .thenReturn(actionResp)
                 .thenReturn(finalResp);
 
-        ReActAgentService.AgentExecutionResult multiStepRes = agentService.runAgent(10L, "计算21乘2", 3);
+        com.agentforge.vo.AgentExecutionResult multiStepRes = agentService.runAgent(10L, "计算21乘2", 3);
         assertNotNull(multiStepRes);
         assertEquals("计算结果为 42。", multiStepRes.getFinalAnswer());
     }

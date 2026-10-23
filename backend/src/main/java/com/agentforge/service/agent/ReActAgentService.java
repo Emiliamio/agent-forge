@@ -1,4 +1,6 @@
 package com.agentforge.service.agent;
+import com.agentforge.vo.AgentExecutionResult;
+import com.agentforge.vo.ReActStep;
 
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.entity.AgentApp;
@@ -44,27 +46,6 @@ public class ReActAgentService {
     private static final Pattern ACTION_PATTERN = Pattern.compile("(?i)Action:\\s*([a-zA-Z0-9_]+)");
     private static final Pattern ACTION_INPUT_PATTERN = Pattern.compile("(?i)Action Input:\\s*(.+?)(?=\\n\\s*Observation:|\\n\\s*Thought:|\\n\\s*Final Answer:|$)", Pattern.DOTALL);
     private static final Pattern FINAL_ANSWER_PATTERN = Pattern.compile("(?i)Final Answer:\\s*(.*)", Pattern.DOTALL);
-
-    @Data
-    @Builder
-    public static class AgentExecutionResult implements Serializable {
-        private String finalAnswer;
-        private List<ReActStep> steps;
-        private List<Citation> citations;
-        private int totalTokens;
-        private long durationMs;
-    }
-
-    @Data
-    @Builder
-    public static class ReActStep implements Serializable {
-        private int stepIndex;
-        private String thought;
-        private String action;
-        private Map<String, Object> actionInput;
-        private String observation;
-        private long durationMs;
-    }
 
     /**
      * 执行 ReAct 推理循环 (同步生成)

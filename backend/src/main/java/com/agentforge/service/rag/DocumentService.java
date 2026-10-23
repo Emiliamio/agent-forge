@@ -29,4 +29,8 @@ public interface DocumentService extends IService<Document> {
      * 同步处理文档分块与向量化入库 (核心 RAG 管道入口)
      */
     void processDocument(Long documentId, byte[] fileBytes, String fileName, String fileType);
+
+    com.agentforge.vo.DocumentVo uploadAndParseVo(Long datasetId, MultipartFile file);
+
+    com.agentforge.vo.PageResult<com.agentforge.vo.DocumentVo> listDocumentVos(Long datasetId, long pageNum, long pageSize);
 }

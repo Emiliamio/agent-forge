@@ -23,4 +23,8 @@ public interface DatasetService extends IService<Dataset> {
      * 删除知识库 (级联清理文档与切片)
      */
     void deleteDataset(Long datasetId);
+
+    com.agentforge.vo.DatasetVo createDataset(com.agentforge.dto.DatasetRequest request);
+
+    com.agentforge.vo.PageResult<com.agentforge.vo.DatasetVo> listDatasetVos(String keyword, long pageNum, long pageSize);
 }

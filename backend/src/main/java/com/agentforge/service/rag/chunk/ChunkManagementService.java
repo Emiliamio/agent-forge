@@ -84,6 +84,18 @@ public class ChunkManagementService {
     /**
      * 分页查询指定文档的分块列表
      */
+    public com.agentforge.vo.PageResult<com.agentforge.vo.DocumentChunkVo> listChunkVos(Long documentId, int pageNum, int pageSize) {
+        Page<DocumentChunk> page = listChunks(documentId, pageNum, pageSize);
+        java.util.List<com.agentforge.vo.DocumentChunkVo> list = page.getRecords().stream()
+                .map(com.agentforge.service.converter.DocumentChunkConverter::toVo)
+                .toList();
+        return com.agentforge.vo.PageResult.of(page.getCurrent(), page.getSize(), page.getTotal(), list);
+    }
+
+    public com.agentforge.vo.DocumentChunkVo updateChunkContentVo(Long chunkId, String newContent) {
+        return com.agentforge.service.converter.DocumentChunkConverter.toVo(updateChunkContent(chunkId, newContent));
+    }
+
     public Page<DocumentChunk> listChunks(Long documentId, int pageNum, int pageSize) {
         Long tenantId = TenantContextHolder.getTenantId();
         return chunkMapper.selectPage(
