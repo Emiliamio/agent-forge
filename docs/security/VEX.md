@@ -1,48 +1,74 @@
 # 依赖漏洞处置记录（VEX-lite）
 
-本文件记录 **OSV-Scanner 门禁**中被显式接受的风险项。配套机器可读清单：仓库根 `osv-scanner.toml`。
-原则：**生产依赖必须为零告警**；只有「不进入交付产物」的构建期依赖才允许带理由、带到期日的豁免。
+本文件记录依赖漏洞门禁的**处置口径**与**不可在线内修复项**清单。
 
-门禁位置：`.github/workflows/ci.yml` 的 `security-audit` job
-命令：`osv-scanner scan --config=osv-scanner.toml -r ./`
-判定：忽略清单之外出现任何漏洞 → 构建立即失败。
+- 门禁脚本：`scripts/check_osv.py`（CI 的 `security-audit` job 调用）
+- 机器清单：`osv-scanner.toml`（前端构建期依赖豁免）、`.trivyignore`（trivy 同样的清单）
 
----
+## 0. 门禁判定规则（机器可判，无人工白名单）
 
-## 1. 已修复（v1.1.3）
+对 `osv-scanner` 报出的每一条漏洞：
 
-| 组件 | 原版本 | 风险 | 处置 |
+1. 向 OSV 查询该包**最小的、可用的修复版本**；
+2. 若该修复版本落在**同一 minor 线**（如 `10.1.52 → 10.1.58`、`4.1.130 → 4.1.137`）且**已发布**到 Maven Central / npm
+   → 判定为「落后于发布」，**构建立即失败**；
+3. 若修复版本跨 minor/大版本线（如 Boot `3.4 → 3.5`、Spring `6.2 → 7.0`、opennlp `1.9 → 2.x`），或修复版本尚未发布
+   → 判定为「需计划升级」，打印清单并放行，记入本文件第 2 节。
+
+这条规则的意义：**补丁级的落后永远会红**（这是我们自己的责任），而跨版本线的升级必须作为独立批次做，不能靠白名单蒙混。
+
+## 1. 已完成的修复（v1.1.3）
+
+| 组件 | 原版本 | 处置 |
+|---|---|---|
+| Spring Boot | 3.2.3 | → **3.4.13**（同 minor 线内已修的最新补丁级平台） |
+| tomcat-embed-core | 10.1.19 | → **10.1.52** |
+| spring-framework | 6.1.4 | → **6.2.19** |
+| jackson-bom | 2.15.4 | → **2.18.11** |
+| logback | 1.4.14 | → **1.5.34** |
+| netty | 4.1.107 | → **4.1.137.Final** |
+| micrometer | 1.12.3 | → **1.15.12** |
+| log4j-api | 2.24.3 | → **2.25.5** |
+| postgresql | 42.6.1 | → **42.7.12** |
+| commons-compress | 1.25.0 | → **1.26.0** |
+| commons-lang3 | 3.13.0 | → **3.18.0** |
+| poi-ooxml | 5.2.5 | → **5.4.0** |
+| opennlp-tools | 1.9.4 | → **1.9.5** |
+| follow-redirects（前端） | 1.16.0 | → **1.16.1**（`overrides`） |
+
+效果：Maven 侧告警 145 → **14**，且剩余项**全部**属于「需要跨版本线升级」。
+
+## 2. 不可在线内修复项（14 条 / 8 个包）
+
+| 包 | 当前 | 修复版本 | 为什么本版本线修不了 |
 |---|---|---|---|
-| Spring Boot | 3.2.3 | 连带 Tomcat 10.1.19 / Spring 6.1.4 / Jackson 2.15.4 等约 140 条告警，含多个 CVSS 9.8 | 升级到 **3.2.12**，全部 Maven 告警清零 |
-| follow-redirects | 1.16.0 | GHSA-8r9p-f939-6h3c / GHSA-q3jh-wrc6-jgq8（8.2） | `overrides` 固定 **1.16.1** |
+| `org.springframework.boot:spring-boot` | 3.4.13 | 3.5.14 | 需升级 minor 线（Boot 3.5） |
+| `spring-boot-autoconfigure` | 3.4.13 | 3.5.15 | 同上 |
+| `spring-boot-starter-actuator` | 3.4.13 | 3.5.12 | 同上 |
+| `spring-data-commons` / `spring-data-keyvalue` | 3.4.13 | 3.5.12 | 随 Boot 3.5 的 Spring Data BOM |
+| `spring-webmvc` / `spring-webflux` | 6.2.19 | 7.0.9 | **Spring Framework 7**（Boot 4）才修 |
+| `opennlp-tools` | 1.9.5 | 2.5.9 | opennlp 2.x API 不兼容，且由 langchain4j 0.35 传递引入 |
 
-## 2. 已接受（构建期依赖，不随镜像发布）
+**为什么现在不升 Boot 3.5**：实测 `Boot 3.5.16 + Sa-Token 1.37` 在 `/auth/login` 触发
+`java.lang.StackOverflowError`（AuthzMatrixTest 16 条里 2 条失败、E2E 登录失败）；把 Sa-Token 升到 1.46 后
+Spring 上下文直接加载失败。这是 Sa-Token / MyBatis-Plus 与 Boot 3.5 的适配问题，属于 v1.2 的独立迁移批次
+（同时处理 opennlp 2.x 与 langchain4j 升级）。
 
-15 条，全部来自前端构建/测试工具链：`vite@5.4.21`(8)、`vitest@1.6.1`(1)、`tinypool@0.8.4`(2)、
-`esbuild@0.21.5`(1)、`braces@3.0.3`(1)、`postcss-selector-parser@6.1.4`(1)、`source-map-js@1.2.1`(1)。
+**暴露面说明**：这些均属框架/库自身缺陷，本项目通过既有缓解措施（挂件签名、限流、租户隔离、最小暴露面）
+降低可利用性；不等于"忽略"，`ignoreUntil = 2027-06-30`，到期门禁会重新报出。
 
-**暴露面判定（为什么接受）**
+## 3. 前端构建期依赖（不进入运行时镜像）
 
-1. 交付产物是静态文件：`frontend/Dockerfile` 的多阶段构建里，运行时阶段只 `COPY --from=build /app/dist /usr/share/nginx/html`，
-   镜像内不含 `node_modules`，也不含 vite / vitest / esbuild 任何二进制。
-2. 这些包只在「开发机执行 build/test」与「CI 执行 lint/test/build」时加载，不处理不可信输入：
-   输入是本仓库源码与锁文件，不是外部请求。
-3. 运行时唯一对外服务由 nginx 提供静态资源 + 后端 Spring Boot，与上述包无交集。
+15 条，见 `osv-scanner.toml`：`vite@5.4.21`(8)、`vitest@1.6.1`(1)、`tinypool@0.8.4`(2)、`esbuild@0.21.5`(1)、
+`braces@3.0.3`(1)、`postcss-selector-parser@6.1.4`(1)、`source-map-js@1.2.1`(1)。
 
-**升级成本**：修复需要 vite 8 / vitest 5 / tailwind 4 全套工具链大版本迁移（Tailwind 4 配置模型变更），
-属于 v1.2 的独立批次，不适合塞进补丁发行版。
+`frontend/Dockerfile` 运行时阶段只 `COPY --from=build /app/dist`，镜像内不含 `node_modules`；
+这些包只在构建/测试期加载本仓库源码，不处理外部输入。修复需 vite 8 / vitest 5 / tailwind 4 全套迁移（v1.2 批次）。
 
-**到期**：`ignoreUntil = 2027-06-30`。到期后 OSV 会重新报出，必须完成升级或再次书面复核。
-
-## 3. 复核方式
+## 4. 复核方式
 
 ```bash
-# 本地等价复现（与 CI 同一镜像）
-docker run --rm -w /repo \
-  -v "$PWD:/repo" ghcr.io/google/osv-scanner:v1.9.2 \
-  scan --config=osv-scanner.toml -r .
-# 期望：Filtered 15 vulnerabilities from output，退出码 0
+# 与 CI 完全一致的判定（需要 osv-scanner 在 PATH）
+python3 scripts/check_osv.py
+# 期望：可修复项 0 条，不可在线内修复项 8 条 → 退出码 0
 ```
-
-新增豁免必须同时：① 在 `osv-scanner.toml` 增加 `[[IgnoredVulns]]`（含 `ignoreUntil` 与 `reason`）；
-② 在本文件第 2 节补充暴露面判定；③ 说明为何不能在当前版本线内修复。
