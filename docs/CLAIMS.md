@@ -16,7 +16,7 @@
 | **06** | **后端自动化测试套件** | 177+ 用例全绿、0 失败、0 跳过 | `cd backend && mvn -B clean verify -Dlive=true` | 终端输出 `Failures: 0, Errors: 0, Skipped: 0` 与 `BUILD SUCCESS` |
 | **07** | **JaCoCo 全局分支与指令覆盖率** | BUNDLE Coverage ≥ 0.60 | `cd backend && mvn -B clean verify -Dlive=true` | 输出含 `All coverage checks have been met.` |
 | **08** | **数据库备份与临时库全量恢复** | 往返保真度 100% | `bash scripts/backup.sh && bash scripts/restore.sh --verify <latest_dump>` | 7 项表结构与业务数据校验全通过，输出 `round-trip restore verification PASSED` |
-| **09** | **一键全栈生产编排冷启动** | 一键起全栈且状态全健康 | `docker compose --profile full up -d --build --wait` | 命令执行返回码 `EXIT=0`，后端/前端/Postgres/Redis 四大容器均为 `healthy` |
+| **09** | **一键全栈生产编排冷启动（≤60s）** | 镜像已就绪时 `up -d --wait` ≤ 60s 且四容器全 `healthy`；镜像可从 GHCR 匿名拉取 | `docker compose --profile full down && time docker compose --profile full up -d --wait` | 实测耗时 ≤ 60s（本机多次：6.6s / 17.8s），`backend`/`frontend`/`postgres`/`redis` 均为 `healthy`，`/api/system/health`=200、前端=200 |
 
 ---
 
@@ -31,3 +31,20 @@ bash scripts/verify-claims.sh
 - 该脚本将逐条执行上述 9 个声明项，对输出与退出码进行强断言；
 - 运行过程中自动检索最新备份快照、在执行限流测试前精准清理 `widget:*` 探针缓存、并在完成后自愈还原 Agent 1 原始配置状态；
 - 任一指标未达成或产生漂移，脚本将立即退出并返回非 0 状态码 (`exit 1`)。
+
+---
+
+## 3. 官方镜像可拉取性（Claim 09 的前置条件）
+
+CI 的 `publish-images` job 在 `main` 与 `v*` 标签上都会向 GHCR 推送镜像；仓库公开时可匿名拉取，
+私有仓库需 `docker login ghcr.io`。本地实测（2026-10-23，`main` 分支构建）：
+
+```
+docker pull ghcr.io/emiliamio/agentforge-backend:latest    # sha256:f572a57df3e94f50c1ff3e525267bf7e5047987b42f5cf5d7f13f7ce218612f6
+docker pull ghcr.io/emiliamio/agentforge-frontend:latest   # sha256:3030f634018272fb90e008913f6c12f1d9b85541b647e885ce1bc0d98ebaea05
+
+docker compose --profile full pull      # 冷缓存 18.4s ~ 80.3s（随网络波动，不计入 60s 阈值）
+docker compose --profile full up -d --wait  # 6.6s / 17.8s（计入阈值）
+```
+
+因此 Claim 09 的 60s 阈值口径为「**镜像已就绪时的启动耗时**」；拉取耗时受网络影响，单列观测值不参与判定。

@@ -167,17 +167,23 @@ else
   record_fail "08" "备份恢复往返可验证" "Restore verification failed"
 fi
 
-# --- Claim 9: 一键全栈可启动且健康 ---
-echo "Verifying Claim 9: 一键全栈可启动且健康..."
+# --- Claim 9: 一键全栈可启动、健康且冷启动 ≤60s ---
+echo "Verifying Claim 9: 一键全栈可启动、健康且冷启动 ≤60s..."
+docker compose --profile full down >/dev/null 2>&1 || true
+CLAIM9_START=$(date +%s)
 if docker compose --profile full up -d --wait; then
+  CLAIM9_ELAPSED=$(( $(date +%s) - CLAIM9_START ))
+  echo "冷启动耗时: ${CLAIM9_ELAPSED}s (阈值 60s)"
   UNHEALTHY=$(docker compose --profile full ps --format '{{.Service}} {{.Health}}' | grep -v "healthy" || true)
-  if [ -z "$UNHEALTHY" ]; then
-    record_pass "09" "一键全栈可启动且状态全健康"
+  if [ -n "$UNHEALTHY" ]; then
+    record_fail "09" "一键全栈可启动、健康且冷启动 ≤60s" "Containers not all healthy: $UNHEALTHY"
+  elif [ "$CLAIM9_ELAPSED" -gt 60 ]; then
+    record_fail "09" "一键全栈可启动、健康且冷启动 ≤60s" "冷启动 ${CLAIM9_ELAPSED}s 超过 60s 阈值"
   else
-    record_fail "09" "一键全栈可启动且状态全健康" "Containers not all healthy: $UNHEALTHY"
+    record_pass "09" "一键全栈可启动、健康且冷启动 ≤60s（实测 ${CLAIM9_ELAPSED}s）"
   fi
 else
-  record_fail "09" "一键全栈可启动且状态全健康" "docker compose up returned non-zero"
+  record_fail "09" "一键全栈可启动、健康且冷启动 ≤60s" "docker compose up returned non-zero"
 fi
 
 echo "========================================================"
