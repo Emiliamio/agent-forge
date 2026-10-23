@@ -1,4 +1,4 @@
-name: AgentForge CI
+﻿name: AgentForge CI
 
 on:
   push:
@@ -125,7 +125,7 @@ jobs:
       - name: Install OSV-Scanner
         run: |
           # v1.9.x 命令为 osv-scanner -r ./ ； v2.x 改为 osv-scanner scan source -r .
-          OSV_VERSION=1.9.3
+          OSV_VERSION=1.9.0
           curl -sSfL "https://github.com/google/osv-scanner/releases/download/v${OSV_VERSION}/osv-scanner_linux_amd64" \
             -o /tmp/osv-scanner
           sudo install -m 0755 /tmp/osv-scanner /usr/local/bin/osv-scanner
