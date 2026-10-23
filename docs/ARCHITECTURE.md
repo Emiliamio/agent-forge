@@ -163,3 +163,106 @@ graph TB
 │  • 全链路自动化单元与集成测试 (100% 绿灯) + 中英文交付文档与架构手册    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🏛️ 六、 工业级架构六大不变量 (Architecture Invariants R1–R6)
+
+AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Architecture Invariants R1–R6）**。
+所有规则均通过 **ArchUnit 架构门禁**、**OpenAPI 规范化契约测试** 与 **六边形端口测试替身** 由机器 100% 自动化核验，**严禁任何白名单豁免或假通过注解**。详细架构决策请参阅 [ADR 0006: 六大架构不变量与机器可验证防御体系](adr/0006-architecture-invariants.md)。
+
+### 1. 不变量 R1: 严格单向分层调用契约 (Layering Hierarchy)
+- **为什么**：系统必须严格沿 `Controller -> Service -> Mapper -> Entity` 单向调用链演进。控制层与数据传输层（`controller`, `dto`, `vo`）严禁穿透直接调用持久层 `mapper`；底层持久层 `mapper` 严禁反向依赖业务层 `service`；领域实体 `entity` 保持贫血/纯洁状态，严禁依赖业务逻辑或持久层。
+- **没它会发生什么真实事故**：控制器若绕过 Service 业务层直接注入 Mapper 增删改查，将完全脱离租户上下文校验、数据脱敏、业务审计及缓存一致性保护，导致数据越权泄露；下层若反向依赖上层，会导致紧密双向耦合，无法拆分与单独测试。
+- **真实反例代码**：
+  ```java
+  // 错误反例：Controller 直接注入 Mapper 越权查库
+  @RestController
+  public class AgentAppController {
+      @Autowired private AgentAppMapper agentAppMapper; // 违背 R1: Controller 严禁直接依赖 Mapper
+  }
+  ```
+- **机器验证命令**：
+  ```bash
+  cd backend && mvn -B -Dtest=ArchitectureTest#r1_controller_must_not_depend_on_mapper,ArchitectureTest#r1_mapper_must_not_depend_on_service,ArchitectureTest#r1_entity_must_not_depend_on_service_or_mapper test
+  ```
+
+### 2. 不变量 R2: 控制器入参出参严格 DTO/VO 化 (Controller DTO/VO Boundary)
+- **为什么**：网络传输模型必须与数据库持久化实体强力解耦。所有 Controller 接口入参必须为专用 Request DTO，出参必须为专用 Response VO 或基础类型，严禁在 HTTP 边界直接暴露 `Entity`。
+- **没它会发生什么真实事故**：攻击者可在请求体中构造恶意 JSON，利用 Spring 反序列化批量赋值漏洞（Mass Assignment）篡改 `tenantId`、`isDeleted` 或系统管理权限；响应直接返回 Entity 则极易无意泄漏密码散列、用户敏感配置或第三方 API 密钥。
+- **真实反例代码**：
+  ```java
+  // 错误反例：直接将 Entity 暴露为请求体入参或响应返回值
+  @PostMapping("/create")
+  public Result<AgentApp> createAgent(@RequestBody AgentApp app) { // 违背 R2: 严禁直接接收或返回 Entity
+      return Result.success(app);
+  }
+  ```
+- **机器验证命令**：
+  ```bash
+  cd backend && mvn -B -Dtest=ArchitectureTest#r2_controller_must_not_depend_on_entity,ArchitectureTest#r2_controller_must_not_depend_on_entity_fields test
+  # 源码级别零依赖验证
+  grep -rn "import com.agentforge.entity" backend/src/main/java/com/agentforge/controller/ | wc -l # 必须输出 0
+  ```
+
+### 3. 不变量 R3: 事务注解严格收敛在业务服务层 (Transactional Boundary)
+- **为什么**：`@Transactional` 事务生命周期必须精确封装在 Service 业务逻辑层，严禁外溢至 Controller 接入层，也禁止下沉至持久层或配置类。
+- **没它会发生什么真实事故**：Controller 控制器方法通常伴随网络 I/O、第三方大模型流式响应（SSE）、长耗时文件读取或外部 HTTP 工具调用。若在 Controller 层声明 `@Transactional`，事务会在整个请求周期霸占数据库物理连接，瞬间导致 HikariCP 数据库连接池耗尽（Connection Pool Starvation），引发全站级雪崩瘫痪。
+- **真实反例代码**：
+  ```java
+  // 错误反例：在 Web 控制器上声明数据库事务
+  @RestController
+  @Transactional(rollbackFor = Exception.class) // 违背 R3: 控制器声明长事务霸占连接
+  public class DocumentController { ... }
+  ```
+- **机器验证命令**：
+  ```bash
+  cd backend && mvn -B -Dtest=ArchitectureTest#r3_transactional_only_in_service test
+  ```
+
+### 4. 不变量 R4: 包级架构切片绝对无环 (Cycle-Free Architecture Slices)
+- **为什么**：系统的顶级包切片（`com.agentforge.(*)..`）之间必须形成清晰的有向无环图（DAG）；跨业务特性领域（`agent`、`rag` 等）必须通过对外契约接口通信，严禁直接跨模块穿透访问对方内部实现类（`internal`）。
+- **没它会发生什么真实事故**：包级循环依赖会导致模块无法进行单元编译隔离与独立演化，构建时出现循环类加载冲突；在 Spring 容器启动时引发 `BeanCurrentlyInCreationException` 循环依赖崩溃；代码重构时牵一发而动全身。
+- **真实反例代码**：
+  ```java
+  // 错误反例：entity 依赖 config 中的 TypeHandler，而 config 依赖 security，security 依赖 entity 形成网状闭环
+  package com.agentforge.entity;
+  import com.agentforge.config.mybatis.PgVectorTypeHandler; // 违背 R4: 引发 entity -> config -> security -> entity 环形依赖
+  ```
+- **机器验证命令**：
+  ```bash
+  cd backend && mvn -B -Dtest=ArchitectureTest#r4_no_cycles,ArchitectureTest#r8_cross_feature_internal_boundary test
+  ```
+
+### 5. 不变量 R5: OpenAPI 契约快照与防漂移机器回归 (OpenAPI Contract Snapshot)
+- **为什么**：对外暴露的 RESTful 接口规范是前端应用以及第三方集成系统的核心契约。必须将标准化 OpenAPI 规范以规范化 JSON 快照（`docs/openapi.json`）落盘，并在自动化测试中逐字段核验防漂移。
+- **没它会发生什么真实事故**：后端开发者无意中修改了 `@RequestParam` 参数名、增删了请求字段、或者更改了数据类型，由于本地单元测试通常 Mock 了 Service，常规测试难以发现 HTTP 契约破损，导致前端工作台或买家线上系统在发布后出现大面积运行时 400/404/反序列化报错。
+- **真实反例代码**：
+  ```java
+  // 错误反例：未同步更新 OpenAPI 契约基线即变更接口形参
+  @GetMapping("/health")
+  public Result<Map<String, Object>> checkHealth(@RequestParam(required = false) String probe) // 违背 R5: 触发 OpenAPI 契约不一致
+  ```
+- **机器验证命令**：
+  ```bash
+  cd backend && mvn -B -Dtest=OpenApiContractTest -Dlive=true test
+  ```
+
+### 6. 不变量 R6: 外部重依赖端口隔离与 Fake 闭环 (Hexagonal Ports & Fakes)
+- **为什么**：遵循六边形架构思想，对外部不可控的大型外部依赖（LLM 大模型客户端、向量化 Embedding 引擎、文件对象存储）进行端口抽象（`ChatModelPort`, `EmbeddingPort`, `DocumentStoragePort`）；并在 `src/test` 提供轻量级、确定性的内存测试替身（`Fake*`），并确保所有 Fake 真实接入测试流程。
+- **没它会发生什么真实事故**：执行回归测试时过度依赖真实网络环境或外网 API，常常因网络抖动、网络隔离或第三方 API 429 限流导致 CI 构建频繁假死或挂掉；若使用 Mockito 大量编写行为 Mock，又会导致测试代码臃肿脆弱，稍有改动便集体失效。
+- **真实反例代码**：
+  ```java
+  // 错误反例：业务服务直接耦合具体的 OkHttp 远程调用类且缺乏抽象端口
+  public class ReActAgentService {
+      private final OkHttpClient httpClient = new OkHttpClient(); // 违背 R6: 强绑定网络客户端，无法进行零 Mock 单元替身验证
+  }
+  ```
+- **机器验证命令**：
+  ```bash
+  # 验证测试包内存在至少 3 个 Fake 替身实现类
+  powershell -Command "(Get-ChildItem -Path backend/src/test -Recurse | Select-String -Pattern 'class Fake').Path | Select-Object -Unique"
+  # 运行六边形端口与测试替身集成验证
+  cd backend && mvn -B -Dtest=HexagonalPortsAndFakesTest test
+  ```
+

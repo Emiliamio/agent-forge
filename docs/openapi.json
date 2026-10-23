@@ -1,0 +1,5842 @@
+{
+  "components" : {
+    "schemas" : {
+      "AgentAppRequest" : {
+        "description" : "智能体应用创建与修改请求对象",
+        "properties" : {
+          "appType" : {
+            "description" : "应用形态分类 (CHATBOT / AGENT / WORKFLOW)",
+            "example" : "AGENT",
+            "type" : "string"
+          },
+          "avatar" : {
+            "description" : "智能体头像图标",
+            "example" : "robot-travel",
+            "type" : "string"
+          },
+          "datasetIds" : {
+            "description" : "关联知识库 ID 数组 JSON 字符串",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "智能体功能描述",
+            "example" : "专用于解答员工关于住宿、交通与差旅标准报销规范",
+            "type" : "string"
+          },
+          "modelConfig" : {
+            "description" : "模型配置参数 JSON 字符串",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "智能体名称",
+            "example" : "企业差旅合规助手",
+            "type" : "string"
+          },
+          "publicEnabled" : {
+            "description" : "是否允许公开免登录挂件嵌入访问 (1: 开启, 0: 关闭)",
+            "example" : 1,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "publicToken" : {
+            "description" : "当前生效的挂件签名密钥或明文安全 Token",
+            "type" : "string"
+          },
+          "publicTokenPrev" : {
+            "description" : "平滑过渡期的旧挂件密钥",
+            "type" : "string"
+          },
+          "status" : {
+            "description" : "启用状态 (1: 启用, 0: 禁用)",
+            "example" : 1,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "systemPrompt" : {
+            "description" : "系统角色 System Prompt 预设词",
+            "type" : "string"
+          },
+          "toolsConfig" : {
+            "description" : "Function Calling 挂载工具列表 JSON 字符串",
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "AgentAppVo" : {
+        "description" : "智能体应用视图对象",
+        "properties" : {
+          "appType" : {
+            "type" : "string"
+          },
+          "avatar" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "datasetIds" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "modelConfig" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "publicEnabled" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "publicToken" : {
+            "type" : "string"
+          },
+          "publicTokenPrev" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "systemPrompt" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "toolsConfig" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "AgentChatRequest" : {
+        "description" : "智能体对话请求对象",
+        "properties" : {
+          "maxIterations" : {
+            "description" : "ReAct 最大推理循环轮数",
+            "example" : 5,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "message" : {
+            "description" : "用户提问内容",
+            "example" : "你好，请介绍一下你自己",
+            "type" : "string"
+          }
+        },
+        "required" : [ "message" ],
+        "type" : "object"
+      },
+      "AgentExecutionResult" : {
+        "description" : "智能体执行推理结果",
+        "properties" : {
+          "citations" : {
+            "items" : {
+              "$ref" : "#/components/schemas/Citation"
+            },
+            "type" : "array"
+          },
+          "durationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "finalAnswer" : {
+            "type" : "string"
+          },
+          "steps" : {
+            "items" : {
+              "$ref" : "#/components/schemas/ReActStep"
+            },
+            "type" : "array"
+          },
+          "totalTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ArenaFeedbackRequest" : {
+        "properties" : {
+          "modelId" : {
+            "type" : "string"
+          },
+          "positive" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
+      "CaseResult" : {
+        "properties" : {
+          "faithfulness" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "generatedAnswer" : {
+            "type" : "string"
+          },
+          "groundTruth" : {
+            "type" : "string"
+          },
+          "precision" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "question" : {
+            "type" : "string"
+          },
+          "recall" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "relevance" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "retrievedContexts" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "ChatMessageVo" : {
+        "description" : "对话消息明细视图对象",
+        "properties" : {
+          "citationsJson" : {
+            "type" : "string"
+          },
+          "completionTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "content" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "promptTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "reasoningStepsJson" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "sessionId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ChatSessionVo" : {
+        "description" : "对话会话视图对象",
+        "properties" : {
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "messageCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "userId" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "CheckItem" : {
+        "properties" : {
+          "component" : {
+            "type" : "string"
+          },
+          "latencyMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "Citation" : {
+        "description" : "RAG 引用溯源模型",
+        "properties" : {
+          "chunkId" : {
+            "description" : "知识库切片 ID",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "documentId" : {
+            "description" : "所属文档 ID",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "documentName" : {
+            "description" : "文档名称",
+            "example" : "企业研发规范.md",
+            "type" : "string"
+          },
+          "highlightKeywords" : {
+            "description" : "命中的高亮关键词列表 (供前端渲染高亮背景色)",
+            "example" : [ "租户隔离", "pgvector" ],
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "index" : {
+            "description" : "引用序号",
+            "example" : 1,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "pageNumber" : {
+            "description" : "所在页码",
+            "example" : 3,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "score" : {
+            "description" : "相关度评分",
+            "example" : 0.92,
+            "format" : "double",
+            "type" : "number"
+          },
+          "sectionTitle" : {
+            "description" : "所在章节标题",
+            "example" : "三、代码安全规范",
+            "type" : "string"
+          },
+          "snippet" : {
+            "description" : "引用的文本片段",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "CreateSessionRequest" : {
+        "description" : "创建会话请求",
+        "properties" : {
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "title" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "DatasetRequest" : {
+        "description" : "知识库数据集创建请求",
+        "properties" : {
+          "avatar" : {
+            "description" : "图标",
+            "type" : "string"
+          },
+          "chunkOverlap" : {
+            "description" : "分块重叠度",
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "chunkSize" : {
+            "description" : "分块大小",
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "description" : {
+            "description" : "知识库描述",
+            "type" : "string"
+          },
+          "embeddingDim" : {
+            "description" : "向量维度",
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "embeddingModel" : {
+            "description" : "向量化模型",
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "知识库名称",
+            "type" : "string"
+          },
+          "status" : {
+            "description" : "状态",
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "DatasetVo" : {
+        "description" : "知识库数据集视图对象",
+        "properties" : {
+          "avatar" : {
+            "type" : "string"
+          },
+          "chunkOverlap" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "chunkSize" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "embeddingDim" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "embeddingModel" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "DiagnosticReport" : {
+        "properties" : {
+          "allPassed" : {
+            "type" : "boolean"
+          },
+          "checkItems" : {
+            "items" : {
+              "$ref" : "#/components/schemas/CheckItem"
+            },
+            "type" : "array"
+          },
+          "checkedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "passedChecks" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "totalChecks" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "DocumentChunkVo" : {
+        "description" : "知识库分块视图对象",
+        "properties" : {
+          "chunkIndex" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "content" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "datasetId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "documentId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "embedding" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "metadata" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tokenCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tsvContent" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "DocumentVo" : {
+        "description" : "知识库文档视图对象",
+        "properties" : {
+          "charCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "chunkCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "datasetId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "errorMsg" : {
+            "type" : "string"
+          },
+          "filePath" : {
+            "type" : "string"
+          },
+          "fileSize" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "fileType" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "parseStatus" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "EntityTriplet" : {
+        "properties" : {
+          "object" : {
+            "type" : "string"
+          },
+          "predicate" : {
+            "type" : "string"
+          },
+          "subject" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "EvalRunRequest" : {
+        "properties" : {
+          "datasetId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "testCases" : {
+            "items" : {
+              "$ref" : "#/components/schemas/TestCase"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "EvaluationReport" : {
+        "properties" : {
+          "answerRelevance" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "caseResults" : {
+            "items" : {
+              "$ref" : "#/components/schemas/CaseResult"
+            },
+            "type" : "array"
+          },
+          "contextPrecision" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "contextRecall" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "datasetId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "evalId" : {
+            "type" : "string"
+          },
+          "evaluatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "faithfulness" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "naiveRagScore" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "overallScore" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "scoreImprovementPercent" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "totalCases" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "FeedbackRequest" : {
+        "description" : "评价反馈请求",
+        "properties" : {
+          "comment" : {
+            "type" : "string"
+          },
+          "feedbackType" : {
+            "type" : "string"
+          },
+          "rating" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "GanttBarItem" : {
+        "properties" : {
+          "badgeColor" : {
+            "type" : "string"
+          },
+          "depth" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "durationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "offsetPercent" : {
+            "format" : "double",
+            "type" : "number"
+          },
+          "parentSpanId" : {
+            "type" : "string"
+          },
+          "spanId" : {
+            "type" : "string"
+          },
+          "spanType" : {
+            "type" : "string"
+          },
+          "startOffsetMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "statusColor" : {
+            "type" : "string"
+          },
+          "widthPercent" : {
+            "format" : "double",
+            "type" : "number"
+          }
+        },
+        "type" : "object"
+      },
+      "GanttTimelineView" : {
+        "properties" : {
+          "items" : {
+            "items" : {
+              "$ref" : "#/components/schemas/GanttBarItem"
+            },
+            "type" : "array"
+          },
+          "spanCount" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "totalDurationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "traceId" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "GuardResult" : {
+        "properties" : {
+          "hitThreats" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "riskLevel" : {
+            "enum" : [ "SAFE", "LOW", "MEDIUM", "HIGH", "CRITICAL" ],
+            "type" : "string"
+          },
+          "safe" : {
+            "type" : "boolean"
+          },
+          "sanitizedText" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "IndustryTemplateVo" : {
+        "description" : "行业模板视图对象",
+        "properties" : {
+          "category" : {
+            "type" : "string"
+          },
+          "dagJson" : {
+            "type" : "string"
+          },
+          "defaultPrompt" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "estimatedPrice" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "templateId" : {
+            "type" : "string"
+          },
+          "valueProposition" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "LoginRequest" : {
+        "description" : "用户登录请求",
+        "properties" : {
+          "password" : {
+            "description" : "密码",
+            "example" : "admin123",
+            "type" : "string"
+          },
+          "tenantCode" : {
+            "description" : "租户编码 (不填默认为 tenant_default)",
+            "example" : "tenant_default",
+            "type" : "string"
+          },
+          "username" : {
+            "description" : "用户名",
+            "example" : "admin",
+            "type" : "string"
+          }
+        },
+        "required" : [ "password", "username" ],
+        "type" : "object"
+      },
+      "LoginVO" : {
+        "description" : "登录响应数据",
+        "properties" : {
+          "role" : {
+            "description" : "用户角色 (OWNER/ADMIN/EDITOR/VIEWER)",
+            "type" : "string"
+          },
+          "tenantId" : {
+            "description" : "租户 ID",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tenantName" : {
+            "description" : "租户名称",
+            "type" : "string"
+          },
+          "token" : {
+            "description" : "认证 Token (Bearer)",
+            "type" : "string"
+          },
+          "tokenPrefix" : {
+            "description" : "Token 头部标识",
+            "example" : "Bearer",
+            "type" : "string"
+          },
+          "username" : {
+            "description" : "用户名",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "McpCallRequest" : {
+        "properties" : {
+          "arguments" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "type" : "object"
+          },
+          "toolName" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "McpCallResult" : {
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "boolean"
+          },
+          "errorMessage" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
+          }
+        },
+        "type" : "object"
+      },
+      "McpToolDefinition" : {
+        "properties" : {
+          "description" : {
+            "type" : "string"
+          },
+          "inputSchema" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "properties" : {
+              "empty" : {
+                "type" : "boolean"
+              }
+            },
+            "type" : "object"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "ModelCandidate" : {
+        "properties" : {
+          "modelId" : {
+            "type" : "string"
+          },
+          "weight" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "OAuthLoginRequest" : {
+        "properties" : {
+          "authCode" : {
+            "type" : "string"
+          },
+          "provider" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "OrgUserSyncItem" : {
+        "properties" : {
+          "deptId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "externalUserId" : {
+            "type" : "string"
+          },
+          "phone" : {
+            "type" : "string"
+          },
+          "realName" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "PageResultAgentAppVo" : {
+        "description" : "全局分页数据包装",
+        "properties" : {
+          "current" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "list" : {
+            "description" : "数据列表",
+            "items" : {
+              "$ref" : "#/components/schemas/AgentAppVo"
+            },
+            "type" : "array"
+          },
+          "pageNum" : {
+            "description" : "当前页码",
+            "example" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "description" : "每页大小",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pages" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "records" : {
+            "items" : {
+              "$ref" : "#/components/schemas/AgentAppVo"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "total" : {
+            "description" : "总记录数",
+            "example" : 100,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "description" : "总页数",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "PageResultDatasetVo" : {
+        "description" : "全局分页数据包装",
+        "properties" : {
+          "current" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "list" : {
+            "description" : "数据列表",
+            "items" : {
+              "$ref" : "#/components/schemas/DatasetVo"
+            },
+            "type" : "array"
+          },
+          "pageNum" : {
+            "description" : "当前页码",
+            "example" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "description" : "每页大小",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pages" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "records" : {
+            "items" : {
+              "$ref" : "#/components/schemas/DatasetVo"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "total" : {
+            "description" : "总记录数",
+            "example" : 100,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "description" : "总页数",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "PageResultDocumentChunkVo" : {
+        "description" : "全局分页数据包装",
+        "properties" : {
+          "current" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "list" : {
+            "description" : "数据列表",
+            "items" : {
+              "$ref" : "#/components/schemas/DocumentChunkVo"
+            },
+            "type" : "array"
+          },
+          "pageNum" : {
+            "description" : "当前页码",
+            "example" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "description" : "每页大小",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pages" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "records" : {
+            "items" : {
+              "$ref" : "#/components/schemas/DocumentChunkVo"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "total" : {
+            "description" : "总记录数",
+            "example" : 100,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "description" : "总页数",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "PageResultDocumentVo" : {
+        "description" : "全局分页数据包装",
+        "properties" : {
+          "current" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "list" : {
+            "description" : "数据列表",
+            "items" : {
+              "$ref" : "#/components/schemas/DocumentVo"
+            },
+            "type" : "array"
+          },
+          "pageNum" : {
+            "description" : "当前页码",
+            "example" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "description" : "每页大小",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pages" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "records" : {
+            "items" : {
+              "$ref" : "#/components/schemas/DocumentVo"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "total" : {
+            "description" : "总记录数",
+            "example" : 100,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "description" : "总页数",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "PageResultTokenUsageLogVo" : {
+        "description" : "全局分页数据包装",
+        "properties" : {
+          "current" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "list" : {
+            "description" : "数据列表",
+            "items" : {
+              "$ref" : "#/components/schemas/TokenUsageLogVo"
+            },
+            "type" : "array"
+          },
+          "pageNum" : {
+            "description" : "当前页码",
+            "example" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pageSize" : {
+            "description" : "每页大小",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "pages" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "records" : {
+            "items" : {
+              "$ref" : "#/components/schemas/TokenUsageLogVo"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "total" : {
+            "description" : "总记录数",
+            "example" : 100,
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalPages" : {
+            "description" : "总页数",
+            "example" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "QuotaCheckRequest" : {
+        "properties" : {
+          "estimatedTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "QuotaDecision" : {
+        "properties" : {
+          "allowed" : {
+            "type" : "boolean"
+          },
+          "currentRpm" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "rejectionReason" : {
+            "type" : "string"
+          },
+          "remainingTokens" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "retryAfterSeconds" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "RagSearchRequest" : {
+        "description" : "RAG 检索请求参数",
+        "properties" : {
+          "datasetIds" : {
+            "description" : "检索范围数据集 ID 列表",
+            "example" : [ 1 ],
+            "items" : {
+              "format" : "int64",
+              "type" : "integer"
+            },
+            "type" : "array"
+          },
+          "minScore" : {
+            "description" : "相似度最低阈值 (支持传 0.0 关闭阈值截断以供调试)",
+            "example" : 0.45,
+            "format" : "double",
+            "type" : "number"
+          },
+          "query" : {
+            "description" : "用户自然语言查询",
+            "example" : "微服务架构中的多租户数据隔离方案是什么？",
+            "type" : "string"
+          },
+          "topK" : {
+            "description" : "召回 Top-K 数量",
+            "example" : 5,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "datasetIds", "query" ],
+        "type" : "object"
+      },
+      "ReActStep" : {
+        "description" : "ReAct 推理步骤",
+        "properties" : {
+          "action" : {
+            "type" : "string"
+          },
+          "actionInput" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "type" : "object"
+          },
+          "durationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "observation" : {
+            "type" : "string"
+          },
+          "stepIndex" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "thought" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "RechargeRequest" : {
+        "description" : "租户充值请求",
+        "properties" : {
+          "amount" : {
+            "type" : "number"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultAgentAppVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/AgentAppVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultAgentExecutionResult" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/AgentExecutionResult",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultBigDecimal" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "type" : "number"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultChatMessageVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/ChatMessageVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultChatSessionVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/ChatSessionVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultDatasetVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/DatasetVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultDiagnosticReport" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/DiagnosticReport",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultDocumentChunkVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/DocumentChunkVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultDocumentVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/DocumentVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultEvaluationReport" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/EvaluationReport",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultGanttTimelineView" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/GanttTimelineView",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultGuardResult" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/GuardResult",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultInteger" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListChatMessageVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/ChatMessageVo"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListChatSessionVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/ChatSessionVo"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListCitation" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/Citation"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListEntityTriplet" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/EntityTriplet"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListIndustryTemplateVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/IndustryTemplateVo"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListMapStringObject" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "additionalProperties" : {
+                "type" : "object"
+              },
+              "type" : "object"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultListMcpToolDefinition" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/McpToolDefinition"
+            },
+            "type" : "array"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultLoginVO" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/LoginVO",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultMapStringObject" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "description" : "业务数据实体",
+            "type" : "object"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultMapStringString" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "description" : "业务数据实体",
+            "type" : "object"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultMcpCallResult" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/McpCallResult",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultPageResultAgentAppVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/PageResultAgentAppVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultPageResultDatasetVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/PageResultDatasetVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultPageResultDocumentChunkVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/PageResultDocumentChunkVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultPageResultDocumentVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/PageResultDocumentVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultPageResultTokenUsageLogVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/PageResultTokenUsageLogVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultQuotaDecision" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/QuotaDecision",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultSandboxResult" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/SandboxResult",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultSetEntityTriplet" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "items" : {
+              "$ref" : "#/components/schemas/EntityTriplet"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultString" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "type" : "string"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultUserInfoVO" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/UserInfoVO",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultVoid" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "description" : "业务数据实体",
+            "type" : "object"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultWorkflowDefinitionVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/WorkflowDefinitionVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "ResultWorkflowExecutionVo" : {
+        "description" : "全局统一响应包装",
+        "properties" : {
+          "code" : {
+            "description" : "业务响应状态码",
+            "example" : 200,
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/WorkflowExecutionVo",
+            "description" : "业务数据实体"
+          },
+          "message" : {
+            "description" : "响应消息提示",
+            "example" : "操作成功",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "响应时间戳",
+            "example" : 1724832000000,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "RunWorkflowRequest" : {
+        "description" : "运行工作流请求",
+        "properties" : {
+          "inputs" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "type" : "object"
+          }
+        },
+        "type" : "object"
+      },
+      "SandboxResult" : {
+        "properties" : {
+          "executionTimeMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "output" : {
+            "type" : "string"
+          },
+          "securityBlocked" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "type" : "boolean"
+          },
+          "violationReason" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "SendMessageRequest" : {
+        "description" : "发送会话消息请求",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "message" ],
+        "type" : "object"
+      },
+      "SyncOrgRequest" : {
+        "properties" : {
+          "userList" : {
+            "items" : {
+              "$ref" : "#/components/schemas/OrgUserSyncItem"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "TestCase" : {
+        "properties" : {
+          "groundTruth" : {
+            "type" : "string"
+          },
+          "question" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "TokenUsageLogVo" : {
+        "description" : "Token 消耗审计日志视图对象",
+        "properties" : {
+          "apiKeyId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "completionTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "costAmount" : {
+            "type" : "number"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "durationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "isCached" : {
+            "type" : "boolean"
+          },
+          "modelName" : {
+            "type" : "string"
+          },
+          "promptTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalTokens" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "userId" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "UpdateChunkRequest" : {
+        "description" : "更新分块请求",
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UserInfoVO" : {
+        "description" : "当前用户信息与租户白牌配置",
+        "properties" : {
+          "email" : {
+            "description" : "邮箱",
+            "type" : "string"
+          },
+          "id" : {
+            "description" : "用户 ID",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "realName" : {
+            "description" : "真实姓名",
+            "type" : "string"
+          },
+          "role" : {
+            "description" : "角色",
+            "type" : "string"
+          },
+          "tenantId" : {
+            "description" : "租户 ID",
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "tenantName" : {
+            "description" : "租户名称",
+            "type" : "string"
+          },
+          "username" : {
+            "description" : "用户名",
+            "type" : "string"
+          },
+          "walletBalance" : {
+            "description" : "租户钱包余额",
+            "type" : "number"
+          },
+          "whiteLabelConfig" : {
+            "description" : "租户白牌配置 (JSON 格式：包含 logo, title, copyright)",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "WidgetChatRequest" : {
+        "description" : "挂件免密对话请求",
+        "properties" : {
+          "maxIterations" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "message" ],
+        "type" : "object"
+      },
+      "WorkflowDefinitionRequest" : {
+        "description" : "工作流定义保存请求",
+        "properties" : {
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "dagJson" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "version" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "WorkflowDefinitionVo" : {
+        "description" : "工作流定义视图对象",
+        "properties" : {
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "dagJson" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "version" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "WorkflowExecutionVo" : {
+        "description" : "工作流执行记录视图对象",
+        "properties" : {
+          "appId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "createdAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "errorMsg" : {
+            "type" : "string"
+          },
+          "id" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "inputSnapshot" : {
+            "type" : "string"
+          },
+          "outputSnapshot" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "stepDetails" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "totalDurationMs" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "triggerType" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "format" : "date-time",
+            "type" : "string"
+          },
+          "workflowId" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "type" : "object"
+      }
+    },
+    "securitySchemes" : {
+      "ApiKeyAuth" : {
+        "description" : "请输入专属 API Key (如 af-sk-xxxx)",
+        "in" : "header",
+        "name" : "X-API-Key",
+        "type" : "apiKey"
+      },
+      "BearerAuth" : {
+        "bearerFormat" : "JWT",
+        "description" : "请输入 Bearer Token",
+        "name" : "BearerAuth",
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  },
+  "info" : {
+    "contact" : {
+      "email" : "support@agentforge.ai",
+      "name" : "AgentForge Team",
+      "url" : "https://agentforge.ai"
+    },
+    "description" : "工业级多租户 AI 编排中台，支持知识库混合检索、DAG 工作流调度与 Token 商业化计费。",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "title" : "AgentForge 企业级 AI 智能体与混合检索 RAG 平台 API",
+    "version" : "v1.0.0"
+  },
+  "openapi" : "3.1.0",
+  "paths" : {
+    "/agents" : {
+      "get" : {
+        "operationId" : "listAgents",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "keyword",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageNum",
+          "required" : false,
+          "schema" : {
+            "default" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "required" : false,
+          "schema" : {
+            "default" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultPageResultAgentAppVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "分页查询当前租户智能体列表",
+        "tags" : [ "07. 智能体编排与 ReAct 对话" ]
+      },
+      "post" : {
+        "operationId" : "createAgent",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AgentAppRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultAgentAppVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "创建智能体应用",
+        "tags" : [ "07. 智能体编排与 ReAct 对话" ]
+      }
+    },
+    "/agents/tools" : {
+      "get" : {
+        "operationId" : "listTools",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListMapStringObject"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取平台当前所有可用 Function Calling 工具清单",
+        "tags" : [ "07. 智能体编排与 ReAct 对话" ]
+      }
+    },
+    "/agents/{id}" : {
+      "get" : {
+        "operationId" : "getAgent",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultAgentAppVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取智能体详情",
+        "tags" : [ "07. 智能体编排与 ReAct 对话" ]
+      }
+    },
+    "/agents/{id}/chat" : {
+      "post" : {
+        "operationId" : "chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AgentChatRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultAgentExecutionResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "与智能体进行 ReAct 推理对话 (包含工具调用步骤追踪与溯源引用)",
+        "tags" : [ "07. 智能体编排与 ReAct 对话" ]
+      }
+    },
+    "/apex/arena/candidates" : {
+      "post" : {
+        "operationId" : "configureArenaCandidates",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "items" : {
+                  "$ref" : "#/components/schemas/ModelCandidate"
+                },
+                "type" : "array"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultString"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "配置多模型候选池",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/arena/feedback" : {
+      "post" : {
+        "operationId" : "recordModelFeedback",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ArenaFeedbackRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultString"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "提交模型竞技场满意度评价",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/arena/route" : {
+      "get" : {
+        "operationId" : "routeModel",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "sessionOrUserId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMapStringString"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取用户会话一致性模型路由决策",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/graph/extract" : {
+      "post" : {
+        "operationId" : "extractGraphTriplets",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "type" : "string"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListEntityTriplet"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "从文本抽取实体关系三元组并索引",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/graph/search" : {
+      "get" : {
+        "operationId" : "searchGraph",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "entity",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "maxHops",
+          "required" : false,
+          "schema" : {
+            "default" : 2,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultSetEntityTriplet"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "执行 GraphRAG 拓扑多跳扩散检索",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/guard/inspect" : {
+      "post" : {
+        "operationId" : "inspectPrompt",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "type" : "string"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultGuardResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Prompt 注入与越狱对抗实时审计",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/mcp/call" : {
+      "post" : {
+        "operationId" : "callMcpTool",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/McpCallRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMcpCallResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "远程调度 MCP 工具执行",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/mcp/tools" : {
+      "get" : {
+        "operationId" : "listMcpTools",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListMcpToolDefinition"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取已发现的 MCP 工具列表",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/quantization/compress" : {
+      "post" : {
+        "operationId" : "testQuantization",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "type" : "object"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMapStringObject"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "SQ8 向量标量量化压缩与相似度保真度评测",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/quota/check" : {
+      "post" : {
+        "operationId" : "checkQuota",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QuotaCheckRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultQuotaDecision"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "租户单日 Token 预算与并发限流检查",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/sandbox/run" : {
+      "post" : {
+        "operationId" : "runSandbox",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "additionalProperties" : {
+                  "type" : "object"
+                },
+                "type" : "object"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultSandboxResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "安全受限代码沙箱运行",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/apex/trace/gantt/{traceId}" : {
+      "get" : {
+        "operationId" : "getTraceGantt",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "traceId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultGanttTimelineView"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取指定 Trace 的 APM 时序瀑布流甘特图",
+        "tags" : [ "15. 企业级 Apex 核心高阶能力中枢" ]
+      }
+    },
+    "/auth/login" : {
+      "post" : {
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultLoginVO"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "用户登录 (支持多租户)",
+        "tags" : [ "02. 身份认证与权限" ]
+      }
+    },
+    "/auth/logout" : {
+      "post" : {
+        "operationId" : "logout",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "用户登出",
+        "tags" : [ "02. 身份认证与权限" ]
+      }
+    },
+    "/auth/user-info" : {
+      "get" : {
+        "operationId" : "getUserInfo",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultUserInfoVO"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取当前用户信息与租户白牌配置",
+        "tags" : [ "02. 身份认证与权限" ]
+      }
+    },
+    "/billing/logs" : {
+      "get" : {
+        "operationId" : "listUsageLogs",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "pageNum",
+          "required" : false,
+          "schema" : {
+            "default" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "required" : false,
+          "schema" : {
+            "default" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultPageResultTokenUsageLogVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "分页查询 Token 消耗审计日志",
+        "tags" : [ "08. 商业化计量与计费看板" ]
+      }
+    },
+    "/billing/recharge" : {
+      "post" : {
+        "operationId" : "recharge",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RechargeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultBigDecimal"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "租户钱包在线充值",
+        "tags" : [ "08. 商业化计量与计费看板" ]
+      }
+    },
+    "/billing/stats" : {
+      "get" : {
+        "operationId" : "getBillingStats",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMapStringObject"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取当前租户 Token 消耗与计费统计看板",
+        "tags" : [ "08. 商业化计量与计费看板" ]
+      }
+    },
+    "/billing/tenant/{tenantId}/usage" : {
+      "get" : {
+        "operationId" : "getTenantUsage",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "tenantId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMapStringObject"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "按租户 ID 查询用量详情 (跨租户越权防护)",
+        "tags" : [ "08. 商业化计量与计费看板" ]
+      }
+    },
+    "/chat/messages/{messageId}/feedback" : {
+      "post" : {
+        "operationId" : "submitFeedback",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "messageId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FeedbackRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultString"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "提交点赞/点踩与修改建议反馈 (用于问答自进化)",
+        "tags" : [ "09. 多轮会话持久化与问答质量评价" ]
+      }
+    },
+    "/chat/sessions" : {
+      "get" : {
+        "operationId" : "listSessions",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListChatSessionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取当前用户的所有历史会话列表",
+        "tags" : [ "09. 多轮会话持久化与问答质量评价" ]
+      },
+      "post" : {
+        "operationId" : "createSession",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateSessionRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultChatSessionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "创建或初始化新会话",
+        "tags" : [ "09. 多轮会话持久化与问答质量评价" ]
+      }
+    },
+    "/chat/sessions/{sessionId}/messages" : {
+      "get" : {
+        "operationId" : "listMessages",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListChatMessageVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取会话历史消息记录",
+        "tags" : [ "09. 多轮会话持久化与问答质量评价" ]
+      }
+    },
+    "/chat/sessions/{sessionId}/send" : {
+      "post" : {
+        "operationId" : "sendMessage",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sessionId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SendMessageRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultChatMessageVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "发送对话消息 (支持 PII 敏感脱敏与多轮持久化)",
+        "tags" : [ "09. 多轮会话持久化与问答质量评价" ]
+      }
+    },
+    "/datasets" : {
+      "get" : {
+        "operationId" : "listDatasets",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "keyword",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageNum",
+          "required" : false,
+          "schema" : {
+            "default" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "required" : false,
+          "schema" : {
+            "default" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultPageResultDatasetVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "分页查询知识库列表",
+        "tags" : [ "03. 知识库数据集管理" ]
+      },
+      "post" : {
+        "operationId" : "createDataset",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DatasetRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultDatasetVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "创建知识库数据集",
+        "tags" : [ "03. 知识库数据集管理" ]
+      }
+    },
+    "/datasets/{id}" : {
+      "delete" : {
+        "operationId" : "deleteDataset",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "删除知识库数据集 (级联清理文档与切片)",
+        "tags" : [ "03. 知识库数据集管理" ]
+      }
+    },
+    "/documents/list" : {
+      "get" : {
+        "operationId" : "listDocuments",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "datasetId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageNum",
+          "required" : false,
+          "schema" : {
+            "default" : 1,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "required" : false,
+          "schema" : {
+            "default" : 10,
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultPageResultDocumentVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "分页查询指定知识库下的文档列表",
+        "tags" : [ "04. 知识库文档管理" ]
+      }
+    },
+    "/documents/upload" : {
+      "post" : {
+        "operationId" : "uploadDocument",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "datasetId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "properties" : {
+                  "file" : {
+                    "format" : "binary",
+                    "type" : "string"
+                  }
+                },
+                "required" : [ "file" ],
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultDocumentVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "上传文档并触发 RAG 管道解析切片 (支持 PDF/DOCX/MD/TXT)",
+        "tags" : [ "04. 知识库文档管理" ]
+      }
+    },
+    "/documents/{id}" : {
+      "delete" : {
+        "operationId" : "deleteDocument",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "删除指定文档及关联的切片向量",
+        "tags" : [ "04. 知识库文档管理" ]
+      }
+    },
+    "/market/templates" : {
+      "get" : {
+        "operationId" : "listTemplates",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListIndustryTemplateVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取模板市场全量模板列表",
+        "tags" : [ "12. 垂直行业应用与工作流模板市场" ]
+      }
+    },
+    "/market/templates/{templateId}/clone" : {
+      "post" : {
+        "operationId" : "cloneTemplate",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "templateId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultWorkflowDefinitionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "一键克隆行业模板到当前租户",
+        "tags" : [ "12. 垂直行业应用与工作流模板市场" ]
+      }
+    },
+    "/public/agents/{id}/chat" : {
+      "post" : {
+        "operationId" : "widgetChat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "header",
+          "name" : "X-Public-Token",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "header",
+          "name" : "X-AgentForge-Public-Token",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WidgetChatRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultAgentExecutionResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "挂件免登录对话 (支持跨租户定位、安全开关与常量时间凭据校验)",
+        "tags" : [ "07-P. 挂件公开对话接口" ]
+      }
+    },
+    "/rag/chunks/document/{documentId}" : {
+      "get" : {
+        "operationId" : "listChunks",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "documentId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "default" : 1,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "default" : 20,
+            "format" : "int32",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultPageResultDocumentChunkVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "分页获取指定文档的分块列表",
+        "tags" : [ "14. 知识库切片单条热编辑与状态管理" ]
+      }
+    },
+    "/rag/chunks/{chunkId}" : {
+      "put" : {
+        "operationId" : "updateChunk",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chunkId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateChunkRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultDocumentChunkVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "在线热编辑单条切片文本 (自动重算向量并驱逐旧缓存)",
+        "tags" : [ "14. 知识库切片单条热编辑与状态管理" ]
+      }
+    },
+    "/rag/chunks/{chunkId}/toggle" : {
+      "put" : {
+        "operationId" : "toggleChunk",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chunkId",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
+          "name" : "isPublic",
+          "required" : true,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "一键启用/禁用切片",
+        "tags" : [ "14. 知识库切片单条热编辑与状态管理" ]
+      }
+    },
+    "/rag/eval/run" : {
+      "post" : {
+        "operationId" : "runEvaluation",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EvalRunRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultEvaluationReport"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "触发 RAGAS 自动化精度量化评测",
+        "tags" : [ "11. RAGAS 知识库精度量化评测沙盒" ]
+      }
+    },
+    "/rag/search" : {
+      "post" : {
+        "operationId" : "search",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RagSearchRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultListCitation"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "执行三路混合检索并返回溯源引用 (Citations)",
+        "tags" : [ "05. RAG 混合检索与调试" ]
+      }
+    },
+    "/sso/oauth2/callback" : {
+      "post" : {
+        "operationId" : "oauthLogin",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OAuthLoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultLoginVO"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "OAuth2 授权码免密扫码登录",
+        "tags" : [ "10. 企业级 SSO 认证与组织架构同步" ]
+      }
+    },
+    "/sso/org/sync" : {
+      "post" : {
+        "operationId" : "syncOrgUsers",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SyncOrgRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultInteger"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "全量同步企业组织架构与员工列表",
+        "tags" : [ "10. 企业级 SSO 认证与组织架构同步" ]
+      }
+    },
+    "/system/diagnostics" : {
+      "get" : {
+        "operationId" : "getDiagnostics",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultDiagnosticReport"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "执行全量基础设施一键自检诊断 (需登录)",
+        "tags" : [ "01. 系统健康监控与诊断" ]
+      }
+    },
+    "/system/health" : {
+      "get" : {
+        "operationId" : "checkHealth",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultMapStringObject"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "系统全链路健康检查 (无需鉴权)",
+        "tags" : [ "01. 系统健康监控与诊断" ]
+      }
+    },
+    "/workflows/save" : {
+      "post" : {
+        "operationId" : "saveWorkflow",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/WorkflowDefinitionRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultWorkflowDefinitionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "保存或更新工作流 DAG 拓扑定义",
+        "tags" : [ "06. DAG 工作流编排与执行" ]
+      }
+    },
+    "/workflows/{id}" : {
+      "get" : {
+        "operationId" : "getWorkflow",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultWorkflowDefinitionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "获取工作流 DAG 拓扑定义详情",
+        "tags" : [ "06. DAG 工作流编排与执行" ]
+      }
+    },
+    "/workflows/{id}/run" : {
+      "post" : {
+        "operationId" : "runWorkflow",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RunWorkflowRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultWorkflowExecutionVo"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "500" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResultVoid"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "运行并调度执行工作流",
+        "tags" : [ "06. DAG 工作流编排与执行" ]
+      }
+    }
+  },
+  "security" : [ {
+    "ApiKeyAuth" : [ ],
+    "BearerAuth" : [ ]
+  } ],
+  "servers" : [ {
+    "description" : "Generated server url",
+    "url" : "http://localhost"
+  } ],
+  "tags" : [ {
+    "description" : "提供金融审计、招投标筛查、IT运维、法务索赔等开箱即用模板",
+    "name" : "12. 垂直行业应用与工作流模板市场"
+  }, {
+    "description" : "提供 PDF/DOCX/MD/TXT 文档上传、异步切块与切片管理",
+    "name" : "04. 知识库文档管理"
+  }, {
+    "description" : "自动化评估精准度、召回率、抗幻觉率与对比报告",
+    "name" : "11. RAGAS 知识库精度量化评测沙盒"
+  }, {
+    "description" : "用于检查容器环境、PostgreSQL+pgvector 与 Redis 运行状态及全量诊断",
+    "name" : "01. 系统健康监控与诊断"
+  }, {
+    "description" : "提供会话列表、历史消息查询与点赞/点踩反馈",
+    "name" : "09. 多轮会话持久化与问答质量评价"
+  }, {
+    "description" : "提供知识库数据集的创建、分页查询与级联删除",
+    "name" : "03. 知识库数据集管理"
+  }, {
+    "description" : "提供可视化 DAG 拓扑定义保存、校验与响应式异步流调度执行",
+    "name" : "06. DAG 工作流编排与执行"
+  }, {
+    "description" : "提供三路混合检索 (pgvector HNSW + BM25 + RRF + Reranker) 调试与溯源验证",
+    "name" : "05. RAG 混合检索与调试"
+  }, {
+    "description" : "支持切片在线微调、实时重算向量与一键禁用",
+    "name" : "14. 知识库切片单条热编辑与状态管理"
+  }, {
+    "description" : "提供智能体创建、工具列表获取与 ReAct 多轮推理对话",
+    "name" : "07. 智能体编排与 ReAct 对话"
+  }, {
+    "description" : "提供 GraphRAG、APM 甘特图、代码沙箱、模型灰度竞技场、MCP 协议与安全护栏接口",
+    "name" : "15. 企业级 Apex 核心高阶能力中枢"
+  }, {
+    "description" : "提供多租户登录、退出与当前用户信息获取",
+    "name" : "02. 身份认证与权限"
+  }, {
+    "description" : "提供租户钱包余额、Token 消耗流水与在线充值",
+    "name" : "08. 商业化计量与计费看板"
+  }, {
+    "description" : "提供企微/钉钉/飞书/OIDC 扫码免登与员工列表同步",
+    "name" : "10. 企业级 SSO 认证与组织架构同步"
+  }, {
+    "description" : "支持第三方两行代码嵌入式 Web Component 智能助理挂件",
+    "name" : "07-P. 挂件公开对话接口"
+  } ]
+}
