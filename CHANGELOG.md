@@ -3,6 +3,13 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.2.1] - 2026-10-23
+
+### Changed
+- **B2 特性域补全**：`service/{billing,security,platform}` 各切分 `api` / `internal` 两层，加上此前的 `agent`、`rag`，共 **5 个特性域 × 2 层**；`converter`（共享映射层）保持原位。
+- **新增通用隔离规则 Rule 11**：`slices().matching("com.agentforge.service.(*).internal..").should().notDependOnEachOther()`，一次性覆盖所有特性对（不再逐对手写）。实测注入 `billing.internal → security.internal` 依赖时立即变红，回滚后转绿。
+- **测试隔离回归、去掉每类独立 JVM**：`DocumentAndDatasetServiceTest` 与 `HexagonalPortsAndFakesTest` 在 `@BeforeEach`/`@AfterAll` 主动清理 `TableInfoHelper` 元数据与 `TenantContextHolder`，surefire 恢复默认共享 JVM。全量 `mvn clean verify -Dlive=true` 由 **123.1s → 63.8s**，且正序/逆序两种执行顺序均绿（216 用例）。
+
 ## [v1.2.0] - 2026-10-23
 
 ### Added
