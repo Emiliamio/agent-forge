@@ -57,11 +57,11 @@
 
 | 项 | 状态 | 说明 |
 |---|---|---|
-| R1 三条规则 | ✅ 全部落地 | `controllers_should_not_access_mappers`、`r1_mapper_must_not_depend_on_service`、`r1_entity_must_not_depend_on_service_or_mapper`；`ArchitectureTest` 共 **11 项**（10 条 ArchUnit 规则 + 1 个 DDL 扫描测试） |
+| R1 三条规则 | ✅ 全部落地 | `controllers_should_not_access_mappers`、`r1_mapper_must_not_depend_on_service`、`r1_entity_must_not_depend_on_service_or_mapper`；`ArchitectureTest` 共 **12 项**（11 条 ArchUnit 规则 + 1 个 DDL 扫描测试） |
 | R2 | ✅ | `r2_controllers_should_not_depend_on_entities`，基于字节码依赖，全限定名（FQN）写法同样会被拦下（审计已注入 FQN 探针验证） |
 | R3 | ✅ | `r3_transactional_only_in_service` |
 | R4 无环 | ✅ | `r4_no_cycles`（`slices().matching("com.agentforge.(*)..")`） |
-| R4 特性隔离 | ⚠️ 双向已补，范围有限 | 已落地特性域仅 `service/agent/{api,internal}`、`service/rag/{api,internal}`；`billing` / `security` / `platform` 尚未切分，规则 8b 为其预留 |
+| R4 特性隔离 | ✅ 全部切片覆盖 | 已落地 `agent / rag / billing / security / platform` 五个特性域（各含 `api` 与 `internal` 两层）；追加 Rule 11 切片规则（`slices().matching("com.agentforge.service.(*).internal..")`）通用杜绝跨特性 internal 耦合；`workflow / chat / market` 尚未切分 |
 | R5 | ✅ 且实测有效 | 审计时注入 `/health-probe` 端点 → 契约测试立即红（`Failures: 1`），回滚后转绿 |
 | R6 | ✅ | 3 端口 + 3 Fake（`test/java/com/agentforge/fake/`），由 `HexagonalPortsAndFakesTest` 注入使用 |
 

@@ -3,7 +3,7 @@ package com.agentforge.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.agentforge.context.TenantContextHolder;
-import com.agentforge.service.auth.SsoAuthService;
+import com.agentforge.service.platform.api.SsoAuthService;
 import com.agentforge.vo.LoginVO;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;

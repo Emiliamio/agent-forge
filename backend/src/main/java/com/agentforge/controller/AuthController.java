@@ -7,7 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.agentforge.dto.LoginRequest;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.service.auth.AuthQueryService;
+import com.agentforge.service.platform.api.AuthQueryService;
 import com.agentforge.vo.LoginVO;
 import com.agentforge.vo.SysTenantVo;
 import com.agentforge.vo.SysUserVo;

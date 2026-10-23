@@ -147,4 +147,13 @@ public class ArchitectureTest {
                     .should().dependOnClassesThat().resideInAnyPackage("..service..", "..mapper..")
                     .as("Rule 10 (R1-b): Entity 领域实体禁止依赖 Service / Mapper")
                     .because("实体是贫血数据模型，必须保持与业务逻辑、持久层实现无关，否则无法跨场景复用且极易产生环形依赖（反例：Entity 里调用 Mapper 或 Service 做级联查询）");
+
+    /** Rule 11 (R4): 所有特性 internal 之间互不依赖（跨特性只能走对方 api） */
+    @ArchTest
+    static final ArchRule r4_all_feature_internal_must_not_depend_on_each_other =
+            slices().matching("com.agentforge.service.(*).internal..")
+                    .should().notDependOnEachOther()
+                    .as("Rule 11 (R4): 特性 internal 实现之间禁止互相依赖")
+                    .because("跨特性通信必须走对方 api 契约；internal 之间互相依赖会让模块退化成一张网，"
+                            + "单项规则只能堵住一个方向，必须用切片规则一次性覆盖所有特性对");
 }

@@ -13,7 +13,7 @@ import com.agentforge.mapper.ChatMessageMapper;
 import com.agentforge.mapper.ChatSessionMapper;
 import com.agentforge.service.agent.ReActAgentService;
 import com.agentforge.service.chat.ChatSessionService;
-import com.agentforge.service.security.pii.PiiMaskingService;
+import com.agentforge.service.security.api.PiiMaskingService;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;

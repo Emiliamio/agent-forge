@@ -1,4 +1,4 @@
-package com.agentforge.service.auth;
+package com.agentforge.service.platform.api;
 
 import com.agentforge.entity.SysTenant;
 import com.agentforge.entity.SysUser;

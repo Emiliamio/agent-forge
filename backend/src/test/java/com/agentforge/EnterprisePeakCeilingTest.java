@@ -1,7 +1,7 @@
 package com.agentforge;
 
 import com.agentforge.service.rag.graph.GraphRagEngine;
-import com.agentforge.service.security.quota.TenantTokenQuotaLimiter;
+import com.agentforge.service.security.api.TenantTokenQuotaLimiter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

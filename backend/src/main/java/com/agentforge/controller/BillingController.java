@@ -5,7 +5,7 @@ import com.agentforge.context.TenantContextHolder;
 import com.agentforge.dto.RechargeRequest;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
-import com.agentforge.service.billing.BillingService;
+import com.agentforge.service.billing.api.BillingService;
 import com.agentforge.vo.PageResult;
 import com.agentforge.vo.Result;
 import com.agentforge.vo.TokenUsageLogVo;

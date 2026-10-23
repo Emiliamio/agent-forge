@@ -1,4 +1,4 @@
-package com.agentforge.service.im;
+package com.agentforge.service.platform.internal;
 import com.agentforge.vo.AgentExecutionResult;
 
 import com.agentforge.service.agent.ReActAgentService;

@@ -1,4 +1,4 @@
-package com.agentforge.service.auth;
+package com.agentforge.service.platform.api;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.agentforge.context.TenantContextHolder;

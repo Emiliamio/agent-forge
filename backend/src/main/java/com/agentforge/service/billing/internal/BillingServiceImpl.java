@@ -1,4 +1,6 @@
-package com.agentforge.service.billing.impl;
+package com.agentforge.service.billing.internal;
+
+import com.agentforge.service.billing.api.BillingService;
 
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.SysTenant;
@@ -7,7 +9,6 @@ import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.SysTenantMapper;
 import com.agentforge.mapper.TokenUsageLogMapper;
-import com.agentforge.service.billing.BillingService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.agentforge.service.security.guard;
+package com.agentforge.service.security.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

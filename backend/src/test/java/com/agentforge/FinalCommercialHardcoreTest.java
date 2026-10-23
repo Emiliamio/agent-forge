@@ -2,7 +2,7 @@ package com.agentforge;
 
 import com.agentforge.service.rag.parser.OcrDocumentParser;
 import com.agentforge.service.rag.parser.ParsedDocument;
-import com.agentforge.service.security.pii.PiiMaskingService;
+import com.agentforge.service.security.api.PiiMaskingService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

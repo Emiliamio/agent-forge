@@ -1,4 +1,4 @@
-package com.agentforge.service.security.moderation;
+package com.agentforge.service.security.internal;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;

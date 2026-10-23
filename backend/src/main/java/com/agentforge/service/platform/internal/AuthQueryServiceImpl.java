@@ -1,10 +1,10 @@
-package com.agentforge.service.auth.impl;
+package com.agentforge.service.platform.internal;
 
 import com.agentforge.entity.SysTenant;
 import com.agentforge.entity.SysUser;
 import com.agentforge.mapper.SysTenantMapper;
 import com.agentforge.mapper.SysUserMapper;
-import com.agentforge.service.auth.AuthQueryService;
+import com.agentforge.service.platform.api.AuthQueryService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

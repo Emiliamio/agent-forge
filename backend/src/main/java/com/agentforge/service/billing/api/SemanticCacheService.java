@@ -1,4 +1,4 @@
-package com.agentforge.service.billing;
+package com.agentforge.service.billing.api;
 
 import cn.hutool.core.util.StrUtil;
 import com.agentforge.context.TenantContextHolder;

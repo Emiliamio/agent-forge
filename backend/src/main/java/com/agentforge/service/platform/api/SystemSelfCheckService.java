@@ -1,4 +1,4 @@
-package com.agentforge.service.system;
+package com.agentforge.service.platform.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

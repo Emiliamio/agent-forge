@@ -14,7 +14,7 @@ import com.agentforge.vo.SysUserVo;
 import com.agentforge.exception.BusinessException;
 import com.agentforge.exception.ErrorCode;
 import com.agentforge.mapper.DocumentChunkMapper;
-import com.agentforge.service.auth.AuthQueryService;
+import com.agentforge.service.platform.api.AuthQueryService;
 import com.agentforge.security.TenantInterceptor;
 import com.agentforge.service.rag.embedding.EmbeddingService;
 import com.agentforge.service.rag.search.HybridSearchService;

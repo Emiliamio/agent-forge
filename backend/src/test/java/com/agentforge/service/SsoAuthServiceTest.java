@@ -7,7 +7,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.agentforge.context.TenantContextHolder;
 import com.agentforge.entity.SysUser;
 import com.agentforge.mapper.SysUserMapper;
-import com.agentforge.service.auth.SsoAuthService;
+import com.agentforge.service.platform.api.SsoAuthService;
 import com.agentforge.vo.LoginVO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

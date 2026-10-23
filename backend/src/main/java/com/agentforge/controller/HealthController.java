@@ -3,7 +3,7 @@ package com.agentforge.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaMode;
-import com.agentforge.service.system.SystemSelfCheckService;
+import com.agentforge.service.platform.api.SystemSelfCheckService;
 import com.agentforge.vo.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

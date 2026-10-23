@@ -3,7 +3,7 @@ package com.agentforge;
 import com.agentforge.service.agent.llm.json.JsonRepairEngine;
 import com.agentforge.service.agent.stream.SseDisconnectGuard;
 import com.agentforge.service.rag.parser.excel.ResilientExcelParser;
-import com.agentforge.service.security.moderation.DfaContentModerationService;
+import com.agentforge.service.security.internal.DfaContentModerationService;
 import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
