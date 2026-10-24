@@ -122,7 +122,7 @@ python3 scripts/check_osv.py          # 期望：可修复项 0 条
 
 ---
 
-## 纪律 5：文件编码与换行
+## 纪律 5：文件编码与换行（含生成物的字节稳定性）
 
 所有文本文件（`*.java` / `*.xml` / `*.json` / `*.yml` / `*.md` / `*.sh`）必须是 **UTF-8 无 BOM、LF**。
 
@@ -131,8 +131,38 @@ python3 scripts/check_osv.py          # 期望：可修复项 0 条
 $b=[IO.File]::ReadAllBytes($path); if ($b[0] -eq 0xEF -and $b[1] -eq 0xBB -and $b[2] -eq 0xBF) { 'HAS BOM' }
 ```
 
+### 5.1 生成物必须跨平台字节一致
+
+凡是被纳入仓库、且由脚本生成的产物（SBOM、benchmark 基线、OpenAPI 快照、codegen 输出），
+**必须显式指定 LF**，不能依赖平台默认：
+
+```python
+# ✅ Python：默认文本模式在 Windows 会把 \n 写成 \r\n
+with open(path, "w", encoding="utf-8", newline="\n") as f:
+    json.dump(doc, f, ensure_ascii=False, indent=2, sort_keys=True)
+```
+
+```bash
+# ✅ 生成脚本要自带守卫：产物含 \r 就直接失败，而不是等 CI 报 drift
+$PYTHON_CMD - <<'PY' || exit 1
+import glob, sys
+bad = [f for f in glob.glob("docs/sbom/*.json") if b"\r" in open(f, "rb").read()]
+if bad:
+    print("[FAIL] 含 CRLF，CI 会报 drift：" + ", ".join(bad), file=sys.stderr)
+    sys.exit(1)
+PY
+```
+
+判据：**同一脚本在 Windows 与 Linux 上跑，`git diff` 必须都为空**。
+
 **真实事故（v1.1.2）**：`pom.xml` / `package.json` / `ci.yml` 被写入 BOM，一次连坐 4 个 CI job：
 Maven 报 `Non-parseable POM`、vite 报 `"name"... is not valid JSON`、trivy 步骤脚本 `unexpected EOF`。
+
+**真实事故（v1.4.0）**：`normalize_sbom.py` 用 `open(..., "w", encoding="utf-8")` 写 SBOM，
+在 Windows 上把 `\n` 翻成 `\r\n` 并提交进仓库；本地刷新后 `git status` 干净，但 CI（Linux）重新生成的是 LF，
+`git diff` 全行变化 → `SBOM · drift check` 红。修复：normalize 显式 `newline="\n"`，`refresh-sbom.sh` 加 CRLF 守卫
+（注入 3 个 CRLF 时守卫 `rc=1` 并点名文件，恢复后 `rc=0`）。
+**教训：跨平台门禁的"本地绿"没有意义，必须让生成物在两套平台上都字节一致。**
 
 ---
 
@@ -165,7 +195,7 @@ Maven 报 `Non-parseable POM`、vite 报 `"name"... is not valid JSON`、trivy �
 - [ ] 反向验证 L2：**每类载体**都单独注入过（围栏命令 / 行内代码 / 脚本引用 / npm task / 锚点 / 量化表述），且逐类变红
 - [ ] 反向验证 L3：门禁自报的覆盖数与独立 grep 统计吻合（例：65 条 vs `grep -rEo '\-Dtest=[A-Za-z0-9_]+' | wc -l`），输出无"全部"式绝对化表述
 - [ ] 文档命令：本次新增/修改的每条验证命令都亲自跑过
-- [ ] 编码：改动文件 UTF-8 无 BOM、LF
+- [ ] 编码：改动文件 UTF-8 无 BOM、LF；**生成物（SBOM/基线/快照）已按纪律 5.1 显式 LF，且守卫脚本通过**
 - [ ] 清场：`git status --short` 为空；临时脚本/日志/容器已清理
 ```
 
