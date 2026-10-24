@@ -75,6 +75,7 @@ curl -s -X POST https://api.osv.dev/v1/query \
 | 失效的 Markdown 锚点 | `[x](docs/foo.md#nope)` | 同上 | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
 | 未挂 claim 的量化表述 | "响应时间 3ms" | `check_doc_claims.py` |
 | 架构规则/契约测试 | 跨域 internal 依赖 / 改端点签名 | `ArchitectureTest` / `OpenApiContractTest` |
+| **安全类断言**（公网不可达 / 未授权拒绝 / 越权拦截） | 见 **L2b**：必须走真实攻击路径 | 对应探针脚本 |
 
 同时要**核对门禁自报的覆盖数与实际口径一致**：
 
@@ -82,6 +83,36 @@ curl -s -X POST https://api.osv.dev/v1/query \
 # 门禁说自己检查了 N 条 → 用独立 grep 算一遍，两者必须吻合
 grep -rEo -- '-Dtest=[A-Za-z0-9_]+' README.md docs/*.md | wc -l
 ```
+
+### L2b · 断言必须命中**真实攻击路径**，而不是你构造的便利路径
+
+凡是"外部不可达 / 未授权被拒 / 越权被拦"这类安全断言，验证时必须模拟**攻击者真实会发出的请求**，
+不能用一条"只有你自己会发"的请求来证明安全：
+
+| 便利路径（不成立） | 真实攻击路径（必须验） |
+|---|---|
+| 手动加 `X-Forwarded-For: 1.2.3.4` 声称"模拟公网" | 从**发布端口**发一个**完全普通**的请求（不加任何头） |
+| 假设 `remoteAddr` 能反映客户端真实地址 | 在 **Docker NAT / 反代 / K8s Service** 下实测来源地址到底是什么 |
+| 只测精确路径 `/actuator/prometheus` | 再测 `/api/actuator`、大小写变体、`..`、`%2f` 编码、尾部斜杠 |
+| 只测"我这条规则的拒绝分支" | 从零构造一次完整绕过尝试，看能不能不经过你的判定就到达目标 |
+
+写进报告的格式固定为三行：**攻击者会怎么发 → 实际返回什么 → 为什么到不了**。
+
+**真实事故（v1.5.0 D1）**：`/actuator` 的隔离实现是"IP 白名单：仅 127.0.0.1 / RFC1918 放行"，
+探针"模拟公网"的方式是手动加 `X-Forwarded-For: 203.0.113.199`，于是 404、Claim 14 判 PASS。
+但真实链路上 **Docker NAT 会把外部请求的 `remoteAddr` 变成网桥网关（172.x）**，白名单必然放行：
+
+```bash
+# 真实攻击路径：没有任何伪造头，从同网桥的任意位置请求发布端口
+docker run --rm --network agent-forge_default curlimages/curl:latest \
+  -s -o /dev/null -w '%{http_code}\n' http://backend:8080/api/actuator/prometheus
+# 实测 200 —— 指标对任何能连到端口的人开放
+```
+
+修复不是"再加一条 IP 判断"，而是换成**结构性边界**：管理端点走独立端口 `9090`，compose 不发布该端口，
+宿主 8080 上 `/actuator` 与 `/api/actuator` 全部 404；探针改为 4 组结构性断言
+（容器内网 9090 有指标 / health 为 UP / 宿主 4 条路径全 404 / `docker port` 中不含 9090）。
+**教训：基于来源 IP 的判断在容器/反代环境里天然不可靠；能用"端口不暴露、路径不存在"解决的，不要用 IP 白名单解决。**
 
 ### L3 · 声明边界：门禁必须说清"覆盖什么、不覆盖什么"
 
@@ -193,6 +224,7 @@ Maven 报 `Non-parseable POM`、vite 报 `"name"... is not valid JSON`、trivy �
 - [ ] SBOM：`bash scripts/refresh-sbom.sh` 后 `git status` 无残差
 - [ ] 反向验证 L1：新增门禁的红/绿两次输出已贴（注入 → 红 → 回滚 → 绿）
 - [ ] 反向验证 L2：**每类载体**都单独注入过（围栏命令 / 行内代码 / 脚本引用 / npm task / 锚点 / 量化表述），且逐类变红
+- [ ] 反向验证 L2b：安全类断言用**真实攻击路径**验证过（不加伪造头、从发布端口发、含路径变体），并写明"攻击者会怎么发 → 实际返回什么 → 为什么到不了"
 - [ ] 反向验证 L3：门禁自报的覆盖数与独立 grep 统计吻合（例：65 条 vs `grep -rEo '\-Dtest=[A-Za-z0-9_]+' | wc -l`），输出无"全部"式绝对化表述
 - [ ] 文档命令：本次新增/修改的每条验证命令都亲自跑过
 - [ ] 编码：改动文件 UTF-8 无 BOM、LF；**生成物（SBOM/基线/快照）已按纪律 5.1 显式 LF，且守卫脚本通过**
