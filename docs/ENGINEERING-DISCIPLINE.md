@@ -216,7 +216,7 @@ Maven 报 `Non-parseable POM`、vite 报 `"name"... is not valid JSON`、trivy �
 # 验收清单（贴进 PR 描述逐项打勾）
 
 ```markdown
-- [ ] 全量后端：`cd backend && mvn -B clean verify -Dlive=true` → Tests run ≥ 216 / Failures 0 / coverage met
+- [ ] 全量后端：`cd backend && mvn -B clean verify -Dlive=true` → Tests run ≥ 224 / Failures 0 / coverage met
 - [ ] 全量前端：`cd frontend && npm ci && npm run lint && npm test && npm run build`
 - [ ] 架构不变量：`mvn -B -Dtest=ArchitectureTest test` → 12 项全绿
 - [ ] 契约门禁：`mvn -B -Dtest=OpenApiContractTest -Dlive=true test` → 绿

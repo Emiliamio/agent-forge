@@ -105,4 +105,4 @@ AgentForge incorporates comprehensive regression testing covering AST tenant iso
 ```bash
 cd backend && mvn clean test
 ```
-* **Test Pass Rate**: **216 passed (100% Green)** (see [docs/CLAIMS.md#claim-06](docs/CLAIMS.md#claim-06)) <!-- claim:06 -->
+* **Test Pass Rate**: **224 passed, 0 failures** (see [docs/CLAIMS.md#claim-06](docs/CLAIMS.md#claim-06)) <!-- claim:06 -->

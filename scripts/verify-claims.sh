@@ -132,8 +132,8 @@ else
   record_fail "05" "单 IP 限流 30 RPM 且原子拦截" "Rate limiter distribution mismatch"
 fi
 
-# --- Claim 6: 后端自动化测试套件 177+ 例、0 跳过 ---
-echo "Verifying Claim 6: 测试套件 177+ 例、0 跳过..."
+# --- Claim 6: 后端自动化测试套件 224 例、0 跳过 ---
+echo "Verifying Claim 6: 测试套件 224 例、0 跳过..."
 MVN_CMD="mvn"
 if command -v mvn.cmd >/dev/null 2>&1; then
   MVN_CMD="mvn.cmd"
@@ -143,10 +143,10 @@ docker exec agentforge-redis redis-cli -a redis123 FLUSHALL >/dev/null 2>&1 || t
 
 MVN_OUT=$(cd backend && $MVN_CMD -B clean verify -Dlive=true 2>&1 || true)
 if grep -q "Failures: 0, Errors: 0, Skipped: 0" <<< "$MVN_OUT" && grep -q "BUILD SUCCESS" <<< "$MVN_OUT"; then
-  record_pass "06" "测试 177+ 例、0 跳过"
+  record_pass "06" "测试 224 例、0 跳过"
 else
   echo "$MVN_OUT" | tail -n 50
-  record_fail "06" "测试 177+ 例、0 跳过" "Maven test run failed"
+  record_fail "06" "测试 224 例、0 跳过" "Maven test run failed"
 fi
 
 # --- Claim 7: JaCoCo 全局分支与指令覆盖率 ≥ 0.60 ---
