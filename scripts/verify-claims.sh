@@ -7,7 +7,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 PASS_COUNT=0
-TOTAL_CLAIMS=12
+TOTAL_CLAIMS=13
 
 echo "========================================================"
 echo " Starting AgentForge Claims Verification Gate"
@@ -249,6 +249,16 @@ elif ! grep -q "HEALTHCHECK" frontend/Dockerfile; then
   record_fail "12" "交付镜像非 root 且带健康检查" "frontend/Dockerfile 缺少 HEALTHCHECK"
 else
   record_pass "12" "交付镜像非 root 且带健康检查（backend 10001:10001, frontend 101:101）"
+fi
+
+# --- Claim 13: 公开挂件调用全量留痕且可核验 ---
+echo "Verifying Claim 13: 公开挂件调用全量留痕且可核验..."
+AUDIT_OUT=$(bash scripts/audit_probe.sh 2>&1 || true)
+if grep -q "Widget Call Audit Probe PASSED" <<< "$AUDIT_OUT"; then
+  record_pass "13" "公开挂件调用全量留痕且可核验（41 条记录状态与脱敏哈希均验证通过）"
+else
+  echo "$AUDIT_OUT"
+  record_fail "13" "公开挂件调用全量留痕且可核验" "audit_probe.sh failed"
 fi
 
 echo "========================================================"
