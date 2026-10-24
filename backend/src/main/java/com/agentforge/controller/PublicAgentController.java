@@ -93,16 +93,18 @@ public class PublicAgentController {
         }
 
         // 2. 多维度组合原子限流防护 (IP 维度 30 RPM, Agent 维度 300 RPM, Token 维度 60 RPM)
-        checkMultiDimensionRateLimit(ip, id, incomingToken);
+        checkMultiDimensionRateLimit(ip, id, incomingToken, servletRequest);
 
         // 3. 跨租户物理检索智能体元数据 (忽略拦截器对未登录默认租户 1 的硬过滤，精准定位目标租户)
         AgentAppVo app = agentAppService.findPublicAppVo(id);
         if (app == null || app.getStatus() == null || app.getStatus() != 1) {
+            servletRequest.setAttribute("widget_audit_outcome", "bad_request");
             throw new BusinessException(ErrorCode.AGENT_APP_NOT_FOUND, "目标智能体不存在或已被停用");
         }
 
         // 4. 安全授权边界：严格默认安全 (必须显式开启 public_enabled == 1，null 或 0 均坚决拒绝)
         if (app.getPublicEnabled() == null || app.getPublicEnabled() != 1) {
+            servletRequest.setAttribute("widget_audit_outcome", "invalid_token");
             log.warn("🛑 [PUBLIC_WIDGET_DISABLED] 拒绝访问：智能体 appId={}, tenantId={} 未开启公开挂件权限", id, app.getTenantId());
             throw new BusinessException(ErrorCode.FORBIDDEN, "目标智能体未开启公开挂件访问权限");
         }
@@ -111,14 +113,23 @@ public class PublicAgentController {
         boolean hasTokenConfigured = StrUtil.isNotBlank(app.getPublicToken()) || StrUtil.isNotBlank(app.getPublicTokenPrev());
         if (hasTokenConfigured) {
             if (StrUtil.isBlank(incomingToken)) {
+                servletRequest.setAttribute("widget_audit_outcome", "invalid_token");
                 log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证缺失：appId={}", id);
                 throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
             }
 
             if (SignedWidgetToken.isSignedToken(incomingToken)) {
-                SignedWidgetToken.verify(incomingToken, app.getPublicToken(), app.getPublicTokenPrev(), app.getId(), app.getTenantId(), replayGuard);
+                try {
+                    SignedWidgetToken.verify(incomingToken, app.getPublicToken(), app.getPublicTokenPrev(), app.getId(), app.getTenantId(), replayGuard);
+                } catch (BusinessException be) {
+                    if (!"replay_blocked".equals(servletRequest.getAttribute("widget_audit_outcome"))) {
+                        servletRequest.setAttribute("widget_audit_outcome", "invalid_token");
+                    }
+                    throw be;
+                }
             } else {
                 if (!legacyTokenEnabled) {
+                    servletRequest.setAttribute("widget_audit_outcome", "invalid_token");
                     log.warn("🛑 [PUBLIC_WIDGET_LEGACY_DISABLED] 明文挂件令牌已被安全策略禁用：appId={}", id);
                     throw new BusinessException(ErrorCode.UNAUTHORIZED, "明文令牌已停用，请升级 v1 签名令牌");
                 }
@@ -137,6 +148,7 @@ public class PublicAgentController {
                     );
                 }
                 if (!tokenMatches) {
+                    servletRequest.setAttribute("widget_audit_outcome", "invalid_token");
                     log.warn("🛑 [PUBLIC_WIDGET_AUTH_FAIL] 挂件凭证校验失败：appId={}", id);
                     throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证 (Token) 无效或缺失");
                 }
@@ -149,6 +161,7 @@ public class PublicAgentController {
             TenantContextHolder.setTenantId(app.getTenantId());
             int maxIterations = request.getMaxIterations() > 0 ? Math.min(request.getMaxIterations(), 5) : 3;
             AgentExecutionResult result = reActAgentService.runAgent(id, request.getMessage(), maxIterations);
+            servletRequest.setAttribute("widget_audit_outcome", "ok");
             return Result.success("对话完成", result);
         } finally {
             if (originalTenantId != null) {
@@ -159,7 +172,7 @@ public class PublicAgentController {
         }
     }
 
-    private void checkMultiDimensionRateLimit(String ip, Long agentId, String incomingToken) {
+    private void checkMultiDimensionRateLimit(String ip, Long agentId, String incomingToken, HttpServletRequest servletRequest) {
         if (luaRateLimiter == null) {
             return;
         }
@@ -167,6 +180,9 @@ public class PublicAgentController {
         // 维度 1: IP 速率限制 (默认 30 RPM)
         LuaRateLimiter.RateLimitResult ipResult = luaRateLimiter.tryAcquire("widget:rate:ip:" + ip, ipRateLimitRpm, 60);
         if (ipResult != null && !ipResult.isAllowed()) {
+            if (servletRequest != null) {
+                servletRequest.setAttribute("widget_audit_outcome", "rate_limited");
+            }
             log.warn("🛑 [RATE_LIMIT_IP] 挂件单 IP 访问频次超限：ip={}, current={}, limit={}", ip, ipResult.getCurrent(), ipResult.getLimit());
             long reset = (System.currentTimeMillis() / 1000L) + ipResult.getTtlSeconds();
             throw new BusinessException(
@@ -182,6 +198,9 @@ public class PublicAgentController {
         // 维度 2: Agent 实例整体速率限制 (防多 IP 刷爆单一 Agent，默认 300 RPM)
         LuaRateLimiter.RateLimitResult agentResult = luaRateLimiter.tryAcquire("widget:rate:agent:" + agentId, agentRateLimitRpm, 60);
         if (agentResult != null && !agentResult.isAllowed()) {
+            if (servletRequest != null) {
+                servletRequest.setAttribute("widget_audit_outcome", "rate_limited");
+            }
             log.warn("🛑 [RATE_LIMIT_AGENT] 智能体全量访问频次超限：agentId={}, current={}, limit={}", agentId, agentResult.getCurrent(), agentResult.getLimit());
             long reset = (System.currentTimeMillis() / 1000L) + agentResult.getTtlSeconds();
             throw new BusinessException(
@@ -199,6 +218,9 @@ public class PublicAgentController {
             String tokenHash = DigestUtil.sha256Hex(incomingToken);
             LuaRateLimiter.RateLimitResult tokenResult = luaRateLimiter.tryAcquire("widget:rate:token:" + tokenHash, tokenRateLimitRpm, 60);
             if (tokenResult != null && !tokenResult.isAllowed()) {
+                if (servletRequest != null) {
+                    servletRequest.setAttribute("widget_audit_outcome", "rate_limited");
+                }
                 log.warn("🛑 [RATE_LIMIT_TOKEN] 挂件凭证调用频次超限：tokenHash={}, current={}, limit={}", tokenHash, tokenResult.getCurrent(), tokenResult.getLimit());
                 long reset = (System.currentTimeMillis() / 1000L) + tokenResult.getTtlSeconds();
                 throw new BusinessException(

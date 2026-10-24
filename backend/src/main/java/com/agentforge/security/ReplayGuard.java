@@ -63,6 +63,7 @@ public class ReplayGuard {
                 String key = "widget:nonce:" + nonce;
                 Boolean isNew = redis.opsForValue().setIfAbsent(key, "1", Duration.ofSeconds(ttlSeconds));
                 if (Boolean.FALSE.equals(isNew)) {
+                    markAuditOutcome("replay_blocked");
                     log.warn("🛑 [REPLAY_ATTACK_DETECTED] 挂件 Nonce 重放拦截 (Redis): nonce={}", nonce);
                     throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证已被使用 (重放拦截)");
                 }
@@ -90,10 +91,22 @@ public class ReplayGuard {
         long nowMs = System.currentTimeMillis();
         Long existingExpMs = memoryLru.get(nonce);
         if (existingExpMs != null && existingExpMs > nowMs) {
+            markAuditOutcome("replay_blocked");
             log.warn("🛑 [REPLAY_ATTACK_DETECTED] 挂件 Nonce 重放拦截 (Local LRU): nonce={}", nonce);
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "挂件访问凭证已被使用 (重放拦截)");
         }
         memoryLru.put(nonce, (exp + 300) * 1000L);
+    }
+
+    private void markAuditOutcome(String outcome) {
+        try {
+            org.springframework.web.context.request.RequestAttributes attrs =
+                    org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            if (attrs instanceof org.springframework.web.context.request.ServletRequestAttributes sra) {
+                sra.getRequest().setAttribute("widget_audit_outcome", outcome);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public synchronized void clearMemoryCache() {

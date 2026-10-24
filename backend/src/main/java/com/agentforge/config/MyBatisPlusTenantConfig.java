@@ -22,9 +22,12 @@ public class MyBatisPlusTenantConfig {
 
     /**
      * 忽略租户隔离的全局系统表清单
+     * sys_tenant: 租户元数据全局表
+     * widget_call_audit: 平台级公开挂件调用审计表（记录未登录外部访客行为，无 tenant_id 隔离）
      */
     private static final List<String> IGNORE_TENANT_TABLES = List.of(
-            "sys_tenant"
+            "sys_tenant",
+            "widget_call_audit"
     );
 
     @Bean

@@ -36,17 +36,33 @@ public class GlobalExceptionHandler {
         HttpStatus httpStatus = HttpStatus.OK;
         if (e.getCode() == ErrorCode.UNAUTHORIZED.getCode()) {
             httpStatus = HttpStatus.UNAUTHORIZED;
+            if (request.getAttribute("widget_audit_outcome") == null) {
+                if (e.getMessage() != null && e.getMessage().contains("重放拦截")) {
+                    request.setAttribute("widget_audit_outcome", "replay_blocked");
+                } else {
+                    request.setAttribute("widget_audit_outcome", "invalid_token");
+                }
+            }
         } else if (e.getCode() == ErrorCode.FORBIDDEN.getCode()) {
             httpStatus = HttpStatus.FORBIDDEN;
+            if (request.getAttribute("widget_audit_outcome") == null) {
+                request.setAttribute("widget_audit_outcome", "invalid_token");
+            }
         } else if (e.getCode() == ErrorCode.NOT_FOUND.getCode() || e.getCode() == ErrorCode.AGENT_APP_NOT_FOUND.getCode()
                 || e.getCode() == ErrorCode.DATASET_NOT_FOUND.getCode() || e.getCode() == ErrorCode.DOCUMENT_NOT_FOUND.getCode()) {
             httpStatus = HttpStatus.NOT_FOUND;
+            if (request.getAttribute("widget_audit_outcome") == null) {
+                request.setAttribute("widget_audit_outcome", "bad_request");
+            }
         } else if (e.getCode() == ErrorCode.PARAM_ERROR.getCode()) {
             httpStatus = HttpStatus.BAD_REQUEST;
+            request.setAttribute("widget_audit_outcome", "bad_request");
         } else if (e.getCode() == ErrorCode.RATE_LIMIT_EXCEEDED.getCode()) {
             httpStatus = HttpStatus.TOO_MANY_REQUESTS;
+            request.setAttribute("widget_audit_outcome", "rate_limited");
         } else if (e.getCode() == ErrorCode.SERVICE_UNAVAILABLE.getCode()) {
             httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+            request.setAttribute("widget_audit_outcome", "error");
         }
         org.springframework.http.ResponseEntity.BodyBuilder responseBuilder = org.springframework.http.ResponseEntity.status(httpStatus);
         if (httpStatus == HttpStatus.SERVICE_UNAVAILABLE) {
@@ -84,6 +100,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
+        request.setAttribute("widget_audit_outcome", "bad_request");
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         String message = fieldErrors.stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
@@ -98,6 +115,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleBindException(BindException e, HttpServletRequest request) {
+        request.setAttribute("widget_audit_outcome", "bad_request");
         String message = e.getAllErrors().stream()
                 .map(err -> err.getDefaultMessage())
                 .collect(Collectors.joining("; "));
@@ -149,6 +167,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Void> handleException(Exception e, HttpServletRequest request) {
+        request.setAttribute("widget_audit_outcome", "error");
         log.error("系统未知异常 [URI: {}]", request.getRequestURI(), e);
         return Result.fail(ErrorCode.SYSTEM_ERROR.getCode(), "系统处理异常，请联系管理员");
     }
