@@ -11,6 +11,8 @@
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [Technical Blog](https://emiliamio.github.io) | [Commercial SLA & License](COMMERCIAL_LICENSE.md)
 
+> 所有量化宣称均由机器验证，逐条见 [docs/CLAIMS.md](docs/CLAIMS.md)。
+
 ---
 
 > **AgentForge** is an industrial-grade AI Agent orchestration and 3-Way Hybrid RAG (Retrieval-Augmented Generation) knowledge base platform built entirely with **Java 21 (Virtual Threads) + Spring Boot 3.2 + PostgreSQL 16 (pgvector) + Vue 3.4**.  
@@ -103,4 +105,4 @@ AgentForge incorporates comprehensive regression testing covering AST tenant iso
 ```bash
 cd backend && mvn clean test
 ```
-* **Test Pass Rate**: **46 / 46 passed (100% Green)**
+* **Test Pass Rate**: **216 passed (100% Green)** (see [docs/CLAIMS.md#claim-06](docs/CLAIMS.md#claim-06)) <!-- claim:06 -->

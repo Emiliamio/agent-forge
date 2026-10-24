@@ -7,7 +7,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 PASS_COUNT=0
-TOTAL_CLAIMS=9
+TOTAL_CLAIMS=12
 
 echo "========================================================"
 echo " Starting AgentForge Claims Verification Gate"
@@ -184,6 +184,68 @@ if docker compose --profile full up -d --wait; then
   fi
 else
   record_fail "09" "一键全栈可启动、健康且冷启动 ≤60s" "docker compose up returned non-zero"
+fi
+
+# --- Claim 10: 架构不变量 R1–R6 全部机器可验 ---
+echo "Verifying Claim 10: 架构不变量 R1–R6 全部机器可验..."
+ARCH_OUT=$(cd backend && $MVN_CMD -B -Dtest=ArchitectureTest test 2>&1 || true)
+if grep -q "Tests run: 12, Failures: 0" <<< "$ARCH_OUT" && grep -q "BUILD SUCCESS" <<< "$ARCH_OUT"; then
+  record_pass "10" "架构不变量 R1–R6 全部机器可验（12/12 通过）"
+else
+  RUN_COUNT=$(grep -oE "Tests run: [0-9]+" <<< "$ARCH_OUT" | tail -n1 || echo "unknown")
+  FAIL_COUNT=$(grep -oE "Failures: [0-9]+" <<< "$ARCH_OUT" | tail -n1 || echo "unknown")
+  record_fail "10" "架构不变量 R1–R6 全部机器可验" "ArchitectureTest failed ($RUN_COUNT, $FAIL_COUNT, expected 12 run, 0 failures)"
+fi
+
+# --- Claim 11: 依赖漏洞口径：前端 0 条、后端仅 7 条且全部归入'跨大版本线/上游未发布' ---
+echo "Verifying Claim 11: 依赖漏洞口径（前端 0 豁免，后端 7 跨大版本/未发布项）..."
+OSV_COUNT=$(grep -c "^id = " osv-scanner.toml 2>/dev/null || true)
+TRIVY_COUNT=$(grep -cE "^(GHSA|CVE)" .trivyignore 2>/dev/null || true)
+
+if [ "$OSV_COUNT" -ne 0 ]; then
+  record_fail "11" "依赖漏洞口径" "osv-scanner.toml 仍有 $OSV_COUNT 条豁免，期望 0"
+elif [ "$TRIVY_COUNT" -ne 7 ]; then
+  record_fail "11" "依赖漏洞口径" ".trivyignore 豁免数为 $TRIVY_COUNT，期望 7"
+else
+  BOM_ERR=$(python - <<'PY'
+import json, sys, re
+try:
+    with open('docs/sbom/frontend-bom.json', 'r', encoding='utf-8') as f:
+        bom = json.load(f)
+    comps = {c.get('name'): c.get('version', '') for c in bom.get('components', [])}
+    vite_v = comps.get('vite', '0')
+    vitest_v = comps.get('vitest', '0')
+    if 'tinypool' in comps:
+        sys.exit("tinypool 组件存在于 frontend BOM")
+    def to_parts(v):
+        return [int(x) if x.isdigit() else 0 for x in re.split(r'[.\-+]', v)[:3]]
+    if to_parts(vite_v) < [6, 4, 4]:
+        sys.exit(f"vite 版本 {vite_v} < 6.4.4")
+    if to_parts(vitest_v) < [4, 1, 12]:
+        sys.exit(f"vitest 版本 {vitest_v} < 4.1.12")
+except Exception as e:
+    sys.exit(str(e))
+PY
+) || true
+  if [ -n "$BOM_ERR" ]; then
+    record_fail "11" "依赖漏洞口径" "frontend-bom.json 校验未通过: $BOM_ERR"
+  else
+    record_pass "11" "依赖漏洞口径：前端 0 条、后端仅 7 条且全部归入'跨大版本线/上游未发布'"
+  fi
+fi
+
+# --- Claim 12: 交付镜像非 root 且带健康检查 ---
+echo "Verifying Claim 12: 交付镜像非 root 且带健康检查..."
+if ! grep -q "USER 10001:10001" backend/Dockerfile; then
+  record_fail "12" "交付镜像非 root 且带健康检查" "backend/Dockerfile 缺少 USER 10001:10001"
+elif ! grep -q "HEALTHCHECK" backend/Dockerfile; then
+  record_fail "12" "交付镜像非 root 且带健康检查" "backend/Dockerfile 缺少 HEALTHCHECK"
+elif ! grep -q "USER 101:101" frontend/Dockerfile; then
+  record_fail "12" "交付镜像非 root 且带健康检查" "frontend/Dockerfile 缺少 USER 101:101"
+elif ! grep -q "HEALTHCHECK" frontend/Dockerfile; then
+  record_fail "12" "交付镜像非 root 且带健康检查" "frontend/Dockerfile 缺少 HEALTHCHECK"
+else
+  record_pass "12" "交付镜像非 root 且带健康检查（backend 10001:10001, frontend 101:101）"
 fi
 
 echo "========================================================"

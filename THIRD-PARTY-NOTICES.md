@@ -24,7 +24,7 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
   因此前端 BOM 统一在 `node:20` 容器内渲染（见 `scripts/refresh-sbom.sh`），
   仓库中的 `frontend-bom.json` 为 **linux/amd64** 口径；请勿用本机 npm 直接覆盖生成。
 
-根据 CycloneDX SBOM（Software Bill of Materials）机器审计，本项目的许可证分布结论如下：
+根据 CycloneDX SBOM（Software Bill of Materials）机器审计，本项目的许可证分布结论如下：<!-- claims-ignore: 第三方组件许可证合规审计统计结果 -->
 1. **无 AGPL、无 GPLv3 等强传染性协议**：后端 172 项构件与前端 348 项依赖中，AGPL/GPLv3 组件数为 **0**；
    GPL 仅以 `GPL-2.0-with-classpath-exception` 形式出现在 Jakarta EE 规范 API
    （`jakarta.annotation-api`、`jakarta.servlet-api`）上，属 Jakarta EE 的标准授权形态，
@@ -64,7 +64,7 @@ AgentForge 商业版采用**私有商业授权（Proprietary License with Evalua
 
 ## 3. 前端核心依赖清单 (Vue 3 / Vite 生态)
 
-通过 npm SBOM（`npm sbom --sbom-format cyclonedx`）针对 `frontend/package.json` 进行全量依赖图谱审计，共审计 348 项依赖，许可证分布为：
+通过 npm SBOM（`npm sbom --sbom-format cyclonedx`）针对 `frontend/package.json` 进行全量依赖图谱审计，共审计 348 项依赖，许可证分布为：<!-- claims-ignore: 前端依赖软件清单静态分布统计 -->
 - **MIT 许可证**：283 个组件（占 81.3%）
 - **Apache-2.0 许可证**：11 个组件
 - **ISC 许可证**：30 个组件

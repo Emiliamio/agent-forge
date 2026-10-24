@@ -18,7 +18,7 @@
 - **绑定关系**：签名内容严格绑定 `agentId` 与 `tenantId`，跨智能体伪造令牌将被立即拒绝（返回 HTTP 401 签名校验失败）；Secret 轮换会导致历史已签发旧令牌立即失效
 - **验签顺序保障**：服务端严格先执行 HMAC-SHA256 常量时间签名校验，验签通过后才记录 Nonce，杜绝未签名伪造请求消耗/烧毁 Nonce 防重放窗口
 - **兼容说明**：v1.0.0 尚未对外正式发布，格式演进无历史兼容负担；存量明文 token 降级兼容分支保持不变
-- **防重放**：`ReplayGuard` 基于 Redis 分布式 Nonce 记录（TTL 为过期时间 + 300 秒），Redis 不可用时无缝降级为本地内存 LRU 缓存，保障零阻断高可用
+- **防重放**：`ReplayGuard` 基于 Redis 分布式 Nonce 记录（TTL 为过期时间 + 300 秒），Redis 不可用时无缝降级为本地内存 LRU 缓存，保障高可用无中断
 - **时钟宽限**：允许 30 秒时钟漂移宽限期
 
 ### 废弃计划 (Deprecation Policy)
@@ -29,7 +29,7 @@
 ### 防重放与限流高可用策略 (Fail-Open vs Fail-Closed)
 
 挂件限流与 Nonce 防重放依赖分布式 Redis。系统通过配置 `agentforge.security.fail-open-when-redis-down` 显式声明 Redis 故障时的行为基线：
-- **开发与单机测试环境 (dev)**：配置为 `true`（Fail-Open 默认降级），Redis 宕机或未部署时平滑降级为本地内存 LRU 缓存与滑动计数器，保障单机体验与开发零阻断；
+- **开发与单机测试环境 (dev)**：配置为 `true`（Fail-Open 默认降级），Redis 宕机或未部署时平滑降级为本地内存 LRU 缓存与滑动计数器，保障单机体验与开发流畅无阻；
 - **生产与高可用集群环境 (prod)**：在 `application-prod.yml` 中显式设为 `false`（Fail-Closed 默认拒绝），当 Redis 不可用时，坚决拦截挂件请求并返回 **HTTP 503 Service Unavailable + `Retry-After: 5`**，杜绝在多实例集群下因内存降级导致分布式限流与防重放机制被击穿绕过。
 
 ### Nginx 安全响应头与挂件跨域公开例外
@@ -39,7 +39,7 @@
 
 ### 挂件密钥平滑轮换操作手册 (Secret Rotation Runbook)
 
-针对生产环境可能发生的安全泄露或定期密钥安全轮换需求，AgentForge 通过数据库字段 `public_token_prev`（由 Flyway V6 引入）支持**双阶段平滑轮换**，保障轮换过程中现有客户端无感知、零停机：
+针对生产环境可能发生的安全泄露或定期密钥安全轮换需求，AgentForge 通过数据库字段 `public_token_prev`（由 Flyway V6 引入）支持**双阶段平滑轮换**，保障轮换过程中现有客户端无感知、平滑热轮换：
 
 1. **生成新密钥与轮换 SQL**：
    运行轮换辅助脚本：

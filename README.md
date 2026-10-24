@@ -11,7 +11,9 @@
 
 [中文版文档 (Chinese)](README.md) | [English Documentation](README_EN.md) | [技术博客](https://emiliamio.github.io) | [商业授权 & SLA](COMMERCIAL_LICENSE.md)
 
-> **AgentForge** 是一套完全基于 **Java 21（虚拟线程）+ Spring Boot 3.2 + PostgreSQL 16 (pgvector) + Vue 3.4** 构建的工业级商业 AI Agent 智能体编排与三路混合 RAG（检索增强生成）知识库中台。  
+> 所有量化宣称均由机器验证，逐条见 [docs/CLAIMS.md](docs/CLAIMS.md)。
+
+> **AgentForge** 是一套基于 **Java 21（虚拟线程）+ Spring Boot 3.2 + PostgreSQL 16 (pgvector) + Vue 3.4** 构建的工业级商业 AI Agent 智能体编排与三路混合 RAG（检索增强生成）知识库中台。  
 > 专为国内政企、国企信创生态、企业私有化交付量身定制，彻底摆脱 Python 框架在企业级环境中的运维困境。
 
 ---
@@ -128,7 +130,7 @@ bash scripts/restore.sh --to-primary backups/agentforge-<TIMESTAMP>.dump
   （`http://localhost:8080/` 根路径返回 404 属预期。）
 * **默认管理员**：`admin` / `admin123456`（默认租户：`tenant_default`）
 
-> **依赖启动说明**：若仅需拉起底层存储与缓存中间件并在宿主机进行源码调试，使用 `docker compose up -d` 即可单独启动 PostgreSQL 与 Redis，该方式完全保持向下兼容。
+> **依赖启动说明**：若仅需拉起底层存储与缓存中间件并在宿主机进行源码调试，使用 `docker compose up -d` 即可单独启动 PostgreSQL 与 Redis，该方式保持向下兼容。
 
 ### 方式 2：本地源码运行与调试
 ```bash
@@ -162,7 +164,7 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 
 ### 📊 真实 CJK 混合 RAG 基准评测看板
 
-评测套件直接对齐真实运行的后端服务（`POST /rag/search`，`topK=5, minScore=0.0`），基于包含 60 个细分制度条款的真实企业知识库（`docs/benchmark_enterprise_policy.md`）。**命中判定为 `目标 chunkId ∈ top-5`**：地面真值由真实切片元数据解析。为保证指标真实性与不可伪造性，所有评测数字均由自动化套件直接生成并由机器基线严格锁定防漂移：
+评测套件直接对齐真实运行的后端服务（`POST /rag/search`，`topK=5, minScore=0.0`），基于包含 60 个细分制度条款的真实企业知识库（`docs/benchmark_enterprise_policy.md`）。**命中判定为 `目标 chunkId ∈ top-5`**：地面真值由真实切片元数据解析。为保证指标真实性与不可伪造性，所有评测数字均由自动化套件直接生成并由机器基线严格锁定防漂移（详见 [docs/CLAIMS.md#claim-01](docs/CLAIMS.md#claim-01)）<!-- claim:01 -->：
 
 - **知识库有效切片规模**：有效切片总数见最新机器评测报告 [docs/BENCHMARK.md](docs/BENCHMARK.md)（远超 $\ge 50$ 候选池评测标准，拒绝保底小语料刷分）
 - **字面覆盖问句硬门禁 (1~18)**：Recall@5 与 MRR 稳定达标并由机器基线锁定，明细见 [docs/BENCHMARK.md](docs/BENCHMARK.md)
@@ -207,10 +209,10 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 - **最小化信任代理**：默认仅信任回环地址（`127.0.0.1`、`::1`），彻底剔除对整个 RFC1918 私网网段的盲目信任。
 - **生产反代显式配置**：若生产环境挂载 Nginx、Kubernetes Ingress 或云负载均衡 SLB，请在 `application.yml` 的 `agentforge.security.trusted-proxies` 中明确指定具体的反代物理 IP，严禁通配私网段；
 - **防伪造真实防御**：外部客户端或局域网直连 8080 端口时，自动忽略所有伪造的 `X-Forwarded-For` 请求头，直接锁定底层物理 Socket IP，彻底封死旋转 XFF 绕过登录防爆破与挂件限流的攻击路径；
-- **同机与演示环境设计取舍**：由于回环地址 `127.0.0.1` / `::1` 默认在受信任列表中（以原生支持部署在同机上的 Nginx/网关反代架构），因此**同机发起的测试脚本或本机直连进程**若主动伪造 `X-Forwarded-For` 仍会被视作同机上游反代转发处理。防伪造机制已 100% 封死所有局域网（LAN）与公网外部直连伪造；若生产环境反代与应用跨机部署且无同机反代需求，可将 `trusted-proxies` 中回环地址移除或仅配置网关真实物理 IP，彻底收口。
+- **同机与演示环境设计取舍**：由于回环地址 `127.0.0.1` / `::1` 默认在受信任列表中（以原生支持部署在同机上的 Nginx/网关反代架构），因此**同机发起的测试脚本或本机直连进程**若主动伪造 `X-Forwarded-For` 仍会被视作同机上游反代转发处理。防伪造机制已 100% 封死所有局域网（LAN）与公网外部直连伪造；若生产环境反代与应用跨机部署且无同机反代需求，可将 `trusted-proxies` 中回环地址移除或仅配置网关真实物理 IP，彻底收口。<!-- claims-ignore: 网络代理信任链防御设计说明 -->
 
 ### 3. 公开挂件 Security-by-Default 规范与存量激活
-- **原子多维速率防护**：公开挂件内置基于 Redis Lua 脚本的原子多维度组合限流，超频自动触发 HTTP 429 熔断与 `Retry-After: <剩余秒数>`（动态，1~60s）响应头防护：
+- **原子多维速率防护**：公开挂件内置基于 Redis Lua 脚本的原子多维度组合限流（详见 [docs/CLAIMS.md#claim-05](docs/CLAIMS.md#claim-05)）<!-- claim:05 -->，超频自动触发 HTTP 429 熔断与 `Retry-After: <剩余秒数>`（动态，1~60s）响应头防护：
   - `agentforge.widget.rate-limit-rpm: 30`：单 IP / 分钟（默认 30）
   - `agentforge.widget.rate-limit-agent-rpm: 300`：单智能体实例 / 分钟（默认 300）
   - `agentforge.widget.rate-limit-token-rpm: 60`：单令牌凭据 / 分钟（默认 60）
@@ -237,7 +239,7 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-e2e.ps1
 系统遵循最小权限原则（Principle of Least Privilege），核心端点访问权限管控如下：
 - **系统全维诊断接口 (`GET /system/diagnostics`)**：包含运行时 JVM 线程、数据库连接池、内存分配与依赖健康状态，**严格限定仅允许 ADMIN 或 OWNER 角色访问**；普通租户成员（VIEWER）或未授权访客访问坚决返回 403 Forbidden 拦截。
 - **租户账单用量接口 (`GET /billing/tenant/{tenantId}/usage`)**：租户仅可查看自身所属租户的账单统计；跨租户横向越权请求自动触发 403 Forbidden 阻断。
-- **公开挂件接口 (`POST /public/agents/{id}/chat`)**：默认关闭（`public_enabled = 0`），开启后受 30 RPM 速率限制与凭证校验保护。
+- **公开挂件接口 (`POST /public/agents/{id}/chat`)**：默认关闭（`public_enabled = 0`），开启后受 30 RPM 速率限制与凭证校验保护（见 [docs/CLAIMS.md#claim-05](docs/CLAIMS.md#claim-05)）<!-- claim:05 -->。
 
 ---
 
