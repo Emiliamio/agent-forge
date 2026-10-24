@@ -3560,6 +3560,120 @@
       "version": "1.15.12"
     },
     {
+      "bom-ref": "pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar",
+      "description": "Core module of Micrometer containing instrumentation API and implementation",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/micrometer-metrics/micrometer"
+        }
+      ],
+      "group": "io.micrometer",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "29a5f15d0cc9c0dec9d0fdaf0d439ff9"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "5064deed80753c36607e21d7a7439b8007f48c52"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "30f6136353e39bc067b26745a6c31b0b6e419d8ff59c05b5364d7c1d4b78083e"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "cf4656024b3a88b6181f587812b81db80fb74a72fb756f3b40effb0835832dce19be138930ba888fcc9cddcfe367935f9c77015a16551d266f1b8519a5f6fb65"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "e0ac20adfcd5bacc04a2e00e512a96c7eb3cd9ece004bcb5dc6cf08d76ae14595b2c331f5de174a34617ac0894b383e2"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "bab4b112fa1da79ebe0a150ca8d2c51ec68cbbab44b6b10671b4b591361ed356a4f2bac1bcbb8da520dcd1677fe0213b"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "d9a58021ceb336fcc6dd5f2b25217250c006d6c2e14b2bf3b1d1947834adae06"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "df9d903ca799e399e1e702b888667907067fcb3697609221fc6ba07cf9dcc14b7cf7d1fbd97e72eb8e6081c1be05d53fa579e898e3072c74763bc503981a32f9"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "micrometer-core",
+      "purl": "pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.15.12"
+    },
+    {
+      "bom-ref": "pkg:maven/io.micrometer/micrometer-jakarta9@1.15.12?type=jar",
+      "description": "Module for Jakarta 9+ based instrumentations",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/micrometer-metrics/micrometer"
+        }
+      ],
+      "group": "io.micrometer",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "e54da694259da4e424b6fa5c870303fd"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "723026e4168c2ff38d30b04ce6b28da7bfd688e5"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "08bfce8241e9de35906a24afd9ee942e0c71784231762dc3984bf794ba269251"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "7157eaaa9a07cbc259bcc0c57ea241b0b72848ac33d88f5972bb52c08605502a07f801ae4592083b72f6dfa99e96e971900adbf6344bf58f80cce35849b2a645"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "d9b7d59fafa8384cf0378ee2ccbfa62aa85e61b4714a2c0a09bc005cab456852418189b9190cfac2053b6456180712e5"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "7062427f2bcc6dc2144c32e33ef7a68fb8f2878b80f371a18d33e0f29d584e213c23692a6c628aeaf4a34a24d02d9d85"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "f101eeb7a2427881a1c0a560b862bb0d80afc9eb36248ec2888108fb082e4e8f"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "608f027581ca7810b801d79fccedfb43f39f92544696a27933a35d8c408bc1ea957c831f04392cd193487835c79cbc7bbfd7f8e9d7c5148bed90cfb66a505c36"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "micrometer-jakarta9",
+      "purl": "pkg:maven/io.micrometer/micrometer-jakarta9@1.15.12?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.15.12"
+    },
+    {
       "bom-ref": "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar",
       "description": "Module containing Observation related code",
       "externalReferences": [
@@ -3612,6 +3726,63 @@
       ],
       "name": "micrometer-observation",
       "purl": "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.15.12"
+    },
+    {
+      "bom-ref": "pkg:maven/io.micrometer/micrometer-registry-prometheus@1.15.12?type=jar",
+      "description": "MeterRegistry implementation for Prometheus using io.prometheus:prometheus-metrics-core. If you have compatibility issues with this module, you can go back to io.micrometer:micrometer-registry-prometheus-simpleclient that uses io.prometheus:simpleclient_common.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/micrometer-metrics/micrometer"
+        }
+      ],
+      "group": "io.micrometer",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "02b9531715ba97d293a2233f4fd912b7"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "4081772a7a9b95f66de1b9738c2cbbc6241d97ae"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "3ef9c07789b8f2a904f304df33b6c0a72dfd4d7dd77a585e5ec9516231305181"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "904843375148dfc620c74ba4fe6a8d64689a6d6809f8ae914d483df7ba560818bc76a5fe4531d8dde9bad712a7f9e24e0bf79891da8a06ea67e4972c2ef3ace3"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "47d263fbabbe0d185496d6ac2179d7e7bb71131b0b20ad2c89a4a16d18b057c2f3094b1db6c31ce72277345cc5b8b642"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "2a273ca41ad5f1d74fa05af4a8aa419a82295df3930f4352034dccbcef1887c751338985c963cfb4bd9b4724c09e226c"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "4e2ec4baeba148014aeaf0e41814788302e8ef31be31ed5cb6759a201d159e88"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "8ca0a6bad4fff369e843f107fedb9a0870df9b2481f44a9db2dde2898571492bfe7e321c2380a1df73985b75bb986b6a35f26e13583f287ab149f20c6a0f3018"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "micrometer-registry-prometheus",
+      "purl": "pkg:maven/io.micrometer/micrometer-registry-prometheus@1.15.12?type=jar",
       "scope": "required",
       "type": "library",
       "version": "1.15.12"
@@ -4935,6 +5106,372 @@
       "scope": "required",
       "type": "library",
       "version": "1.2.18"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-config@1.3.10?type=jar",
+      "description": "Configuration for Prometheus metrics and exposition formats.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-config"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "44a453f8599f67ab45ed6fbb941a450e"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "4fe03e3cc60188a32385bbd4559368842815e435"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "d20ea739f1af130d67d6a8e67a0fd00169cd4e62dca7fa29c5f2ae656b7587f9"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "e9a0988271d57a08920eb7bfc74aba03e8f4d0499e4a108784d0401292fec40150d1c30b0786cda4b515a8ac9709c3cf33deb5a00b0ed8cc20d90b0e615fc33d"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "7c35a31960d15780a5099de5ff43904c95bfcefb6db97619ad9bdcbd9701b258049d6c8bf874517770dc8ee73048ddb4"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "095f2d345032fca475cfe4fe0e114dabc146f7ed432bb9bccdcd2f1426372b9543e47be0c120af847c8d4d9878797bdf"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "7a4c9d38359c6a01e5df2c926a4cf9e01fbb2b1086d58f3906e62215a2d4487b"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "d7d96bee8948d9a5f1a88015f43e8d11d0909341ab772eb8a5b2a4400276f22623a35fb6045bc5cfb73f1b0f321b07da7c3eecd4aa274369246a07309dd22d02"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-config",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-config@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-core@1.3.10?type=jar",
+      "description": "Core Prometheus metric types",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-core"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "1111c9332ac84ec6ea67959369961fc0"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "30c645782bc458a4868f59a9218c8395250a9f69"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "a856dbad954222a835c9085abc9a136586eb60495f17ef8ac903dfb8be3b4f15"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "a82b25b73fc6a774b9b71b1d3949d91d9f5c92567cffad0d57a1a527ee1334b9ade40651c5ff0b7f0e2ee01e5da297b91153b04feec7a2853f4d871225b917c8"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "6a386f18f185b9892d88ff9a765ab1a1e4b1badda28b1ebad751f142b421100893941954503e2bd4e9bead629114c637"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "0f86e9afe07cfa18901930c8428b520dedf3b06d9c2e1f670424a75d00b759ae34698283073bc55e7c48994498927fe1"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "6f22bc334bafc8be8a91f87967d6b6e6c276a940a0a0b720d06e98d7bb1b60de"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "9a9a98022e2b295d1c1761b712c4e227cdc88c5c9155cebc4115dfab7eb1e3e6ceb8e44fe86bff648c7af056077d8f9c48bc7ece265176623a945806757a8890"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-core",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-core@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-exposition-formats@1.3.10?type=jar",
+      "description": "Prometheus exposition formats.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-exposition-formats"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "e079cfe0e3c7594fd99cd45f600cc54c"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "9f8433c962ff720dc2c83f6c2e8af069dd36a898"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "a970d6de00a6fa3c9b62ebec1e45f70d42b88d16a19e5ef1621c1f9e89ba3c9f"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "2d12569122d464aefe9dfcb74ea63bda7d5038846be98b60c875556648e91721c14090e884136e10d0b952e088843508c8000c141d88c6b6d2a28b4e24cd0e49"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "013cf2347a76dec5598eb30bf89a5ac9a437c5189ad6f614d09c12bca2014e35da0944780d12a4a05df6d904d9509546"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "c4005f91e847c7320e3e41c3f501bf5f99f2702b419962d5c79e879ac6a9abcfec9c695dfa448515cae34990f5fa4515"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "f8f6e8ce986c6d72fd1954213654b137857fdc58a9af663f4ebe999e003e92a8"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "ccc12ccc28e7fc0f7d8c0d7853b29d855c61a84562d5d7b298adf33ab46e764cdb41c19f10ea7d4583f5dceb391ffc9dd410eb0169c74806c4a18681503e9d9d"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-exposition-formats",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-exposition-formats@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-exposition-textformats@1.3.10?type=jar",
+      "description": "Prometheus exposition text formats.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-exposition-textformats"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "f2a1e98beffcc218e2ff0f8a8bf3822c"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "7475c21ee94b4c46ff0394a2df02b3d2c5443690"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "8dd118ac15a4162ac586f42ff69e8ca3efa8b1291d870c89a678f8f72de62e44"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "58bc11b2845612d6ab74423a165070ae4568c775fe57b8f21e19483a9df51fdc1b630a7a5083d3359a8249a2a4c8138e76be7974d8b3fe37398cbd7daf775a55"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "79e591fd9a36d2ef741d082fbb14bda56a1a5f66df081c51544438422e6c205b396ef3fcdb0acee1f5fa875618b4b725"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "862e92b43ab96d38230d393ad886dcb118a0f9624df4ade294b16b46b2b14741321b3ebd78bbdf85e3a296e56d0a974e"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "98e43cf9c16ad0555c0a150a27ebc3c6335c5a2b5e4b4d59612a4e3afd495653"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "4a064c543077c660e4600d6be0db500a0096edcd92bbcad12e4bd5a4dc651b0dd7d0640717697a97080d5de3e0fb444593f96e938c6902a3fa6b6a43dccc41fa"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-exposition-textformats",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-exposition-textformats@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-model@1.3.10?type=jar",
+      "description": "Data model for read-only immutable Prometheus metrics snapshots.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-model"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "d099f2af51a118e73cdd3eb5e633e061"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "e74c144f68e0258cbbdea64d4e387e65ebae6329"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "945ace48cc8d9d09f87bac0d8fbbc13e70b29c5c74b103c6fee0b9df09343148"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "fe78f34df99b28942f6c8b9124bd728ac5d0616a74c3705d02ef545a09d292ac5ddb2dbab291653ea0c3fa634044fd5c5cf27c36b2ac3379a4d5653e61cda156"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "3d0d34ea0f9f72303a124edc3d30c8872b27d68331196db70963688d4716c545eb0a4457b6b87f98e6df87cfd9df2c16"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "4deb1e517f6e73159a66193a5eb0e06bb75e2e2bb9ac39d8f8fab98ef99c38345de0191b7a63dde22905dfc68877598b"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "dffc96cbb8a54ca432634120abd9ee8281f2241708598377a5edd2c2d9e3b9e4"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "c7662bd78cb524eaa7f74b76d09b2298252bfec6fd1820c3598bcee777aa71ef823d1812f3e976421b4e31e9e43d4f6e584910fc5e4703755d7e30042b75d3bb"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-model",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-model@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
+    },
+    {
+      "bom-ref": "pkg:maven/io.prometheus/prometheus-metrics-tracer-common@1.3.10?type=jar",
+      "description": "Common Module for Prometheus integrations with distributed tracing libraries.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://github.com/prometheus/client_java/client_java/prometheus-metrics-tracer/prometheus-metrics-tracer-common"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        }
+      ],
+      "group": "io.prometheus",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "d8d9e2bb7ec48e11c877b83eb9a9485e"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "abf6e4d1a41d96e37b200606e121697751794a45"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "835826a5728d9da8512186b67676d2ba68828713f0c0050753ce2bc718dd9acb"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "f4bda2709a4e83b7b2a452fdf59300b1d88511a3c6a53a0f8454c2821b48f3fbeb5ead31a81de86f05ff757c724b7f46a0694f2aeee5118947eb474c3a929d7f"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "0341ec66c51b653f457847715a5651e05eb2e0e236c8c83fe4c7e77e11ae81480c324474a220c55547ee5864dd3d4aaf"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "63cccbff36626c00126a4c767a5fb2985c9b6e75d01adcfb04907238e4a6bf7c1ea80676338bb6be4fd9c064bab840a9"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "db439bafa8f0b9ccca8c757797d260c0edd0cb7a11c272127d2700e4f2578207"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "79022fd87dee6dd646400c11c63f718117ff272e8447a6fd6149e1b70f193509af9c71eb64dc3862901b0527a0aa947645b9b23d985573a0684176e02e6e8b56"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "prometheus-metrics-tracer-common",
+      "purl": "pkg:maven/io.prometheus/prometheus-metrics-tracer-common@1.3.10?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "1.3.10"
     },
     {
       "bom-ref": "pkg:maven/io.swagger.core.v3/swagger-annotations-jakarta@2.2.28?type=jar",
@@ -7039,6 +7576,77 @@
       "version": "10.10.0"
     },
     {
+      "bom-ref": "pkg:maven/org.hdrhistogram/HdrHistogram@2.2.2?type=jar",
+      "description": "HdrHistogram supports the recording and analyzing sampled data value counts across a configurable integer value range with configurable value precision within the range. Value precision is expressed as the number of significant digits in the value recording, and provides control over value quantization behavior across the value range and the subsequent value resolution at any given level.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://hdrhistogram.github.io/HdrHistogram/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/HdrHistogram/HdrHistogram/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "scm:git:git://github.com/HdrHistogram/HdrHistogram.git"
+        }
+      ],
+      "group": "org.hdrhistogram",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "41f807bf0c681d6f692c408a6e217eaf"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "7959933ebcc0f05b2eaa5af0a0c8689fa257b15c"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "22d1d4316c4ec13a68b559e98c8256d69071593731da96136640f864fa14fad8"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "fb28f1bc3a3d4430474ea87a0833d56dc3d1303c98918122d93c630ebdb0d1323bbf8feb9ffdc7dddd1908105858e6959bdfdd3889ca5803cecde93a974ab6b7"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "fa19cf4674dee37cb5114689cccafeadbb7989e17768b814cb431806a0f69c7b37093b6e100430bd571a45d87a319758"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "fc0a9e2e5284bc2f911c5e2fdf9eec6cfa1973b6cfb1362822580d6c8768c73ebd1c8056b6e4e5302940f6b5ec4c74b7"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "79af553410abf4d3bbfa64374dfdf8777ce49d28b4c67a615e6d4a78e97d0498"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "5b2b1795ed1ea55b5a3566bb1f4170a4367b7893256809fdb428df9405857c8454196badf3681abaf536260ed6f293c096a3f3c9d72f0f04830e8fe71d49410a"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "CC0-1.0"
+          }
+        },
+        {
+          "license": {
+            "id": "BSD-2-Clause",
+            "url": "https://opensource.org/licenses/BSD-2-Clause"
+          }
+        }
+      ],
+      "name": "HdrHistogram",
+      "purl": "pkg:maven/org.hdrhistogram/HdrHistogram@2.2.2?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "2.2.2"
+    },
+    {
       "bom-ref": "pkg:maven/org.hibernate.validator/hibernate-validator@8.0.3.Final?type=jar",
       "description": "Hibernate's Jakarta Bean Validation reference implementation.",
       "externalReferences": [
@@ -7902,6 +8510,75 @@
       "scope": "required",
       "type": "library",
       "version": "1.12.2"
+    },
+    {
+      "bom-ref": "pkg:maven/org.latencyutils/LatencyUtils@2.0.3?type=jar",
+      "description": "LatencyUtils is a package that provides latency recording and reporting utilities.",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://latencyutils.github.io/LatencyUtils/"
+        },
+        {
+          "type": "distribution-intake",
+          "url": "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/LatencyUtils/LatencyUtils/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "scm:git:git://github.com/LatencyUtils/LatencyUtils.git"
+        }
+      ],
+      "group": "org.latencyutils",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "2ad12e1ef7614cecfb0483fa9ac6da73"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "769c0b82cb2421c8256300e907298a9410a2a3d3"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "a32a9ffa06b2f4e01c5360f8f9df7bc5d9454a5d373cd8f361347fa5a57165ec"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "bb81a42498c65389366205f4e07cee336920e2f05cc0daae213f2784b1d0ce9a908b038daec20478f23eb00b2bf704f96c5b00f63c99615193ab2a3cc4a9f890"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "16ca4640dc9d848e6c6d15441897e1b5a9f27f34207b0bb456dd54d8f267b73b348092e548e78634144de44ba3515205"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "406c2b5c6f64b0c090568e479b5e6136a04a4e77f8eea65d32b4e2b01deebcdf6a0a851240cdb740c25b5a5e61e6c179"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "50ae828358301033542fd7c412e86ee318d5451f89a182e2a679aaf18099d26d"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "456c337b9fb385579aae707409ed6a04d08e5fc87b1a46733dca617c22c625bf253dc4747e0cdbf5e7d8b48102d2938cb482b6b688a79aab645a7459c592258f"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "CC0-1.0"
+          }
+        }
+      ],
+      "name": "LatencyUtils",
+      "purl": "pkg:maven/org.latencyutils/LatencyUtils@2.0.3?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "2.0.3"
     },
     {
       "bom-ref": "pkg:maven/org.mybatis/mybatis@3.5.19?type=jar",
@@ -9552,6 +10229,138 @@
       "version": "3.5.16"
     },
     {
+      "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-actuator@3.5.16?type=jar",
+      "description": "Spring Boot Actuator",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://spring.io/projects/spring-boot"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/spring-projects/spring-boot/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/spring-projects/spring-boot"
+        }
+      ],
+      "group": "org.springframework.boot",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "3bf9040985e17de7335f9b1c0aff9765"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "b3f8312fdca225b7765b915e3b336307b6e34eb8"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "3251e8197ea7df906086a86730e069deb7290ea17ce87c25a1f7db79661abbd6"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "c6a0fc388a25ea9670ed3bc62f9aab0e40bf3adbb36ba1db193df5fb1d06d8af65d08bc3cf6df5d5e43c3c480afcababb7b2a44fc678a9743d3b84ce12a2a037"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "ca3a2ff21976f2a33ecb3a759ba8fa59fa7e4c943ab69c57bfdb36a069efe3162971f9f258bcadbb4db4b0726de2e20b"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "8aa93fd177fd27bdbd8868019f643e23d32d7ba51fa5bd8fb725c8ab93708c0b26cef86aabbc3928ca0a73a03561054d"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "9b7239c9c54bff83c6ec493a3ce6614c2b80149a54d4f33d5453a63f2cfaa09f"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "fa1b45ca1dc770ffc0089ce996dd22767e564c2f792835ef76ad7e165aec9e0b373c5495c79c281e2aae895ec113e7eab7b07fec0140f81632410ea87fc9bf61"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "spring-boot-actuator",
+      "publisher": "VMware, Inc.",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-actuator@3.5.16?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "3.5.16"
+    },
+    {
+      "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@3.5.16?type=jar",
+      "description": "Spring Boot Actuator AutoConfigure",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://spring.io/projects/spring-boot"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/spring-projects/spring-boot/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/spring-projects/spring-boot"
+        }
+      ],
+      "group": "org.springframework.boot",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "c49e5fc69440f92da9e0ba4a42cb81d1"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "c88feefc15654606964df42daa71fc8df4c94cbf"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "50a5630e503c24f4421b2b3dde8b4f58ff5aedf263899aa80213ba5e02787fc3"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "40afc3e83ca605c33d64a80da587eba20a25626baae40f05c5f75d19503aa28f32aff67dfb49356614453dccbda305d8dbe5c1298c0842774ebd470d376f320c"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "9afc1168b3bc5065d848152e47089e696426bbc2a0acfaba349fa708484f253034e8dbd34cbbaa7543eae96460df5969"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "28fc47b9b388404c9fd3663b8bee9b88280d4383e155d3889baf5b42be23062e82cb5eb469e6b30a0e5db1e2a00e31a5"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "f830503bc9c2bc1c0cfffdf9258577e5e45028636da89e93a1e86f1face5da3e"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "a94b53b5218e8b48e747a6f16e9c1d6df3285e97ed2c2d06a1ab83709461d37b67f30f8026366bd6cad22a3596c61ded9490f78d540fef33679694c4aafc3bd0"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "spring-boot-actuator-autoconfigure",
+      "publisher": "VMware, Inc.",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@3.5.16?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "3.5.16"
+    },
+    {
       "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.16?type=jar",
       "description": "Spring Boot AutoConfigure",
       "externalReferences": [
@@ -9679,6 +10488,72 @@
       "name": "spring-boot-starter",
       "publisher": "VMware, Inc.",
       "purl": "pkg:maven/org.springframework.boot/spring-boot-starter@3.5.16?type=jar",
+      "scope": "required",
+      "type": "library",
+      "version": "3.5.16"
+    },
+    {
+      "bom-ref": "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.16?type=jar",
+      "description": "Starter for using Spring Boot's Actuator which provides production ready features to help you monitor and manage your application",
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://spring.io/projects/spring-boot"
+        },
+        {
+          "type": "issue-tracker",
+          "url": "https://github.com/spring-projects/spring-boot/issues"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/spring-projects/spring-boot"
+        }
+      ],
+      "group": "org.springframework.boot",
+      "hashes": [
+        {
+          "alg": "MD5",
+          "content": "cbc461932fe0bc3a6fbbfb08a4fa7205"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "10d1b0d154545c910b47c7c64206b80239bd2309"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "e80a3e369d6da7e6324be00027c4d22d525f6a18bb1e09fa512cc541720172b3"
+        },
+        {
+          "alg": "SHA-512",
+          "content": "9c01e9c9276c07c2d46184f6759df2eb6b2c3799511f68b8827631c780a5919e35aaa1717a5cdc9dab2b18ab2ed7a6311dcd11749eb7413ae13db7f9180b963b"
+        },
+        {
+          "alg": "SHA-384",
+          "content": "0a65a8615f791fb0ccc9b9c49539e5a153b5d7bf7e6b2e619e7a5a6f979dc9220df71ddd56f526b5ddf9045f7b20e41d"
+        },
+        {
+          "alg": "SHA3-384",
+          "content": "cc1f9fcc70580047b1eb74aedef3b4660975d9897f0aba41c822117c4f56e9e8692b200fb9c5c3822c1e1c663e93acb5"
+        },
+        {
+          "alg": "SHA3-256",
+          "content": "ac768d041ca73f94d91e13177a07ac261c3582c4f8dc683a9924514335889483"
+        },
+        {
+          "alg": "SHA3-512",
+          "content": "6553106545125eb0fce861b5e490685ddc956762f46d956b7f6383edad3684b66b1654d708b913cc5415af15358090a1891d4a16adbd9e5def59a24520947493"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "spring-boot-starter-actuator",
+      "publisher": "VMware, Inc.",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.16?type=jar",
       "scope": "required",
       "type": "library",
       "version": "3.5.16"
@@ -10904,6 +11779,8 @@
         "pkg:maven/com.baomidou/mybatis-plus-spring@3.5.17?type=jar",
         "pkg:maven/com.baomidou/mybatis-plus-jsqlparser@3.5.17?type=jar",
         "pkg:maven/org.springframework.boot/spring-boot-starter-data-redis@3.5.16?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.16?type=jar",
+        "pkg:maven/io.micrometer/micrometer-registry-prometheus@1.15.12?type=jar",
         "pkg:maven/cn.dev33/sa-token-spring-boot3-starter@1.46.0?type=jar",
         "pkg:maven/cn.dev33/sa-token-redis-jackson@1.46.0?type=jar",
         "pkg:maven/dev.langchain4j/langchain4j@0.35.0?type=jar",
@@ -11192,9 +12069,35 @@
     },
     {
       "dependsOn": [
+        "pkg:maven/io.micrometer/micrometer-commons@1.15.12?type=jar",
+        "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar",
+        "pkg:maven/org.hdrhistogram/HdrHistogram@2.2.2?type=jar",
+        "pkg:maven/org.latencyutils/LatencyUtils@2.0.3?type=jar"
+      ],
+      "ref": "pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar",
+        "pkg:maven/io.micrometer/micrometer-commons@1.15.12?type=jar",
+        "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar"
+      ],
+      "ref": "pkg:maven/io.micrometer/micrometer-jakarta9@1.15.12?type=jar"
+    },
+    {
+      "dependsOn": [
         "pkg:maven/io.micrometer/micrometer-commons@1.15.12?type=jar"
       ],
       "ref": "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/io.micrometer/micrometer-core@1.15.12?type=jar",
+        "pkg:maven/io.prometheus/prometheus-metrics-core@1.3.10?type=jar",
+        "pkg:maven/io.prometheus/prometheus-metrics-tracer-common@1.3.10?type=jar",
+        "pkg:maven/io.prometheus/prometheus-metrics-exposition-formats@1.3.10?type=jar"
+      ],
+      "ref": "pkg:maven/io.micrometer/micrometer-registry-prometheus@1.15.12?type=jar"
     },
     {
       "dependsOn": [
@@ -11370,6 +12273,38 @@
         "pkg:maven/org.reactivestreams/reactive-streams@1.0.4?type=jar"
       ],
       "ref": "pkg:maven/io.projectreactor/reactor-core@3.7.19?type=jar"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-config@1.3.10?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/io.prometheus/prometheus-metrics-model@1.3.10?type=jar",
+        "pkg:maven/io.prometheus/prometheus-metrics-config@1.3.10?type=jar"
+      ],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-core@1.3.10?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/io.prometheus/prometheus-metrics-exposition-textformats@1.3.10?type=jar"
+      ],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-exposition-formats@1.3.10?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/io.prometheus/prometheus-metrics-model@1.3.10?type=jar",
+        "pkg:maven/io.prometheus/prometheus-metrics-config@1.3.10?type=jar"
+      ],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-exposition-textformats@1.3.10?type=jar"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-model@1.3.10?type=jar"
+    },
+    {
+      "dependsOn": [],
+      "ref": "pkg:maven/io.prometheus/prometheus-metrics-tracer-common@1.3.10?type=jar"
     },
     {
       "dependsOn": [],
@@ -11553,6 +12488,10 @@
       "ref": "pkg:maven/org.flywaydb/flyway-database-postgresql@10.10.0?type=jar"
     },
     {
+      "dependsOn": [],
+      "ref": "pkg:maven/org.hdrhistogram/HdrHistogram@2.2.2?type=jar"
+    },
+    {
       "dependsOn": [
         "pkg:maven/jakarta.validation/jakarta.validation-api@3.0.2?type=jar",
         "pkg:maven/org.jboss.logging/jboss-logging@3.6.3.Final?type=jar",
@@ -11642,6 +12581,10 @@
     },
     {
       "dependsOn": [],
+      "ref": "pkg:maven/org.latencyutils/LatencyUtils@2.0.3?type=jar"
+    },
+    {
+      "dependsOn": [],
       "ref": "pkg:maven/org.mybatis/mybatis-spring@3.0.5?type=jar"
     },
     {
@@ -11698,9 +12641,34 @@
     },
     {
       "dependsOn": [
+        "pkg:maven/org.springframework.boot/spring-boot@3.5.16?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-actuator@3.5.16?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.16?type=jar",
+        "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.18.11?type=jar",
+        "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.18.11?type=jar"
+      ],
+      "ref": "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@3.5.16?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/org.springframework.boot/spring-boot@3.5.16?type=jar"
+      ],
+      "ref": "pkg:maven/org.springframework.boot/spring-boot-actuator@3.5.16?type=jar"
+    },
+    {
+      "dependsOn": [
         "pkg:maven/org.springframework.boot/spring-boot@3.5.16?type=jar"
       ],
       "ref": "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.16?type=jar"
+    },
+    {
+      "dependsOn": [
+        "pkg:maven/org.springframework.boot/spring-boot-starter@3.5.16?type=jar",
+        "pkg:maven/org.springframework.boot/spring-boot-actuator-autoconfigure@3.5.16?type=jar",
+        "pkg:maven/io.micrometer/micrometer-observation@1.15.12?type=jar",
+        "pkg:maven/io.micrometer/micrometer-jakarta9@1.15.12?type=jar"
+      ],
+      "ref": "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.16?type=jar"
     },
     {
       "dependsOn": [

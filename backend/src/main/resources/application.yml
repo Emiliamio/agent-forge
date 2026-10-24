@@ -1,12 +1,14 @@
 server:
   port: ${SERVER_PORT:8080}
   servlet:
-    context-path: /api
     encoding:
       charset: UTF-8
       force: true
 
 spring:
+  mvc:
+    servlet:
+      path: /api
   application:
     name: agent-forge-backend
   profiles:
@@ -129,3 +131,20 @@ agentforge:
       rerank-enabled: true
       rerank-model-weight: 0.5     # 重排器与原检索分的混合权重
       rrf-normalize-factor: 30.0
+
+# 生产级可观测性与 Actuator 监控端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus     # 禁止通配符 "*"，收敛暴露面
+      base-path: /actuator
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never                   # 严禁向外部探测泄露内部数据库与组件细节
+  metrics:
+    tags:
+      application: agent-forge
+

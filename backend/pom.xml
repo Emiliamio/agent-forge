@@ -135,6 +135,16 @@
         <!-- Redisson 已移除：其 spring-data-32 适配与 Spring Data Redis 3.5 的 pExpire 存在递归冲突；
              本项目限流/锁/会话全部走 Spring Data Redis + Lua，不需要 Redisson 客户端。 -->
 
+        <!-- Spring Boot Actuator & Micrometer Prometheus 监控与可观测性 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!-- Sa-Token 权限鉴权与 API Key 认证 -->
         <dependency>
             <groupId>cn.dev33</groupId>

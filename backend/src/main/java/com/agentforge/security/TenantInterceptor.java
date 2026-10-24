@@ -33,7 +33,8 @@ public class TenantInterceptor implements HandlerInterceptor {
             "/swagger-ui",
             "/doc.html",
             "/favicon.ico",
-            "/error"
+            "/error",
+            "/actuator"
     };
 
     private boolean isPublicPath(String uri) {
