@@ -39,4 +39,16 @@ if python3 -c "import sys" >/dev/null 2>&1; then
   PYTHON_CMD="python3"
 fi
 $PYTHON_CMD scripts/normalize_sbom.py docs/sbom/backend-bom.json docs/sbom/frontend-bom.json
+
+# 防线：SBOM 必须是 LF。Windows 下 Python 文本模式会把 \n 写成 \r\n，而 CI(Linux) 重新生成的是 LF，
+# 只要仓库里存的是 CRLF，`git diff` 就会全行变化 → "SBOM · drift check" 假红（v1.4.0 实际踩过）。
+$PYTHON_CMD - <<'PY' || exit 1
+import glob, sys
+bad = [f for f in glob.glob("docs/sbom/*.json") if b"\r" in open(f, "rb").read()]
+if bad:
+    print("[FAIL] 以下 SBOM 含 CRLF，CI 的 SBOM drift 会失败：" + ", ".join(bad)
+          + "；请检查 normalize_sbom.py 的 newline 参数", file=sys.stderr)
+    sys.exit(1)
+PY
+
 echo "[OK] docs/sbom 已刷新（后端 mvn / 前端 node:20 容器，跨平台一致）"

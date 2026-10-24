@@ -22,7 +22,9 @@ def normalize(path: str) -> None:
         )
     if isinstance(doc.get("dependencies"), list):
         doc["dependencies"] = sorted(doc["dependencies"], key=lambda d: d.get("ref") or "")
-    with open(path, "w", encoding="utf-8") as f:
+    # newline="\n" 必须显式指定：Windows 下默认文本模式会把 \n 翻成 \r\n，
+    # 导致 CI（Linux，LF）重新生成后与仓库里的 CRLF 版本全行 diff —— SBOM drift 假红。
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(doc, f, ensure_ascii=False, indent=2, sort_keys=True)
         f.write("\n")
 
