@@ -3,6 +3,19 @@
 所有关于 AgentForge 项目的重要更新与版本迭代记录均归档于此文件。  
 版本号遵循 [Semantic Versioning 2.0.0](https://semver.org/lang/zh-CN/) 语义化版本规范。
 
+## [v1.4.0] - 2026-10-24
+
+### Added
+- **声明矩阵扩到 12 条**：新增 Claim 10（架构不变量 R1–R6，12 项断言）、Claim 11（依赖漏洞口径：前端 0 条 / 后端 7 条跨线项）、Claim 12（交付镜像非 root + HEALTHCHECK）；每条附「证据文件 / CI job / 最近验证」三列，并在 `docs/CLAIMS.md` 顶部新增声明口径与准入规范。
+- **两道文档门禁（CI job `docs-claims`）**：
+  - `scripts/check_doc_claims.py`：公开文档中的量化/绝对化表述必须挂 `<!-- claim:N -->` 或 `CLAIMS.md` 链接，否则构建失败；
+  - `scripts/check_doc_commands.py`：文档中的 `-Dtest=类#方法`、`bash scripts/*.sh`、`python scripts/*.py`、`npm run <task>`、Markdown 锚点必须全部可解析。
+- **纪律文档升级**：`docs/ENGINEERING-DISCIPLINE.md` 的纪律 3 从「注入一次」升级为 **L1 有效性 / L2 覆盖每一类载体 / L3 声明覆盖边界** 三级反向验证，并把本轮事故写成案例二。
+
+### Fixed
+- **门禁只扫围栏代码块（漏检 17/65 条行内命令）**：`check_doc_commands.py` 增加行内代码 span 扫描（覆盖 48 → 65 条），并新增 `<!-- doc-commands-ignore: 原因 -->` 行级豁免用于合法展示反例；漏检的行内命令里包含 `docs/CLAIMS.md` 自身的 7 条复现命令。
+- **Claims 门禁假失败**：Claim 04/05 压满登录限流后，Claim 06 的用例会拿到 429；现在 Claim 06 执行前 `FLUSHALL`，脚本连跑两次稳定 12/12。
+
 ## [v1.3.1] - 2026-10-23
 
 ### Fixed

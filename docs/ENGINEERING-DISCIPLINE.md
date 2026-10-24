@@ -48,11 +48,12 @@ curl -s -X POST https://api.osv.dev/v1/query \
 
 ## 纪律 3：新增或修改门禁，必须做反向验证（注入 → 红 → 回滚 → 绿）
 
-任何新增的 ArchUnit 规则、契约测试、覆盖率门禁、依赖门禁，**只在通过时绿不算数**，
-必须证明它真的能拦住违规：
+任何新增的 ArchUnit 规则、契约测试、覆盖率门禁、依赖门禁、**文档门禁**，**只在通过时绿不算数**，
+必须证明它真的能拦住违规。而且要分 **三级** 验证，只做第一级是不够的：
+
+### L1 · 有效性：注入 1 条真实违规 → 必须红 → 回滚 → 必须绿
 
 ```bash
-# 模板：注入真实违规 → 确认变红 → 回滚 → 确认转绿
 # ① 注入（例：让 billing.internal 依赖 security.internal）
 # ② mvn -B -Dtest=ArchitectureTest test        → 必须红，且报错点名该规则
 # ③ git checkout -- <被改文件>
@@ -61,9 +62,43 @@ curl -s -X POST https://api.osv.dev/v1/query \
 
 报告里要贴**红的那一次输出**（含规则名/违约条目），否则视为未验证。
 
-**真实案例（v1.2.1 / v1.3.0）**：Rule 11（`slices().matching("com.agentforge.service.(*).internal..")`）
+### L2 · 覆盖率：对门禁覆盖的**每一类载体**分别注入
+
+同一个门禁往往覆盖多种写法，**只测其中一种就等于没测**。必须逐类注入、逐类确认能红：
+
+| 载体类型 | 注入示例 | 必须红的门禁 |
+|---|---|---|
+| 围栏代码块内的命令 | ```bash 里写 `mvn -Dtest=NoSuchTest#nope test` ``` | `check_doc_commands.py` | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
+| **行内代码**（`…`，常用于表格单元格） | 表格里写 `mvn -Dtest=NoSuchTest#nope test` | 同上 | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
+| 引用了不存在的脚本 | `bash scripts/nope.sh` | 同上 | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
+| 未登记的 npm task | `npm run nope` | 同上 | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
+| 失效的 Markdown 锚点 | `[x](docs/foo.md#nope)` | 同上 | <!-- doc-commands-ignore: L2 反例载体，故意写错以验证门禁 -->
+| 未挂 claim 的量化表述 | "响应时间 3ms" | `check_doc_claims.py` |
+| 架构规则/契约测试 | 跨域 internal 依赖 / 改端点签名 | `ArchitectureTest` / `OpenApiContractTest` |
+
+同时要**核对门禁自报的覆盖数与实际口径一致**：
+
+```bash
+# 门禁说自己检查了 N 条 → 用独立 grep 算一遍，两者必须吻合
+grep -rEo -- '-Dtest=[A-Za-z0-9_]+' README.md docs/*.md | wc -l
+```
+
+### L3 · 声明边界：门禁必须说清"覆盖什么、不覆盖什么"
+
+- 脚本输出里禁止写"全部可解析/全部通过"这类**绝对化表述**，除非同时打印覆盖口径
+  （例如：`[OK] 命令引用全部可解析（围栏 + 行内，共 65 条）`）；
+- 新增门禁要在 `docs/ENGINEERING-DISCIPLINE.md` 或脚本 docstring 里写明**已知不覆盖**的部分
+  （例如：不校验 `curl` 示例、不校验外部 URL 可达性），避免后人误以为"门禁绿 = 一切正确"。
+
+**真实案例一（v1.2.1 / v1.3.0）**：Rule 11（`slices().matching("com.agentforge.service.(*).internal..")`）
 两次都是靠注入探针证明有效的——一次在旧域（agent↔rag），一次在新切分的域（workflow↔market），
 第二次还顺带证明了这条通用规则会自动覆盖新增特性域。
+
+**真实案例二（v1.4.0，本纪律 L2 的来源）**：`check_doc_commands.py` 上线时只扫**围栏代码块**，
+却输出「命令引用全部可解析（48 条）」——而仓库里实际有 **65 条**命令引用，漏掉的 17 条全在行内代码里
+（其中 7 条正是 `docs/CLAIMS.md` 矩阵自己的复现命令）。往 `CLAIMS.md` 表格塞一个不存在的测试类，
+门禁照样绿。修复后覆盖 48 → 65，并新增 `<!-- doc-commands-ignore: 原因 -->` 用于合法展示反例。
+**教训：门禁的"通过"只对已验证过的载体有效；没验证过的载体等于没门禁。**
 
 ---
 
@@ -126,7 +161,9 @@ Maven 报 `Non-parseable POM`、vite 报 `"name"... is not valid JSON`、trivy �
 - [ ] 契约门禁：`mvn -B -Dtest=OpenApiContractTest -Dlive=true test` → 绿
 - [ ] 依赖门禁：`python3 scripts/check_osv.py` → 可修复项 0
 - [ ] SBOM：`bash scripts/refresh-sbom.sh` 后 `git status` 无残差
-- [ ] 反向验证：新增门禁的红/绿两次输出已贴
+- [ ] 反向验证 L1：新增门禁的红/绿两次输出已贴（注入 → 红 → 回滚 → 绿）
+- [ ] 反向验证 L2：**每类载体**都单独注入过（围栏命令 / 行内代码 / 脚本引用 / npm task / 锚点 / 量化表述），且逐类变红
+- [ ] 反向验证 L3：门禁自报的覆盖数与独立 grep 统计吻合（例：65 条 vs `grep -rEo '\-Dtest=[A-Za-z0-9_]+' | wc -l`），输出无"全部"式绝对化表述
 - [ ] 文档命令：本次新增/修改的每条验证命令都亲自跑过
 - [ ] 编码：改动文件 UTF-8 无 BOM、LF
 - [ ] 清场：`git status --short` 为空；临时脚本/日志/容器已清理
