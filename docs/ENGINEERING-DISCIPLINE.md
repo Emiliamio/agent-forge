@@ -37,7 +37,7 @@ curl -s -X POST https://api.osv.dev/v1/query \
 
 | 陷阱 | 现象 | 正确做法 |
 |---|---|---|
-| JUnit 方法级过滤 | `mvn -Dtest=ArchitectureTest#r1_xxx test` 对 `@ArchTest` 静态字段**无法选中**，surefire 会退化成跑整个类，输出仍显示 `BUILD SUCCESS` | 统一 `-Dtest=ArchitectureTest`；规则类测试不做方法级过滤 |
+| JUnit 方法级过滤 | <!-- doc-commands-ignore: 该行故意展示错误用法 -->`mvn -Dtest=ArchitectureTest#r1_xxx test` 对 `@ArchTest` 静态字段**无法选中**，surefire 会退化成跑整个类，输出仍显示 `BUILD SUCCESS` | 统一 `-Dtest=ArchitectureTest`；规则类测试不做方法级过滤 |
 | 容器内 `localhost` | 解析到 `::1`，服务只监听 IPv4 时健康检查假失败 | 健康检查一律 `127.0.0.1` |
 
 **真实事故（v1.2.0）**：`docs/ARCHITECTURE.md` 写了 6 条按方法名精确选择 ArchUnit 规则的命令，

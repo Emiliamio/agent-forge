@@ -123,13 +123,21 @@ def check_all_documents() -> tuple[list[str], int]:
                 in_fence = not in_fence
                 continue
 
-            # 围栏代码块内部检查可执行命令
-            if in_fence:
-                if line.startswith("#"):
-                    continue
+            # 允许文档显式标注"反例/反面示例"：行内出现 doc-commands-ignore 则跳过该行
+            if "doc-commands-ignore" in raw_line:
+                continue
 
+            # 待检查的命令片段：围栏内的整行 + 行内代码 span（两者都要查，缺一不可）
+            texts = []
+            if in_fence:
+                if not line.startswith("#"):
+                    texts.append(line)
+            else:
+                texts.extend(m.group(1) for m in re.finditer(r"`([^`]+)`", raw_line))
+
+            for text in texts:
                 # 1. -Dtest=
-                for m in test_pat.finditer(line):
+                for m in test_pat.finditer(text):
                     checked_count += 1
                     cname, mname = m.group(1), m.group(2)
                     if cname not in test_classes:
@@ -138,7 +146,6 @@ def check_all_documents() -> tuple[list[str], int]:
                         )
                     elif mname:
                         content = test_classes[cname]
-                        # 支持标准方法 void mname( 或 ArchRule 字段声明
                         has_method = (
                             f"void {mname}(" in content
                             or f"void {mname} (" in content
@@ -150,7 +157,7 @@ def check_all_documents() -> tuple[list[str], int]:
                             )
 
                 # 2. bash scripts/xxx.sh
-                for m in sh_pat.finditer(line):
+                for m in sh_pat.finditer(text):
                     checked_count += 1
                     spath = m.group(1)
                     full_spath = os.path.join(REPO_ROOT, spath)
@@ -160,7 +167,7 @@ def check_all_documents() -> tuple[list[str], int]:
                         )
 
                 # 3. python scripts/xxx.py
-                for m in py_pat.finditer(line):
+                for m in py_pat.finditer(text):
                     checked_count += 1
                     spath = m.group(1)
                     full_spath = os.path.join(REPO_ROOT, spath)
@@ -170,7 +177,7 @@ def check_all_documents() -> tuple[list[str], int]:
                         )
 
                 # 4. npm run <task>
-                for m in npm_pat.finditer(line):
+                for m in npm_pat.finditer(text):
                     checked_count += 1
                     task = m.group(1)
                     if task not in npm_scripts:
