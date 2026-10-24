@@ -138,6 +138,9 @@ MVN_CMD="mvn"
 if command -v mvn.cmd >/dev/null 2>&1; then
   MVN_CMD="mvn.cmd"
 fi
+# 清掉 Claim 04/05 留下的限流与会话键：否则登录限流会让 Claim 06 的用例拿到 429（假失败）
+docker exec agentforge-redis redis-cli -a redis123 FLUSHALL >/dev/null 2>&1 || true
+
 MVN_OUT=$(cd backend && $MVN_CMD -B clean verify -Dlive=true 2>&1 || true)
 if grep -q "Failures: 0, Errors: 0, Skipped: 0" <<< "$MVN_OUT" && grep -q "BUILD SUCCESS" <<< "$MVN_OUT"; then
   record_pass "06" "测试 177+ 例、0 跳过"
