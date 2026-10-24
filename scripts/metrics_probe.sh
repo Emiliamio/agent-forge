@@ -1,80 +1,83 @@
 #!/usr/bin/env bash
 # AgentForge 可观测性与安全暴露自动化探针 (metrics_probe.sh)
+#
+# 准入控制模型（v1.5 起）：**端口隔离**，不是 IP 白名单。
+#   - 管理端口 management.server.port=9090，只在容器内网/本机可达；
+#   - compose 仅发布 8080，因此经 Docker NAT 转发的宿主端口请求到不了 9090；
+#   - Docker 桥接下外部请求的 remoteAddr 是网桥网关（172.x），IP 白名单无法区分内外，
+#     所以本脚本断言的是"宿主端口上根本不存在 /actuator"，而不是"被过滤器挡住了"。
 set -euo pipefail
 export MSYS_NO_PATHCONV=1
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-METRICS_HOST="${METRICS_HOST:-127.0.0.1}"
-METRICS_PORT="${METRICS_PORT:-8080}"
-BASE_URL="http://${METRICS_HOST}:${METRICS_PORT}"
+PUBLIC_HOST="${METRICS_HOST:-127.0.0.1}"
+PUBLIC_PORT="${METRICS_PORT:-8080}"
+PUBLIC_URL="http://${PUBLIC_HOST}:${PUBLIC_PORT}"
+
+BACKEND_CONTAINER="${BACKEND_CONTAINER:-agentforge-backend}"
+MGMT_PORT="${MANAGEMENT_PORT:-9090}"
 
 echo "========================================================"
-echo " Starting AgentForge Metrics & Actuator Guard Probe"
-echo " Target Base: $BASE_URL"
+echo " Starting AgentForge Metrics & Actuator Isolation Probe"
+echo " Public surface : $PUBLIC_URL (published)"
+echo " Management     : ${BACKEND_CONTAINER}:${MGMT_PORT} (NOT published)"
 echo "========================================================"
 
-# 1. 验证 Prometheus 指标端点 (/actuator/prometheus)
-echo "Step 1: 验证本地回环访问 /actuator/prometheus 指标端点..."
-PROMETHEUS_OUT=$(curl -sfS "$BASE_URL/actuator/prometheus" 2>&1 || true)
-if grep -q "http_server_requests_seconds_count" <<< "$PROMETHEUS_OUT" || grep -q "jvm_memory_used_bytes" <<< "$PROMETHEUS_OUT"; then
+# 1. 容器内网访问 Prometheus 端点（应成功）
+echo "Step 1: 从容器内网校验 /actuator/prometheus 指标..."
+PROMETHEUS_OUT=$(docker exec "$BACKEND_CONTAINER" \
+  curl -sfS "http://127.0.0.1:${MGMT_PORT}/actuator/prometheus" 2>&1 || true)
+if grep -q "http_server_requests_seconds_count" <<< "$PROMETHEUS_OUT" \
+   || grep -q "jvm_memory_used_bytes" <<< "$PROMETHEUS_OUT"; then
   METRIC_COUNT=$(grep -c "^[a-zA-Z_]" <<< "$PROMETHEUS_OUT" || echo "0")
-  echo "[PASS] /actuator/prometheus 正常暴露指标 (采集到约 $METRIC_COUNT 类指标)"
+  echo "[PASS] 管理端口 ${MGMT_PORT} 正常暴露指标（采集到约 ${METRIC_COUNT} 类指标）"
 else
-  echo "[FAIL] /actuator/prometheus 未检测到预期监控指标 (输出前 200 字符: ${PROMETHEUS_OUT:0:200})"
+  echo "[FAIL] 管理端口未返回预期指标（输出前 200 字符: ${PROMETHEUS_OUT:0:200}）"
   exit 1
 fi
 
-# 2. 验证 Health 探针端点 (/actuator/health)
-echo "Step 2: 验证本地回环访问 /actuator/health 端点..."
-HEALTH_RESP=$(curl -sS -w "\n%{http_code}" "$BASE_URL/actuator/health")
-HEALTH_CODE=$(echo "$HEALTH_RESP" | tail -n1)
-HEALTH_BODY=$(echo "$HEALTH_RESP" | sed '$d')
-
-if [ "$HEALTH_CODE" -eq 200 ] && grep -q '"status":"UP"' <<< "$HEALTH_BODY"; then
-  # 验证 show-details: never，确保未泄露敏感拓扑
-  if grep -q "database" <<< "$HEALTH_BODY" || grep -q "postgres" <<< "$HEALTH_BODY"; then
-    echo "[FAIL] /actuator/health 泄露了内部组件敏感细节: $HEALTH_BODY"
+# 2. 容器内网访问 Health（应 UP 且不泄露细节）
+echo "Step 2: 从容器内网校验 /actuator/health..."
+HEALTH_BODY=$(docker exec "$BACKEND_CONTAINER" \
+  curl -sfS "http://127.0.0.1:${MGMT_PORT}/actuator/health" 2>&1 || true)
+if grep -q '"status":"UP"' <<< "$HEALTH_BODY"; then
+  if grep -qE '"database"|postgres|jdbc:' <<< "$HEALTH_BODY"; then
+    echo "[FAIL] /actuator/health 泄露内部组件细节: ${HEALTH_BODY}"
     exit 1
   fi
-  echo "[PASS] /actuator/health 返回状态 UP 且内部敏感细节已隐藏"
+  echo "[PASS] /actuator/health 返回 status=UP，且 show-details=never 生效"
 else
-  echo "[FAIL] /actuator/health 期望 HTTP 200 且 status=UP，实际 HTTP $HEALTH_CODE, body: $HEALTH_BODY"
+  echo "[FAIL] /actuator/health 未返回 UP: ${HEALTH_BODY:0:200}"
   exit 1
 fi
 
-# 3. 验证从公网源访问被静默拦截为 404 (不对公网暴露端点指纹)
-echo "Step 3: 模拟公网源访问验证 404 静默拦截..."
+# 3. 宿主端口上 /actuator 与 /api/actuator 都必须 404（结构上不存在）
+echo "Step 3: 校验宿主发布端口上不存在任何 actuator 路径..."
+TMP_BODY="$(mktemp)"
+trap 'rm -f "$TMP_BODY"' EXIT
+for path in "/actuator/prometheus" "/actuator/health" "/api/actuator/prometheus" "/api/actuator/health"; do
+  # 不用 /dev/null：Git Bash 下 MSYS_NO_PATHCONV=1 会让原生 curl 把 /dev/null 当成 D:\dev\null
+  code=$(curl -sS -o "$TMP_BODY" -w '%{http_code}' "${PUBLIC_URL}${path}")
+  if [ "$code" != "404" ]; then
+    echo "[FAIL] ${path} 在宿主端口返回 ${code}（期望 404：管理端点不得发布）"
+    exit 1
+  fi
+done
+echo "[PASS] 宿主端口 ${PUBLIC_PORT} 上 /actuator 与 /api/actuator 全部 404"
 
-# (A) 模拟通过受信任反代传递公网客户端 IP (203.0.113.199)
-PUBLIC_RESP=$(curl -sS -w "\n%{http_code}" \
-  -H "X-Forwarded-For: 203.0.113.199" \
-  "$BASE_URL/actuator/prometheus")
-PUBLIC_RESP_CODE=$(echo "$PUBLIC_RESP" | tail -n1)
-
-if [ "$PUBLIC_RESP_CODE" -eq 404 ]; then
-  echo "[PASS] 公网源访问 /actuator/prometheus 成功拦截并返回 HTTP 404 (无端点指纹泄露)"
-else
-  echo "[FAIL] 公网源访问期望 HTTP 404，实际返回 HTTP $PUBLIC_RESP_CODE"
+# 4. 结构性断言：容器端口映射里不得出现管理端口
+echo "Step 4: 校验管理端口未被发布到宿主..."
+PUBLISHED=$(docker port "$BACKEND_CONTAINER" 2>/dev/null || true)
+if grep -qE "(^|:)${MGMT_PORT}(/|$)" <<< "$PUBLISHED"; then
+  echo "[FAIL] 管理端口 ${MGMT_PORT} 已发布到宿主：${PUBLISHED}"
   exit 1
 fi
-
-# (B) 验证 /actuator/health 在公网源访问下同样返回 404
-PUBLIC_HEALTH_RESP=$(curl -sS -w "\n%{http_code}" \
-  -H "X-Forwarded-For: 198.51.100.88" \
-  "$BASE_URL/actuator/health")
-PUBLIC_HEALTH_CODE=$(echo "$PUBLIC_HEALTH_RESP" | tail -n1)
-
-if [ "$PUBLIC_HEALTH_CODE" -eq 404 ]; then
-  echo "[PASS] 公网源访问 /actuator/health 成功拦截并返回 HTTP 404"
-else
-  echo "[FAIL] 公网源访问 /actuator/health 期望 HTTP 404，实际返回 HTTP $PUBLIC_HEALTH_CODE"
-  exit 1
-fi
+echo "[PASS] 管理端口 ${MGMT_PORT} 未发布（docker port 输出中不存在）"
 
 echo "========================================================"
-echo " Metrics & Actuator Guard Probe PASSED"
-echo " All 3 assertion criteria verified successfully"
+echo " Metrics & Actuator Isolation Probe PASSED"
+echo " 4 assertion groups verified (metrics / health / public-404 / port-not-published)"
 echo "========================================================"
 exit 0

@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 /**
- * 生产级 Actuator 可观测性端点安全防护过滤器
- * 1. 仅限内网/本地安全回环源访问：仅允许 127.0.0.1 / ::1 / 10.0.0.0/8 / 172.16.0.0/12 / 192.168.0.0/16；
- * 2. 外部公网访问坚决静默阻断：直接返回 HTTP 404 Not Found（绝不返回 403，彻底消除端点存在性指纹泄露）；
- * 3. 内部路径无缝转发：支持 /api/actuator/** 自动内部 forward 至 /actuator/**，保障内外统一调用。
+ * Actuator 可观测性端点安全防护过滤器（纵深防御，第二道闸）。
+ * 真正的准入控制是【端口隔离】：management.server.port=9090，且 compose 只发布 8080，
+ * 因此经 Docker NAT 转发的宿主端口请求根本到不了管理端口，/actuator 对外不可达。
+ * 本过滤器在此基础上再加一层：仅允许回环 / RFC1918 内网源的直接套接字连接，
+ * 且 X-Forwarded-For 链路上只要出现非内网 IP 就静默返回 404（不暴露端点存在性）。
+ * 注意：Docker 桥接网络下外部请求的 remoteAddr 是网桥网关（172.x），单靠本过滤器无法区分内外，
+ * 所以不要把管理端口发布到宿主——端口不发布才是真正的边界。
  */
 @Slf4j
 @Component

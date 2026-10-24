@@ -295,7 +295,7 @@ flowchart LR
         Proxy -->|HTTP Cleartext:8080| Backend["AgentForge Backend (后端容器)"]
         Backend -->|TCP:5432| DB[("PostgreSQL 16")]
         Backend -->|TCP:6379| Redis[("Redis 7")]
-        Prometheus["内网 Prometheus 采集器"] -->|HTTP:8080/actuator/prometheus| Backend
+        Prometheus["内网 Prometheus 采集器"] -->|HTTP:9090/actuator/prometheus（管理端口不发布）| Backend
     end
 ```
 
@@ -352,18 +352,11 @@ server {
         proxy_read_timeout 300s; # 满足 LLM 流式 SSE 长连接响应
     }
 
-    # 6. Actuator 可观测性端点安全屏障 (公网直接 404，仅允许特定内部运维网段)
-    location /actuator/ {
-        # 运维网络白名单访问控制
-        allow 127.0.0.1;
-        allow 10.0.0.0/8;
-        allow 172.16.0.0/12;
-        allow 192.168.0.0/16;
-        deny all;
-
-        proxy_pass http://127.0.0.1:8080/actuator/;
-        proxy_http_version 1.1;
-    }
+    # 6. Actuator 不在 8080 上！管理端点走独立端口 9090 且不发布到宿主，
+    #    公网/反代根本无处可代理（这是结构性边界，不依赖 IP 白名单）。
+    #    监控采集器应直连容器网络或本机 9090：
+    #      docker exec agentforge-backend curl -s http://127.0.0.1:9090/actuator/prometheus
+    #    切勿在本层加 location /actuator/ 反向代理，否则等于把管理端点重新暴露给公网。
 }
 ```
 

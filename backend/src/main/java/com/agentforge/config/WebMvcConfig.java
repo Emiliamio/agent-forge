@@ -42,8 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/doc.html",
                         "/webjars/**",
                         "/favicon.ico",
-                        "/actuator/**",
-                        "/api/actuator/**"
+                        "/actuator/**"
                 )
                 .order(1);
     }

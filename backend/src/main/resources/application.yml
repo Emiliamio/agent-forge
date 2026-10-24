@@ -133,6 +133,11 @@ agentforge:
 
 # 生产级可观测性与 Actuator 监控端点配置
 management:
+  server:
+    # 独立管理端口：compose 只发布 8080，本端口仅容器内网/本机可达，
+    # 因此 /actuator 从公网（含经 Docker NAT 转发的宿主端口请求）结构上不可达。
+    # 若在本机直接跑 jar 并对外暴露该端口，需自行加防火墙或令牌校验。
+    port: ${MANAGEMENT_PORT:9090}
   endpoints:
     web:
       exposure:

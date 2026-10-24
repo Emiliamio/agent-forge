@@ -261,14 +261,14 @@ else
   record_fail "13" "公开挂件调用全量留痕且可核验" "audit_probe.sh failed"
 fi
 
-# --- Claim 14: 可观测性端点就绪且不对公网泄露 ---
-echo "Verifying Claim 14: 可观测性端点就绪且不对公网泄露..."
+# --- Claim 14: 管理端口隔离：指标就绪，且宿主端口上不存在 actuator ---
+echo "Verifying Claim 14: 管理端口隔离（指标就绪，宿主端口无 actuator）..."
 METRICS_OUT=$(bash scripts/metrics_probe.sh 2>&1 || true)
-if grep -q "Metrics & Actuator Guard Probe PASSED" <<< "$METRICS_OUT"; then
-  record_pass "14" "可观测性端点就绪且不对公网泄露（Prometheus/Health就绪，公网404拦截）"
+if grep -q "Metrics & Actuator Isolation Probe PASSED" <<< "$METRICS_OUT"; then
+  record_pass "14" "管理端口隔离：指标/健康就绪，宿主端口 actuator 全 404，管理端口未发布"
 else
   echo "$METRICS_OUT"
-  record_fail "14" "可观测性端点就绪且不对公网泄露" "metrics_probe.sh failed"
+  record_fail "14" "管理端口隔离" "metrics_probe.sh failed"
 fi
 
 echo "========================================================"
