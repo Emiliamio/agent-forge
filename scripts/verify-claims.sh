@@ -7,7 +7,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 PASS_COUNT=0
-TOTAL_CLAIMS=13
+TOTAL_CLAIMS=14
 
 echo "========================================================"
 echo " Starting AgentForge Claims Verification Gate"
@@ -259,6 +259,16 @@ if grep -q "Widget Call Audit Probe PASSED" <<< "$AUDIT_OUT"; then
 else
   echo "$AUDIT_OUT"
   record_fail "13" "公开挂件调用全量留痕且可核验" "audit_probe.sh failed"
+fi
+
+# --- Claim 14: 可观测性端点就绪且不对公网泄露 ---
+echo "Verifying Claim 14: 可观测性端点就绪且不对公网泄露..."
+METRICS_OUT=$(bash scripts/metrics_probe.sh 2>&1 || true)
+if grep -q "Metrics & Actuator Guard Probe PASSED" <<< "$METRICS_OUT"; then
+  record_pass "14" "可观测性端点就绪且不对公网泄露（Prometheus/Health就绪，公网404拦截）"
+else
+  echo "$METRICS_OUT"
+  record_fail "14" "可观测性端点就绪且不对公网泄露" "metrics_probe.sh failed"
 fi
 
 echo "========================================================"

@@ -60,7 +60,7 @@ public class ActuatorGuardFilterTest {
     @DisplayName("公网请求静默阻断：来自公网 IP 的 Actuator 请求直接返回 404")
     void testPublicRequestBlockedWith404() throws Exception {
         ActuatorGuardFilter filter = new ActuatorGuardFilter(clientIpResolver);
-        when(clientIpResolver.resolveClientIp(any())).thenReturn("203.0.113.199");
+        org.mockito.Mockito.lenient().when(clientIpResolver.resolveClientIp(any())).thenReturn("203.0.113.199");
 
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/prometheus");
         request.setRemoteAddr("203.0.113.199");

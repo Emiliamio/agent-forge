@@ -1,14 +1,13 @@
 server:
   port: ${SERVER_PORT:8080}
   servlet:
+    context-path: /api
     encoding:
       charset: UTF-8
       force: true
 
 spring:
-  mvc:
-    servlet:
-      path: /api
+
   application:
     name: agent-forge-backend
   profiles:

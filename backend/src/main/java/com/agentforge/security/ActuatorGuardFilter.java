@@ -44,25 +44,34 @@ public class ActuatorGuardFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String uri = request.getRequestURI();
 
-        // 1. 解析真实客户端 IP (由 ClientIpResolver 从右向左剥离可信代理)
-        String clientIp = clientIpResolver != null ? clientIpResolver.resolveClientIp(request) : request.getRemoteAddr();
+        // 1. 校验直接套接字来源 IP 是否属于合法内网/回环
         String socketIp = request.getRemoteAddr();
-
-        // 2. 校验来源 IP 是否属于合法的内网可信网段
-        boolean isClientInternal = isInternalOrLoopback(clientIp);
-        boolean isSocketInternal = isInternalOrLoopback(socketIp);
-
-        if (!isClientInternal || !isSocketInternal) {
-            log.warn("🛑 [ACTUATOR_PUBLIC_BLOCKED] 拒绝外网访问监控端点: uri={}, clientIp={}, socketIp={}", uri, clientIp, socketIp);
+        if (!isInternalOrLoopback(socketIp)) {
+            log.warn("🛑 [ACTUATOR_PUBLIC_BLOCKED] 拒绝外网套接字访问监控端点: uri={}, socketIp={}", uri, socketIp);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        // 3. 上下文路径平滑转发兼容：若以 /api/actuator 发起，自动内部 forward 至 /actuator
-        if (uri.startsWith("/api/actuator")) {
-            String forwardPath = uri.substring(4); // 剥离 /api
-            request.getRequestDispatcher(forwardPath).forward(request, response);
+        // 2. 校验 ClientIpResolver 解析出的客户端真实 IP
+        String clientIp = clientIpResolver != null ? clientIpResolver.resolveClientIp(request) : socketIp;
+        if (!isInternalOrLoopback(clientIp)) {
+            log.warn("🛑 [ACTUATOR_PUBLIC_BLOCKED] 拒绝外网客户端访问监控端点: uri={}, clientIp={}", uri, clientIp);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
+        }
+
+        // 3. 严格防范反向代理透传公网源：若携带 X-Forwarded-For，链路上任何非内网 IP 均坚决静默阻断
+        String xff = request.getHeader("X-Forwarded-For");
+        if (xff != null && !xff.isBlank()) {
+            String[] ips = xff.split(",");
+            for (String rawIp : ips) {
+                String ip = rawIp.trim();
+                if (!ip.isEmpty() && !isInternalOrLoopback(ip)) {
+                    log.warn("🛑 [ACTUATOR_PUBLIC_BLOCKED] 拒绝外网代理源访问监控端点: uri={}, xffIp={}", uri, ip);
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+            }
         }
 
         filterChain.doFilter(request, response);

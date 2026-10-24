@@ -36,6 +36,7 @@
 | **11** <a id="claim-11"></a> | **依赖漏洞口径严格可审计** | 前端 0 条漏洞与豁免；后端仅 7 条跨大版本/上游未发布项 | 离线断言：`osv-scanner.toml` 中 `^id = ` 计数为 0；`.trivyignore` 计数为 7；`frontend-bom.json` 中 `vite` ≥ 6.4.4、`vitest` ≥ 4.1.12 且无 `tinypool` | 三项离线断言全部通过，且 `python scripts/check_osv.py` 退出码为 0 | `osv-scanner.toml`, `.trivyignore`, `docs/sbom/frontend-bom.json` | `security-audit` / `claims-verify` | `v1.3.1 @ 6f83f8a · 2026-10-23 · PASS` |
 | **12** <a id="claim-12"></a> | **交付镜像非 root 且带健康检查** | 生产镜像禁止 root 运行，且容器自带周期性主动健康探针 | 静态检查：`backend/Dockerfile` 含 `USER 10001:10001` 与 `HEALTHCHECK`；`frontend/Dockerfile` 含 `USER 101:101` 与 `HEALTHCHECK` | 两份 Dockerfile 均严格通过无特权用户与 HEALTHCHECK 指令校验 | `backend/Dockerfile`, `frontend/Dockerfile` | `claims-verify` / `publish-images` | `v1.3.1 @ 6f83f8a · 2026-10-23 · PASS` |
 | **13** <a id="claim-13"></a> | **公开挂件调用全量留痕且可核验** | 一次成功调用产生 1 条 `outcome=ok` 记录；一次限流调用产生 `outcome=rate_limited` 且 `http_status=429` | `bash scripts/audit_probe.sh` | 两条记录字段齐全、`ip_hash`/`ua_hash` 均为 64 位十六进制、`latency_ms ≥ 0` | `widget_call_audit` 表 | `claims-verify` | 待验证 |
+| **14** <a id="claim-14"></a> | **可观测性端点就绪且不对公网泄露** | `/actuator/prometheus` 含 `http_server_requests_seconds_count`；`/actuator/health` 返回 `status=UP`；从公网 IP 访问返回 404 | `bash scripts/metrics_probe.sh` | 三条断言同时成立 | `scripts/metrics_probe.sh` | `claims-verify` | 待验证 |
 
 ---
 
@@ -47,7 +48,7 @@
 bash scripts/verify-claims.sh
 ```
 
-- 该脚本将逐条执行上述 13 个声明项，对输出与退出码进行强断言；
+- 该脚本将逐条执行上述 14 个声明项，对输出与退出码进行强断言；
 - 运行过程中自动检索最新备份快照、在执行限流测试前精准清理 `widget:*` 探针缓存、并在完成后自愈还原 Agent 1 原始配置状态；
 - 任一指标未达成或产生漂移，脚本将立即退出并返回非 0 状态码 (`exit 1`)。
 

@@ -278,3 +278,102 @@ AgentForge 在 v1.2+ 架构演进中建立了**六大核心架构不变量（Arc
   cd backend && mvn -B -Dtest=HexagonalPortsAndFakesTest test
   ```
 
+---
+
+## 🔒 八、 生产级传输层安全与反向代理规范 (Production TLS Termination & Reverse Proxy)
+
+> **核心原则**：当前 Docker Compose 编排中各容器保持明文 HTTP 交互，**仅用于本地研发调试与内网隔离环境部署**。对外暴露服务时严禁直接将 `8080`（后端）或 `3000`（前端）端口向公网裸奔，**必须前置工业级反向代理（如 Nginx、Caddy、Traefik 或云厂商 API 网关）完成 TLS 卸载与公私网流量清洗**。
+
+### 1. 架构拓扑与信任边界
+
+```mermaid
+flowchart LR
+    Client["公网客户端 / 浏览器 / 嵌入式挂件"] -->|HTTPS TLS 1.2/1.3:443| Proxy["边缘反向代理 Nginx / Gateway<br/>TLS 卸载 + HSTS + 流量清洗"]
+    
+    subgraph InternalNet["受保护内网 / Docker Bridge 隔离网络"]
+        Proxy -->|HTTP Cleartext:3000| Frontend["AgentForge Studio (前端容器)"]
+        Proxy -->|HTTP Cleartext:8080| Backend["AgentForge Backend (后端容器)"]
+        Backend -->|TCP:5432| DB[("PostgreSQL 16")]
+        Backend -->|TCP:6379| Redis[("Redis 7")]
+        Prometheus["内网 Prometheus 采集器"] -->|HTTP:8080/actuator/prometheus| Backend
+    end
+```
+
+### 2. 标准 Nginx 生产反向代理配置示例
+
+```nginx
+# 生产级 HTTP -> HTTPS 强制跳转
+server {
+    listen 80;
+    server_name agentforge.example.com;
+    return 301 https://$host$request_uri;
+}
+
+# 生产级 TLS 终结与反向代理核心配置
+server {
+    listen 443 ssl http2;
+    server_name agentforge.example.com;
+
+    # 1. TLS 证书与加密套件收敛 (禁止不安全的 SSLv3/TLSv1.0/TLSv1.1)
+    ssl_certificate /etc/nginx/certs/agentforge.crt;
+    ssl_certificate_key /etc/nginx/certs/agentforge.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    # 2. HSTS 强制安全通道 (6 个月以上，强制所有子域名走 HTTPS)
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options SAMEORIGIN always;
+
+    # 3. 基础反向代理透传头
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port $server_port;
+
+    # 4. 前端应用静态托管与路由回退
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # 5. 后端 RESTful API 路由代理
+    location /api/ {
+        proxy_pass http://127.0.0.1:8080/api/;
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_read_timeout 300s; # 满足 LLM 流式 SSE 长连接响应
+    }
+
+    # 6. Actuator 可观测性端点安全屏障 (公网直接 404，仅允许特定内部运维网段)
+    location /actuator/ {
+        # 运维网络白名单访问控制
+        allow 127.0.0.1;
+        allow 10.0.0.0/8;
+        allow 172.16.0.0/12;
+        allow 192.168.0.0/16;
+        deny all;
+
+        proxy_pass http://127.0.0.1:8080/actuator/;
+        proxy_http_version 1.1;
+    }
+}
+```
+
+### 3. 与嵌入式挂件 (Web Component Widget) CORS 的关系
+
+- **混合内容 (Mixed Content) 屏障**：现代浏览器安全规范禁止在 HTTPS 宿主页面中发起任何明文 HTTP 请求（Mixed Content 阻断）。当第三方企业门户（如 OA、CRM、ERP 均启用 HTTPS）嵌入 AgentForge 挂件脚本时，挂件与 AgentForge 后端交互的接口**必须全部采用 HTTPS 协议**，否则浏览器将直接静默拦截所有 API 请求；
+- **CORS 跨域握手与凭证隔离**：
+  - 生产环境下，第三方站点域名通过 `Origin` 请求头调用 `/api/public/agents/{id}/chat`；
+  - 反向代理或后端 Spring CORS 过滤器校验该 Origin；
+  - 挂件接口采用无状态的签名 Widget Token 或一次性安全凭据，响应头输出受控的 `Access-Control-Allow-Origin: <origin>` 与 `Access-Control-Allow-Credentials: true`，严禁在包含凭证时返回通配符 `*`；
+  - `X-Forwarded-Proto` 头保证后端能够准确识别外部实际协议为 `https`，确保生成的资源重定向与 Cookie 携带 `Secure; SameSite=Lax` 属性。
+
+
